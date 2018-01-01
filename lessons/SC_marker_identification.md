@@ -1,7 +1,7 @@
 ---
 title: "Single-cell RNA-seq: Marker identification"
 author: "Mary Piper, Lorena Pantano, Meeta Mistry, Radhika Khetani"
-date: Tuesday, September 25, 2018
+date: Thursday, June 6,2019
 ---
 
 Approximate time: 45 minutes
@@ -13,10 +13,125 @@ Approximate time: 45 minutes
 
 # Single-cell RNA-seq marker identification
 
-Now that we have the single cells clustered based on different cell types,  we are ready to move forward with identifying cluster markers. 
-After we have identified our desired clusters, we can move on to marker identification, which will allow us to verify the identity of certain clusters and help surmise the identity of any unknown clusters. Since we have two clusters identified as CD4 T cells, we may also want to know which genes are differentially expressed between these two clusters.
+Now that we have identified our desired clusters, we can move on to marker identification, which will allow us to verify the identity of certain clusters and help surmise the identity of any unknown clusters. 
 
 <img src="../img/sc_workflow.png" width="800">
+
+_**Goals:**_ 
+ 
+ - _To **determine the gene markers** for each of the clusters_
+ - _To **identify cell types** of each cluster using markers_
+ - _To determine whether need to **re-cluster based on cell type markers**, perhaps clusters need to be merged or split_
+
+_**Challenges:**_
+ 
+ - _Over-interpretation of the results_
+ - _Combining different types of marker identification_
+
+_**Recommendations:**_
+ 
+ - _Think of the results as hypotheses that need verification. Inflated p-values can lead to over-interpretation of results (essentially each cell is used as a replicate). Top markers are most trustworthy._
+ _Identify all markers conserved between conditions for each cluster_
+ - _Identify markers that are differentially expressed between specific clusters_
+
+
+There are a few different types of marker identification that we can explore using Seurat. Each with their own benefits and drawbacks:
+
+1. **Identification of all markers for each cluster:** this analysis compares each cluster against all others and outputs the genes that are differentially expressed/present. 
+	- *Useful for identifying unkown clusters and improving confidence in hypothesized cell types.*
+
+2. **Identification of conserved markers for each cluster regardless of condition:** This analysis looks for those genes that are conserved in the cluster across all conditions. This analysis will output genes that are consistently differentially expressed/present for all of the sample groups. These genes can help to figure out the identity for the cluster. Often, this analysis is performed only for those clusters whose identity is uncertain or novel.
+	- *Useful when more than one condition to identify cell type markers that are conserved across conditions.*  	
+3. **Marker identification between specific clusters:** this analysis explores differentially expressed genes between specific clusters. 
+	- *Useful for determining differences in gene expression between clusters with markers that are similar in the above analyses.*
+
+Since we only are exploring a single sample, we do not need to explore conserved markers, but we will investigate all markers for each cluster and tease out markers differentiating specific clusters.
+
+## Identification of all markers for each cluster
+
+For this analysis we are comparing each cluster against all other clusters to identify cluster markers using the ` FindAllMarkers()` function. This function has two important arguments which provide thresholds for determining whether a gene is a marker:
+
+- `logfc.threshold`: minimum log2 foldchange for average expression of gene in cluster relative to the average expression in all other clusters combined
+	- **Cons:** 
+		- could miss those cell markers that are expressed in the cluster being compared, but not in the other clusters, if the average log2FC doesn't meet the threshold
+		- could return a lot of metabolic/ribosomal genes due to slight differences in metabolic output by different cell types, which are not as useful to distinguish cell type identities
+- `min.diff.pct`: minimum percent difference between the percent of cells expressing the gene in the cluster and the percent of cells expressing gene in all other clusters combined
+	- **Cons:** could miss those cell markers that are expressed in all cells, but are highly up-regulated in this specific cell type
+	
+You could use one or the other of these arguments or both. We will be a bit lenient and use only the log2 fold change threshold greater than 0.25. We will also specify to return only the positive markers for each cluster
+
+```r
+# Find markers for every cluster compared to all remaining cells, report only the positive ones
+markers <- FindAllMarkers(object = seurat_control, 
+                          only.pos = TRUE,
+                          logfc.threshold = 0.25)
+                          
+View(markers)                          
+```
+
+The order of the columns doesn't seem the most intuitive, so we will reorder the columns with the `cluster` first followed by the `gene`.
+
+```r
+# Combine markers with gene descriptions 
+ann_markers <- inner_join(x = markers, 
+                          y = annotations[, c("gene_name", "description")],
+                          by = c("gene" = "gene_name")) %>%
+        unique()
+
+# Rearrange the columns to be more intuitive
+ann_markers <- ann_markers[ , c(6, 7, 2:4, 1, 5,8)]
+
+# Order the rows by p-adjusted values
+ann_markers <- ann_markers %>%
+        dplyr::arrange(cluster, p_val_adj)
+
+View(ann_markers)
+```
+
+<p align="center">
+<img src="../img/all_markers.png" width="800">
+</p>
+
+**Usually the top markers are relatively trustworthy, but because of inflated p-values, many of the less significant genes are not so trustworthy as markers.**
+
+When looking at the output, we suggest looking for markers with large differences in expression between `pct.1` and `pct.2` and larger fold changes. For instance if `pct.1` = 0.90 and `pct.2` = 0.80, I might not be as excited about that marker. However, if `pct.2` = 0.1 instead, then I would be much more excited about it. Also, I look for the majority of cells expressing marker in my cluster of interest. If `pct.1` is low, such as 0.3, I again might not be as interested in it.
+
+- **cluster:** number corresponding to cluster
+- **gene:** gene id
+- **avg_logFC:** average log2 fold change. Positive values indicate that the gene is more highly expressed in the cluster.
+- **pct.1**: The percentage of cells where the gene is detected in the cluster
+- **pct.2**: The percentage of cells where the gene is detected on average in the other clusters
+- **p_val:** p-value not adjusted for multiple test correction
+- **p_val_adj:** Adjusted p-value, based on bonferroni correction using all genes in the dataset, used to determine significance
+
+
+If the format looks good, we can save our marker analysis results to file and output the top 5 markers by log2 fold change for each cluster for a quick perusal.
+
+```r
+# Save markers to file
+write.csv(ann_markers, 
+          file = "results/control_all_markers.csv", 
+          quote = FALSE, 
+          row.names = FALSE)
+
+# Extract top 5 markers per cluster
+top5 <- ann_markers %>% 
+        group_by(cluster) %>% 
+        top_n(n = 5, 
+              wt = avg_logFC)
+
+# Visualize top 5 markers per cluster
+View(top5)
+
+```
+
+<p align="center">
+<img src="../img/top5_markers.png" width="800">
+</p>
+
+Based on my marker results, if there were any questions about the identity of any clusters, exploring the cluster's markers would be the first step. If we look at the markers of cluster 9,
+
+
 
 ## Identifying gene markers for each cluster
 
