@@ -1,7 +1,7 @@
 ---
 title: "Single-cell RNA-seq: Quality Control Analysis"
 author: "Mary Piper, Lorena Pantano, Meeta Mistry, Radhika Khetani"
-date: Monday, September 18, 2018
+date: Tuesday, April 9, 2019
 ---
 
 Approximate time: 90 minutes
@@ -18,9 +18,9 @@ Approximate time: 90 minutes
 
 ## Dataset
 
-The dataset we will be working with is comprised of 2,700  Peripheral Blood Mononuclear Cells (PBMC) taken from a healthy donr, sequenced on  the Illumina NextSeq 500. This dataset is freely available from 10X Genomics and is used as part of the [Seurat tutorial](https://satijalab.org/seurat/pbmc3k_tutorial.html). 
+ two groups of PBMCs from Kang et al, 2017. The dataset we will be working with is comprised of Peripheral Blood Mononuclear Cells (PBMC) taken from a healthy donor and split into control and interferon beta treatment conditions. The libraries were prepared using 10X Genomics version 2 chemistry and sequenced on the Illumina NextSeq 500. This dataset is freely available from 10X Genomics and is used as part of the [Seurat tutorial](https://satijalab.org/seurat/v3.0/immune_alignment.html). 
 
-We are going to go through the analysis workflow for quality control through marker identification; however, **this dataset has already been filtered for poor quality cells**. Therefore, don't be surprised if any data from the sequencing facility looks a bit worse for the metrics we will be exploring.
+We are going to go through the analysis workflow for quality control through marker identification; however, **this dataset has already been filtered for poor quality cells** using the Cell Ranger analysis pipelines. Therefore, don't be surprised if your data from the sequencing facility looks a bit worse for the metrics we will be exploring.
 
 
 ## Setting up the R environment
@@ -37,9 +37,9 @@ single_cell_rnaseq/
 
 ### Download data
 
-**Right-click** the link [here](https://s3-us-west-2.amazonaws.com/10x.files/samples/cell/pbmc3k/pbmc3k_filtered_gene_bc_matrices.tar.gz) and download the data into the `data` folder.
+**Right-click** the link [here](https://www.dropbox.com/s/79q6dttg8yl20zg/immune_alignment_expression_matrices.zip?dl=1) and download the data into the `data` folder.
 
-We will need to navigate to the `data` folder and **click on the file `pbmc3k_filtered_gene_bc_matrices.tar.gz`** to decompress it. 
+We will need to navigate to the `data` folder and **click on the file `immune_alignment_expression_matrices.zip`** to decompress it. 
 
 Finally, create an Rscript and type the following note:
 
