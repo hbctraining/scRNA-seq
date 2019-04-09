@@ -18,9 +18,9 @@ Approximate time: 90 minutes
 
 ## Dataset
 
- two groups of PBMCs from Kang et al, 2017. The dataset we will be working with is comprised of Peripheral Blood Mononuclear Cells (PBMC) taken from a healthy donor and split into control and interferon beta treatment conditions. The libraries were prepared using 10X Genomics version 2 chemistry and sequenced on the Illumina NextSeq 500. This dataset is freely available from 10X Genomics and is used as part of the [Seurat tutorial](https://satijalab.org/seurat/v3.0/immune_alignment.html). 
+The dataset we will be working with is comprised of Peripheral Blood Mononuclear Cells (PBMC) taken from a healthy donor and split into control and interferon beta-treated conditions (Kang et al, 2017). The libraries were prepared using 10X Genomics version 2 chemistry and sequenced on the Illumina NextSeq 500. This dataset is freely available from 10X Genomics and is used as part of the [Seurat tutorial](https://satijalab.org/seurat/v3.0/immune_alignment.html). 
 
-We are going to go through the analysis workflow for quality control through marker identification; however, **this dataset has already been filtered for poor quality cells** using the Cell Ranger analysis pipelines. Therefore, don't be surprised if your data from the sequencing facility looks a bit worse for the metrics we will be exploring.
+We are going to go through the analysis workflow for quality control through marker identification; however, **this dataset has already been filtered for poor quality cells** using the 10X Cell Ranger analysis pipelines. Therefore, don't be surprised if your data from the sequencing facility looks a bit worse for the metrics we will be exploring.
 
 
 ## Setting up the R environment
