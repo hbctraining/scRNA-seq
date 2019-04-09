@@ -82,7 +82,7 @@ Generally, all single-cell RNA-seq datasets, regardless of technology or pipelin
 3. a **matrix of counts** per gene for every cell
 
 
-We can explore these files by clicking on the `data/filtered_gene_bc_matrices/hg19` folder:
+We can explore these files by clicking on the `data/immune_alignment_expression_matrices` folder:
 
 - **`barcodes.tsv`:** cellular barcodes present in dataset
 
