@@ -261,9 +261,9 @@ for (file in c("ctrl_raw_feature_bc_matrix", "stim_raw_feature_bc_matrix")){
         seurat_data <- Read10X(data.dir = paste0("data/", file))
 ```
 
-Finally, we can create the Seurat object by using the `CreateSeuratObject()` function, adding in the argument `project`, where we can specify to add the sample name into the `orig.identity` slot of the metadata.
+Finally, we can create the Seurat object by using the `CreateSeuratObject()` function, adding in the argument `project`, where we can add the sample name into the `orig.ident` slot of the metadata.
 
-The last command specified assigns to Seurat object created (`seurat_obj`) to a variable called by the sample name (`sample`). We need to assign it a new name because we would overwrite our `seurat_obj` every time we go through the commands with a new sample input.
+The last command assigns the Seurat object created (`seurat_obj`) to a variable called by the sample name (`sample`). We need to assign it to a variable with a new name because we would overwrite our `seurat_obj` every time we go through the commands with a new sample input.
 
 ```r
 for (file in c("ctrl_raw_feature_bc_matrix", "stim_raw_feature_bc_matrix")){
@@ -293,62 +293,68 @@ Because the same cell IDs are used for different samples, we add a sample-specif
 head(merged_seurat@meta.data)
 ```
 
-You should see each cell has a `ctrl_` or ``stim_` prefix and an `orig.identity` of `ctrl_raw_feature_bc_matrix` or `stim_raw_feature_bc_matrix`.
+You should see each cell has a `ctrl_` or `stim_` prefix and an `orig.ident` matching the sample.
 
-Now, we need to extract the counts and metadata for this merged object:
+Now, we need to extract the counts for this merged object:
 
 ```r
 # Extract counts for merged data
 counts <- GetAssayData(object = merged_seurat, slot = "counts")
 
-# Extract metadata for merged data
-metadata <- merged_seurat@meta.data
 ```
 
 ### Creating metadata object with some QC metrics
 
 Now that we have a counts matrix with the genes as row names and cells as columns, we can create our metadata with information about the different metrics to evaluate during quality control assessment.
 
-
-
-We will create the metadata with only the cell IDs: 
+We will create the metadata dataframe by extracting the `meta.data` slot from the Seurat object: 
 
 ```r
 # Create metadata containing only the cell IDs
-metadata <- data.frame(row.names = cell_ids, cells = cell_ids, stringsAsFactors = F)
+metadata <- merged_seurat@meta.data
 ```
 
-Then, we can add information about the number of UMIs per cell,
+This should contain information about the sample (`orig.ident`), number of UMIs (`nCount_RNA`), and number of genes detected (`nFeature_RNA`) for each cell. We can add metrics to this object for QC purposes.
+
+First, let's add a column with our cell IDs and change the column names to be more intuitive:
 
 ```r
-# Add number of UMIs for each gene per cell to metadata
-metadata$nUMI <- Matrix::colSums(counts)
+# Add cell IDs to metadata
+metadata$cells <- rownames(metadata)
+
+# Rename columns
+metadata <- metadata %>%
+        dplyr::rename(seq_folder = orig.ident,
+                      nUMI = nCount_RNA,
+                      nGene = nFeature_RNA)
 ```
 
-the number of genes identified per cell,
+Now, let's get sample names for each of the cells based on the cell prefix:
 
 ```r
-# Add number of genes detected per cell to metadata
-metadata$nGene <- Matrix::colSums(counts > 0)
+# Create sample column
+metadata$sample <- NA
+metadata$sample[which(str_detect(metadata$cells, "^ctrl_"))] <- "ctrl"
+metadata$sample[which(str_detect(metadata$cells, "^stim_"))] <- "stim"
 ```
 
-the number of genes per UMI for each cell,
+Now we need to calculate some metrics for plotting:
+
+- **number of genes detected per UMI:** this metric with give us an idea of the complexity of our dataset (more genes detected per UMI, more complex our data)
+- **mitochondrial ratio:** this metric will give us a percentage of cell reads originating from the mitochondrial genes
+
+The number of genes per UMI for each cell is quite easy to calculate, and we will log10 transform the result for better comparison between samples.
 
 ```r
 # Add number of UMIs per gene for each cell to metadata
 metadata$log10GenesPerUMI <- log10(metadata$nGene) / log10(metadata$nUMI)
 ```
 
-and the sample names. However, with this dataset we only have a single sample.
+The determination of mitochondrial ratios is a bit more complex and requires us to use genome annotations to determine which genes originated from the mitochondrial DNA.
 
-```r
-# Add sample name associated with each cell to metadata (we only have one sample, so more important when you have multiple samples)
-metadata$sample <- "pbmcs"
-```
+### Using annotation file to generate mitochondrial count metrics
 
-## Using annotations file to generate additional QC metrics
-
-We will be using [AnnotationHub](https://bioconductor.org/packages/release/bioc/vignettes/AnnotationHub/inst/doc/AnnotationHub.html), which allows accession to a wide variety of online databases and other resources, to query Ensembl annotations made available through [ensembldb](https://bioconductor.org/packages/release/bioc/vignettes/ensembldb/inst/doc/ensembldb.html). Ensembldb is a package that retrieves annotation for the databases directly from the Ensembl Perl API.
+We will be using [AnnotationHub](https://bioconductor.org/packages/release/bioc/vignettes/AnnotationHub/inst/doc/AnnotationHub.html), which allows accession to a wide variety of online databases and other resources, to query Ensembl annotations made available through [ensembldb](https://bioconductor.org/packages/release/bioc/vignettes/ensembldb/inst/doc/ensembldb.html). Ensembldb is a package that retrieves annotation for the databases directly from Ensembl.
 
 ### Downloading database for organism of interest
 
@@ -412,22 +418,13 @@ annotations <- annotations %>%
   dplyr::select(gene_id, gene_name, gene_biotype, seq_name, description, entrezid)
 ```
 
-Since we are looking for genes associated with mitochondrial gene expression, the `biotype` information is the field we should query. Let's explore the options:
-
-```r
-# Explore biotypes
-annotations$gene_biotype %>%
-  factor() %>%
-  levels()
-```
-
 Now we can retrieve the genes associated with the different biotypes of interest:
 
 ```r
 # Extract IDs for mitochondrial genes
-mt <- annotations %>% 
-  dplyr::filter(seq_name == "MT") %>%
-  dplyr::pull(gene_id)
+mt <- annotations %>%
+        dplyr::filter(seq_name == "MT") %>%
+        dplyr::pull(gene_name)
 ```
 
 ### Adding metrics to metadata
@@ -438,9 +435,6 @@ Now that we have information about which genes are mitochondrial, we can quaniti
 # Number of UMIs assigned to mitochondrial genes
 metadata$mtUMI <- Matrix::colSums(counts[which(rownames(counts) %in% mt),], na.rm = T)
 
-# Ensure all NAs receive zero counts
-metadata$mtUMI[is.na(metadata$mtUMI)] <- 0
-
 # Calculate of mitoRatio per cell
 metadata$mitoRatio <- metadata$mtUMI/metadata$nUMI
 ```
@@ -449,21 +443,6 @@ Now you are **all setup with the metrics you need to assess the quality of your 
 
 <img src="../img/metadata_scrnaseq.png" width="900">
 
-
-## Initial filtering
-
-Prior to assessing our metrics, we are going to perform a very minimal filtering of those cells with less than 100 UMIs to get rid of the  cells that are clearly junk, containing less than 100 UMIs.
-
-```r
-# Keep cells with nUMI greater than 100
-idx <- which(metadata$nUMI > 100)
-
-# Extract the counts for those cells
-counts_c <- counts[, idx]
-
-# Extract the metadata for those cells
-metadata_c <- metadata[idx,]
-```
 
 ## Saving metrics to single cell experiment 
 
@@ -486,7 +465,6 @@ Now that we have generated the various metrics to assess, we can explore them wi
 # Create a data frame containing the metrics for visualizations
 metrics <- colData(se) %>%
   as.data.frame
-
 ```
 
 We will explore the following metrics through visualizations to decide on which cells are low quality and should be removed from the analysis:
@@ -505,7 +483,7 @@ The cell counts are determined by the number of unique cellular barcodes detecte
 
 You expect the number of unique cellular barcodes to be around the number of sequenced cells or greater. In single-cell protocols using hydrogels, like inDrops, some hydrogels may have more than one cellular barcode (see details in note below). After we remove the low quality cells by filtering, we will expect the number of cells to be at or a bit below the number of sequenced cells.
 
-> **NOTE:** During the **inDrop** protocol, the cellular barcodes are present in the hydrogels, which are encapsulated in the droplets with a single cell and lysis/reaction mixture. Upon treatment of UV and cell lysis, all components mix together inside the droplet and reverse transcription proceeds, followed by droplet breakup and linear amplification for library preparation. While each hydrogel should have a single cellular barcode associated with it, occasionally a hydrogel can have more than one cellular barcode. We often see all possible combinations of cellular barcodes at a low level, leading to a higher number of cellular barcodes than cells.
+> **NOTE:** During the **inDrops** protocol, the cellular barcodes are present in the hydrogels, which are encapsulated in the droplets with a single cell and lysis/reaction mixture. Upon treatment of UV and cell lysis, all components mix together inside the droplet and reverse transcription proceeds, followed by droplet breakup and linear amplification for library preparation. While each hydrogel should have a single cellular barcode associated with it, occasionally a hydrogel can have more than one cellular barcode. We often see all possible combinations of cellular barcodes at a low level, leading to a higher number of cellular barcodes than cells.
 
 ```r
 # Visualize the number of cell counts per cell
@@ -516,7 +494,7 @@ metrics %>%
 ```
 
 
-<img src="../img/cell_counts.png" width="350">
+<img src="../img/cell_counts.png" width="600">
 
 
 ## UMI counts (transcripts) per cell
@@ -533,7 +511,7 @@ metrics %>%
         geom_vline(xintercept = 500)
 ```
 
-<img src="../img/nUMIs.png" width="350">
+<img src="../img/nUMIs.png" width="600">
    
 ## Genes detected per cell
 
@@ -554,9 +532,9 @@ metrics %>%
         ggtitle("NCells vs NGenes")
 ```
 
-<img src="../img/genes_detected.png" width="350">
+<img src="../img/genes_detected.png" width="600">
 
-<img src="../img/Ncells_vs_ngenes.png" width="350">
+<img src="../img/Ncells_vs_ngenes.png" width="600">
 
 ## UMIs vs. genes detected
 
@@ -565,16 +543,17 @@ Poor quality cells are likely to have low genes and UMIs per cell. Therefore, a 
 ```r
 # Visualize the correlation between genes detected and number of UMIs and determine whether strong presence of cells with low numbers of genes/UMIs
 metrics %>% 
-  ggplot(aes(x=nUMI, y=nGene, color=mitoRatio)) + 
-  geom_point() + 
-  stat_smooth(method=lm) +
-  scale_x_log10() + 
-  scale_y_log10() + 
-  geom_vline(xintercept = 800) +
-  facet_wrap(~sample)
+        ggplot(aes(x=nUMI, y=nGene, color=mitoRatio)) + 
+        geom_point() + 
+        stat_smooth(method=lm) +
+        scale_x_log10() + 
+        scale_y_log10() + 
+        geom_vline(xintercept = 500) +
+        geom_hline(yintercept = 250) +
+        facet_wrap(~sample)
 ```
 
-<img src="../img/UMIs_vs_genes.png" width="350">
+<img src="../img/UMIs_vs_genes.png" width="600">
 
 ## Mitochondrial counts ratio
 
@@ -588,7 +567,7 @@ metrics %>%
         scale_x_log10() + 
         geom_vline(xintercept = 0.1)
 ```
-<img src="../img/mitoRatio.png" width="350">
+<img src="../img/mitoRatio.png" width="600">
 
 ## Novelty
 
@@ -601,7 +580,7 @@ metrics %>%
         geom_density()
 ```
 
-<img src="../img/novelty.png" width="350">
+<img src="../img/novelty.png" width="600">
 
 > **NOTE:** **Reads per cell** is another metric that can be useful to explore; however, the workflow used would need to save this information to assess. Generally, with this metric you hope to see all of the samples with peaks in relatively the same location between 10,000 and 100,000 reads per cell. 
 
