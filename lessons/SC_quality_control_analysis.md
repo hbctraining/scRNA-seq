@@ -38,9 +38,9 @@ _**Recommendations:**_
 
 ## Biology of our dataset
 
-The dataset we will be working with is from [Kang et al, 2017](https://www.nature.com/articles/nbt.4042) and is comprised of pooled Peripheral Blood Mononuclear Cells (PBMC) taken from eight lupus patients split into control and interferon beta-treated conditions. The libraries were prepared using 10X Genomics version 2 chemistry and sequenced on the Illumina NextSeq 500. This dataset is freely available from 10X Genomics and is used as part of the [Seurat tutorial](https://satijalab.org/seurat/v3.0/immune_alignment.html). 
+The dataset we will be working with is from [Kang et al, 2017](https://www.nature.com/articles/nbt.4042) and is comprised of pooled Peripheral Blood Mononuclear Cells (PBMCs) taken from eight lupus patients split into control and interferon beta-treated conditions. The libraries were prepared using 10X Genomics version 2 chemistry and sequenced on the Illumina NextSeq 500. This dataset is freely available from 10X Genomics and is used as part of the [Seurat tutorial](https://satijalab.org/seurat/v3.0/immune_alignment.html). 
 
-Therefore, for these samples we will expect immune cells, such as:
+Since the samples are PBMCs, we will expect immune cells, such as:
 
 - B cells
 - T cells
