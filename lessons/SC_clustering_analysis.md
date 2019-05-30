@@ -1,7 +1,7 @@
 ---
 title: "Single-cell RNA-seq: Clustering Analysis"
 author: "Mary Piper, Lorena Pantano, Meeta Mistry, Radhika Khetani"
-date: Tuesday, September 25, 2018
+date: Thursday, May 30, 2019
 ---
 
 Approximate time: 90 minutes
@@ -21,18 +21,44 @@ Now that we have our high quality cells, we want to know the different cell type
 
 <img src="../img/sc_workflow.png" width="800">
 
-To do this we are going to perform a clustering analysis. The workflow for this analysis is adapted from the following sources:
+_**Goals:**_ 
+ 
+ - _To **generate cell type-specific clusters** and use known markers to determine identity of the clusters._
+ - _To **determine whether clusters represent true cell types or cluster due to biological or technical variation**, such as clusters of cells in the S phase of the cell cycle, clusters of specific batches, or cells with high mitochondrial content._
 
-- Satija Lab: [Seurat v2 Guided Clustering Tutorial](http://satijalab.org/seurat/pbmc3k_tutorial.html)
+_**Challenges:**_
+ 
+ - _Clustering so that **cells of the same cell type from different conditions cluster together**_
+ - _**Removing unwanted variation** so that we do not have cells clustering by artifacts_
+ - _**Identifying the cell types** of each cluster_
+ - _Maintaining patience as this can be a highly iterative process between clustering and marker identification (sometimes even going back to the QC filtering_
+
+_**Recommendations:**_
+ 
+ - _Have a good idea of your expectations for the **cell types to be present** prior to performing the clustering. Know whether you expect cell types of low complexity or higher mitochondrial content and whether the cells are differentiating_
+ - _If you have **more than one condition**, it's often helpful to perform integration to align the cells_
+ - _**Regress out** number of UMIs, mitochondrial content, and cell cycle, if needed and appropriate for experiment, so not to drive clustering_
+ - _Identify any junk clusters for removal. Possible junk clusters could include those with high **mitochondrial content** and low UMIs/genes_
+ - _If **not detecting all cell types as separate clusters**, try changing the resolution or the number of PCs used for clustering_
+
+## Clustering workflow
+
+To determine the cell types present, we are going to perform a clustering analysis. Since we have two conditions, `Control` and `Stimulated`, we will work through the workflow for the `Control` sample to determine the cell types present, then integrate with the `Stimulated` to identify the cell types present in both of the samples. 
+
+The workflow for this analysis is adapted from the following sources:
+
+- Satija Lab: [Seurat v3 Guided Integration Tutorial](https://satijalab.org/seurat/v3.0/immune_alignment.html)
 - Paul Hoffman: [Cell-Cycle Scoring and Regression](http://satijalab.org/seurat/cell_cycle_vignette.html)
 
 To identify clusters, the following steps will be performed:
 
-1. **Normalization and transformation** of the raw gene counts per cell to account for **differences in sequencing depth** per cell.
-2. Identification of high variance genes.
-3. **Regression of sources of unwanted variation** (e.g. number of UMIs per cell, mitochondrial transcript abundance, cell cycle phase).
-4. **Identification of the primary sources of heterogeneity** using principal component (PC) analysis and heatmaps.
-5. **Clustering cells** based on significant PCs (metagenes).
+1. **Normalization** and **identification of high variance genes** in each sample
+2. **Integration** of the samples using shared highly variable genes (optional, but recommended to align cells from different samples)
+3. **Scaling** and **regression** of sources of unwanted variation (e.g. number of UMIs per cell, mitochondrial transcript abundance, cell cycle phase)
+4. **Clustering cells** based on top PCs (metagenes)
+5. Exploration of **quality control metrics**: determine whether clusters unbalanced wrt UMIs, genes, cell cycle, mitochondrial content, samples, etc.
+6. Searching for expected cell types using **known markers**
+7. **Marker identification** for each cluster
 
 ## Set-up
 
@@ -55,12 +81,115 @@ seurat_raw <- CreateSeuratObject(raw.data = counts(se_c),
                                  meta.data = colData(se_c) %>% data.frame())
 ```
 
->**NOTE:** Often we only want to analyze a subset of samples, cells, or genes. To subset the Seurat object, the `SubsetData()` function can be easily used. For example, to only cluster cells using a single sample group, `control`, we could run the following:
->
->```r
-> pre_regressed_seurat <- SubsetData(seurat_raw, 
->                                    cells.use = rownames(seurat_raw@meta.data[which(seurat_raw@meta.data$interestingGroups == "control"), ])
->```
+We are interested in only analyzing the `ctrl` sample by itself as a first pass. To do this we need to subset the Seurat object. We can use the `subset()` function to extract a subset of samples, cells, or genes. To extract only the cells from the `ctrl` sample we can run the following:
+
+```r
+# Get cell IDs for control cells
+control_cell_ids <- rownames(seurat_raw@meta.data[which(seurat_raw@meta.data$sample == "ctrl"), ])
+
+head(control_cell_ids)
+
+# Subset Seurat object to only contain control cells
+seurat_control <- subset(seurat_raw, 
+                         cells = control_cell_ids)
+```
+
+To perform clustering of our data, we must identify the sources of variation present in our data based on the most variable genes. The assumption being that the most variable genes will determine the principal components (PCs) distinguishing the differences between cell types. After normalization of the expression values, we extract the 2000 most variable genes to determine the major sources of variation in the data, or significant PCs.
+
+## **Normalization** and **identification of high variance genes** in each sample
+
+The first step in the analysis is to normalize the raw counts to account for differences in sequencing depth per cell **for each sample**. By default, the raw counts are normalized using global-scaling normalization by performing the following:
+
+1. normalizing the gene expression measurements for each cell by the total expression 
+2. multiplying this by a scale factor (10,000 by default)
+3. log-transforming the result
+
+```r
+# Normalize the data for read depth
+seurat_control <- NormalizeData(seurat_control,
+                                normalization.method = "LogNormalize",
+                                scale.factor = 10000)
+```
+
+Following normalization, we want to **identify the most variable genes** (highly expressed in some cells and lowly expressed in others) to use for downstream clustering analyses. 
+
+The mean-variance relationship of the data is modeled, and the 2,000 most variable genes are returned.
+
+```r
+# Identify the 2000 most variable genes
+seurat_control <- FindVariableFeatures(object = seurat_control,
+                                       selection.method = "vst",
+                                       nfeatures = 2000)
+```
+
+We can plot these most variable genes highlighting the 20 most highly variable. The labelled genes should look familiar given the experiment.
+
+```r
+# Identify the 20 most highly variable genes
+top20 <- head(x = VariableFeatures(object = seurat_control), 
+              n =20)
+
+# Plot variable features with labels
+plot1 <- VariableFeaturePlot(object = seurat_control)
+
+LabelPoints(plot = plot1, 
+            points = top20, 
+            repel = TRUE)
+```
+
+<p align="center">
+<img src="../img/top_variable_genes.png" width="800">
+</p>
+
+After identification of variable genes for each dataset, we will scale the data and regress out sources of unwanted variation. If we had more than a single sample, we could integrate our data at this step.
+
+> **NOTE:** Seurat has just incorporated the `sctransform` tool for better normalization, scaling, and finding of variable genes. There is a new [vignette](https://satijalab.org/seurat/v3.0/sctransform_vignette.html) and [preprint](https://www.biorxiv.org/content/biorxiv/early/2019/03/18/576827.full.pdf) available to explore this new methodology.
+
+## Scaling and regression of sources of unwanted variation
+
+In addition to the interesting variation in your dataset that separates the different cell types, there is also "uninteresting" sources of variation present that can obscure the cell type-specific differences. This can include technical noise, batch effects, and/or uncontrolled biological variation (e.g. cell cycle).
+
+### Cell cycle scoring
+
+Cell cycle variation is a common source of uninteresting variation in single-cell RNA-seq data. To examine cell cycle variation in our data, we assign each cell a score, based on its expression of G2/M and S phase markers. 
+
+> An overview of the cell cycle phases is given in the image below:
+> 
+> <p align="center">
+><img src="../img/cell_cycle.png" width="200">
+></p> 	
+> 
+> _Adapted from [Wikipedia](https://en.wikipedia.org/wiki/Cell_cycle) (Image License is [CC BY-SA 3.0](https://en.wikipedia.org/wiki/Wikipedia:Text_of_Creative_Commons_Attribution-ShareAlike_3.0_Unported_License))_
+> 
+> - **G0:** Quiescence or resting phase. The cell is not actively dividing, which is common for cells that are fully differentiated. Some types of cells enter G0 for long periods of time (many neuronal cells), while other cell types never enter G0 by continuously dividing (epithelial cells).
+> - **G1:** Gap 1 phase represents the **beginning of interphase**. During G1 there is growth of the non-chromosomal components of the cells. From this phase, the cell may enter G0 or S phase.
+> - **S:** Synthesis phase for the replication of the chromosomes (also part of interphase).
+> - **G2:** Gap 2 phase represents the **end of interphase**, prior to entering the mitotic phase. During this phase th cell grows in preparation for mitosis and the spindle forms.
+> - **M:** M phase is the nuclear division of the cell (consisting of prophase, metaphase, anaphase and telophase).
+	
+
+The [Cell-Cycle Scoring and Regression tutorial](https://satijalab.org/seurat/v3.0/cell_cycle_vignette.html) from Seurat makes available a list of cell cycle phase marker genes for humans, while the HBC core has [compiled lists](https://github.com/hbc/tinyatlas/tree/master/cell_cycle) for other organisms.
+
+After scoring each gene for cell cycle phase, we can perform PCA using the expression of cell cycle genes. If the cells group by cell cycle in the PCA, then we would want to regress out cell cycle variation, **unless cells are differentiating**.  
+
+<p align="center">
+<img src="../img/SC_preregressed_phase_pca.png" width="400">
+</p>
+
+
+> **NOTE:** If cells are known to be differentiating and there is clear clustering differences between G2M and S phases, then you may want to regress out by the difference between the G2M and S phase scores as described in the [Seurat tutorial](https://satijalab.org/seurat/v3.0/cell_cycle_vignette.html), thereby still differentiating the cycling from the non-cycling cells.
+
+### Apply regression variables
+
+**Regressing variation due to uninteresting sources can improve downstream identification of principal components and clustering.** To mitigate the effects of these signals, Seurat constructs linear models to predict gene expression based on the variables to regress.
+
+We generally recommend regressing out **number of UMIs, mitochondrial ratio, and possibly cell cycle** if needed, as a standard first-pass approach. However, if the differences in mitochondrial gene expression represent a biological phenomenon that may help to distinguish cell clusters, then we advise not regressing the mitochondrial expression.
+
+When regressing out the effects of cell-cycle variation, include S-phase score and G2M-phase score for regression. Cell-cycle regression is generally recommended but should be avoided for samples containing cells undergoing differentiation.
+
+> **NOTE:** If using the `sctransform` tool, there is no need to regress out number of UMIs as it is corrected for in the function.
+
+
 
 ## Normalizing counts, finding variable genes, and scaling the data
 
