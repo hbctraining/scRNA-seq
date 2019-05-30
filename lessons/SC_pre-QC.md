@@ -1,7 +1,7 @@
 ---
 title: "Single-cell RNA-seq: Generation of count matrix"
 author: "Mary Piper, Lorena Pantano, Meeta Mistry, Radhika Khetani, Rory Kirchner"
-date: Thursday, May 23, 2019
+date: Thursday, May 30, 2019
 ---
 
 Approximate time: 45 minutes
@@ -172,7 +172,7 @@ The duplicate UMIs are collapsed, and only the unique UMIs are quantified using 
 
 Each value in the matrix represents the number of reads in a cell originating from the corresponding gene. Using the count matrix, we can explore and filter our data, keeping only the higher quality cells.
 
-[Click here for next lesson](https://github.com/marypiper/WIB_scRNA-seq/blob/master/lessons/SC_quality_control_analysis.md)
+[Click here for next lesson](https://hbctraining.github.io/scRNA-seq/lessons/SC_quality_control_analysis.md)
 ***
 
 *This lesson has been developed by members of the teaching team at the [Harvard Chan Bioinformatics Core (HBC)](http://bioinformatics.sph.harvard.edu/). These are open access materials distributed under the terms of the [Creative Commons Attribution license](https://creativecommons.org/licenses/by/4.0/) (CC BY 4.0), which permits unrestricted use, distribution, and reproduction in any medium, provided the original author and source are credited.*
