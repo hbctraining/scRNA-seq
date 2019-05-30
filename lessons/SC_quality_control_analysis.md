@@ -15,7 +15,9 @@ Approximate time: 90 minutes
 # Single-cell RNA-seq: Quality control
 
 
+<p align="center">
 <img src="../img/sc_workflow.png" width="800">
+</p>
 
 Each step of this workflow has its own goals and challenges. For QC of our raw count data, they include:
 
@@ -79,8 +81,9 @@ Finally, create an Rscript and type the following note:
 
 Save the Rscript as `quality_control.R`. Your working directory should look something like this:
 
+<p align="center">
 <img src="../img/Rstudio_singlecell.png" width="500">
-
+</p>
 
 ### Loading libraries 
 
@@ -117,15 +120,21 @@ We can explore these files by clicking on the `data/ctrl_raw_feature_bc_matrix` 
 
 - **`barcodes.tsv`:** cellular barcodes present in dataset
 
+  <p align="center">
   <img src="../img/cell_ids_new.png" width="180">
+  </p>
   
 - **`genes.tsv`:** IDs of quantified genes
 
+  <p align="center">
   <img src="../img/genes.png" width="300">
+  </p>
 
 - **`matrix.mtx`:** a matrix of count values, where rows are associated with the gene IDs above and columns correspond to the cellular barcodes. Note that there are many zero values in this matrix.
 
+  <p align="center">
   <img src="../img/sparse_matrix.png">
+  </p>
 
 We can create a count matrix using these files. However, instead of creating a standard count matrix, we will create a **sparse matrix** to improve the amount of space, memory and CPU required to work with our huge count matrix. 
 
@@ -199,16 +208,18 @@ The data that we would like to perform the QC on is stored inside the `counts` s
 counts <- GetAssayData(object = ctrl, slot = "counts")
 ```
 
-We would also need the metadata saved as a separate object:
+We also need the metadata saved as a separate object:
 
 ```r
 # Extract metadata
 metadata <- ctrl@meta.data
 ```
 
-We would use these data for downstream QC analysis. However, we have more than one sample and we would like to explore the QC metrics together, side-by-side. For more than a single sample it can be helpful to read data into Seurat with a `for loop`.
+This data can be used for downstream QC analysis; however, we have more than one sample and we would like to explore the QC metrics for both samples side-by-side. For more than a single sample it can be helpful to read data into Seurat with a `for loop`.
 
-A `for loop` interates over a series of commands for each of the inputs given. It has the structure:
+#### Reading in 10X data with a `for loop`
+
+A `for loop` interates over a series of commands for each of the inputs given. In R, it has the structure:
 
 ```r
 for (variable in input){
@@ -218,23 +229,25 @@ for (variable in input){
 }
 ```
 
-The input generally has multiple files provided, so the commands 1-3 are run on each of the files, one after the other.
+The `input` generally has multiple files provided, so the commands 1-3 are run on each of the files, one after the other.
 
-The `for loop` we would like to run to create Seurat objects for each of our samples is as follows:
+The `for loop` we plan to run creates Seurat objects for each of our samples as follows:
 
 ```r
 # Create each individual Seurat object for every sample
 for (file in c("ctrl_raw_feature_bc_matrix", "stim_raw_feature_bc_matrix")){
-        sample <- file
         seurat_data <- Read10X(data.dir = paste0("data/", file))
         seurat_obj <- CreateSeuratObject(counts = seurat_data, 
                                          min.features = 100, 
-                                         project = sample)
+                                         project = file)
+        sample <- file
         assign(sample, seurat_obj)
 }
 ```
 
 Now, let's break down the `for loop` between the different steps:
+
+##### Step 1: Specify inputs
 
 For our experiment, we have two samples that we would like to read into R using the `Read10X()` function:
 
@@ -248,33 +261,44 @@ We can specify these samples in the *input* part for our `for loop`. The *variab
 for (file in c("ctrl_raw_feature_bc_matrix", "stim_raw_feature_bc_matrix")){
 ```
 
+##### Step 2: Create command to read in data for the input
 
 We can continue our `for loop` by:
 
-- creating a variable with the name of our sample called `sample`. We will be using this variable for naming purposes downstream. 
-- using the path to the files for input to the `Read10X()` function. We need to specify the path to the file, so we will prepend the `data/` directory to our sample folder name using the `paste0()` function.
+- Creating a variable with the name of our sample called `sample`. We will be using this variable for naming purposes downstream. 
+- Using the path to the files for input to the `Read10X()` function. We need to specify the path to the file, so we will prepend the `data/` directory to our sample folder name using the `paste0()` function.
 
 ```r
 # Create each individual Seurat object
 for (file in c("ctrl_raw_feature_bc_matrix", "stim_raw_feature_bc_matrix")){
-        sample <- file
         seurat_data <- Read10X(data.dir = paste0("data/", file))
 ```
 
-Finally, we can create the Seurat object by using the `CreateSeuratObject()` function, adding in the argument `project`, where we can add the sample name into the `orig.ident` slot of the metadata.
+##### Step 3: Create Seurat object from the 10X data
 
-The last command assigns the Seurat object created (`seurat_obj`) to a variable called by the sample name (`sample`). We need to assign it to a variable with a new name because we would overwrite our `seurat_obj` every time we go through the commands with a new sample input.
+Now, we can create the Seurat object by using the `CreateSeuratObject()` function, adding in the argument `project`, where we can add the sample name into the `orig.ident` slot of the metadata.
 
 ```r
 for (file in c("ctrl_raw_feature_bc_matrix", "stim_raw_feature_bc_matrix")){
-        sample <- file
         seurat_data <- Read10X(data.dir = paste0("data/", file))
         seurat_obj <- CreateSeuratObject(counts = seurat_data, 
                                          min.features = 100, 
-                                         project = sample)
+                                         project = file)        
+```
+
+##### Step 4: Assign Seurat object to a new variable based on sample
+
+The last command assigns the Seurat object created (`seurat_obj`) to a variable called by the sample name (`sample`). We need to assign the Seurat object to a variable with a new name, otherwise we would overwrite our `seurat_obj` every iteration through the loop.
+
+```r
+for (file in c("ctrl_raw_feature_bc_matrix", "stim_raw_feature_bc_matrix")){
+        seurat_data <- Read10X(data.dir = paste0("data/", file))
+        seurat_obj <- CreateSeuratObject(counts = seurat_data, 
+                                         min.features = 100, 
+                                         project = file)        
+        sample <- file
         assign(sample, seurat_obj)
 }
-
 ```
 
 Now that we have our Seurat objects for each sample, we need to merge them together to run QC on them at the same time. We can use the `merge()` function to do this:
@@ -290,8 +314,12 @@ Because the same cell IDs are used for different samples, we add a sample-specif
 
 ```r
 # Explore merged metadata
-head(merged_seurat@meta.data)
+View(merged_seurat@meta.data)
 ```
+
+<p align="center">
+<img src="../img/merged_seurat_meta.png" width="500">
+</p>
 
 You should see each cell has a `ctrl_` or `stim_` prefix and an `orig.ident` matching the sample.
 
@@ -403,9 +431,7 @@ And to extract gene-level information we can use the Ensembldb function `genes()
 ```r
 # Extract gene-level information from database
 annotations <- genes(edb, 
-                     return.type = "data.frame")
-                     
-View(annotations)                    
+                     return.type = "data.frame")                
 ```
 
 ### Exracting IDs for mitochondrial genes
@@ -416,7 +442,13 @@ We aren't interested in all of the information present in this `annotations` fil
 # Select annotations of interest
 annotations <- annotations %>%
   dplyr::select(gene_id, gene_name, gene_biotype, seq_name, description, entrezid)
+                         
+View(annotations)    
 ```
+
+<p align="center">
+<img src="../img/annotations.png" width="800">
+</p>
 
 Now we can retrieve the genes associated with the different biotypes of interest:
 
@@ -441,7 +473,9 @@ metadata$mitoRatio <- metadata$mtUMI/metadata$nUMI
 
 Now you are **all setup with the metrics you need to assess the quality of your data**! Your final metadata table will have rows that correspond to each cell, and columns with information about those cells:
 
+<p align="center">
 <img src="../img/metadata_scrnaseq.png" width="900">
+</p>
 
 
 ## Saving metrics to single cell experiment 
@@ -494,7 +528,9 @@ metrics %>%
 ```
 
 
+<p align="center">
 <img src="../img/cell_counts.png" width="600">
+</p>
 
 
 ## UMI counts (transcripts) per cell
@@ -511,7 +547,9 @@ metrics %>%
         geom_vline(xintercept = 500)
 ```
 
+<p align="center">
 <img src="../img/nUMIs.png" width="600">
+</p>
    
 ## Genes detected per cell
 
@@ -532,9 +570,13 @@ metrics %>%
         ggtitle("NCells vs NGenes")
 ```
 
+<p align="center">
 <img src="../img/genes_detected.png" width="600">
+</p>
 
+<p align="center">
 <img src="../img/Ncells_vs_ngenes.png" width="600">
+</p>
 
 ## UMIs vs. genes detected
 
@@ -553,7 +595,9 @@ metrics %>%
         facet_wrap(~sample)
 ```
 
+<p align="center">
 <img src="../img/UMIs_vs_genes.png" width="600">
+</p>
 
 ## Mitochondrial counts ratio
 
@@ -567,7 +611,9 @@ metrics %>%
         scale_x_log10() + 
         geom_vline(xintercept = 0.1)
 ```
+<p align="center">
 <img src="../img/mitoRatio.png" width="600">
+</p>
 
 ## Novelty
 
@@ -580,7 +626,9 @@ metrics %>%
         geom_density()
 ```
 
+<p align="center">
 <img src="../img/novelty.png" width="600">
+</p>
 
 > **NOTE:** **Reads per cell** is another metric that can be useful to explore; however, the workflow used would need to save this information to assess. Generally, with this metric you hope to see all of the samples with peaks in relatively the same location between 10,000 and 100,000 reads per cell. 
 
@@ -589,29 +637,35 @@ metrics %>%
 Now that we have visualized the various metrics, we can decide on the thresholds to use to remoe the low quality. Often the recommendations mentioned earlier are a rough guideline, but the specific experiment needs to inform the exact thresholds chosen. We will use the following thresholds:
 
 - nUMI > 500
-- nGene > 500
+- nGene > 250
 - log10GenesPerUMI > 0.8
-- mitoRatio < 0.1
+- mitoRatio < 0.2
 
 ```r
 # Filter out low quality reads using selected thresholds - these will change with experiment
-keep <- metrics %>%
-  dplyr::filter(nUMI > 500 , 
-                nGene > 500,
+keep_cells <- metrics %>%
+  dplyr::filter(nUMI >= 500 , 
+                nGene >= 250,
                 log10GenesPerUMI > 0.8,
-                mitoRatio < 0.1,
+                mitoRatio < 0.2,
                 ) %>% 
   pull(cells)
 
 # Subset the cells to only include those that meet the thresholds specified
-se_c <- se[ ,keep]
+se_c <- se[ ,keep_cells]
+
+# Output a logical vector for every gene on whether the more than zero counts per cell
+nonzero <- counts(se_c) > 0L
+
+# Sums all TRUE values and returns TRUE if more than 10 TRUE values per gene
+keep_genes <- rowSums(as.matrix(nonzero)) >= 10
+
+# Only keeping those genes expressed in more than 10 cells
+se_c <- se_c[keep_genes, ]
 
 # Save subset to new metrics variable
 metrics_clean <- colData(se_c) %>%
  as.data.frame()
-
-# Save cleaned single-cell experimnet as .RData to load at any time
-saveRDS(se_c, file = "data/se_filtered.rds")
 ```
 
 ## Re-assess QC metrics
@@ -625,25 +679,15 @@ After filtering, we should not have more cells than we sequenced. Generally we a
 ```r
 ## Cell counts
 metrics_clean %>% 
-  ggplot(aes(x=sample, fill = sample)) + 
-  geom_bar() + 
-  ggtitle("NCells")
+        ggplot(aes(x=sample, fill=sample)) + 
+        geom_bar() + 
+        theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)) +
+        ggtitle("NCells")
 ```
 
-<img src="../img/cell_counts_filtered.png" width="350">
-
-## Cells versus genes
-
-``` 
-# Cells versus genes
-metrics_clean %>% 
-  ggplot(aes(x=sample, y=log10(nGene), fill = sample)) + 
-  geom_boxplot() + 
-  ggtitle("NCells vs NGenes")
-  
-```
-
-<img src="../img/cells_vs_ngenes_filtered.png" width="350">
+<p align="center">
+<img src="../img/cell_counts_filtered.png" width="600">
+</p>
 
 
 ## UMI counts
@@ -653,14 +697,16 @@ The filtering using a threshold of 500 has removed the cells with low numbers of
 ```r
 # UMI counts
 metrics_clean %>% 
-  ggplot(aes(fill=sample, x=nUMI)) + 
-  geom_density() + 
-  scale_x_log10() + 
-  ylab("log10 cell density") +
-  geom_vline(xintercept = 500)
+        ggplot(aes(color=sample, x=nUMI, fill= sample)) + 
+        geom_density(alpha = 0.2) + 
+        scale_x_log10() + 
+        ylab("log10 cell density") +
+        geom_vline(xintercept = 500)
 ```
 
-<img src="../img/nUMIs_filtered.png" width="350">
+<p align="center">
+<img src="../img/nUMIs_filtered.png" width="600">
+</p>
 
 
 ## Genes detected
@@ -668,53 +714,68 @@ metrics_clean %>%
 ```r
 # Genes detected
 metrics_clean %>% 
-  ggplot(aes(fill=sample, x=nGene)) + 
-  geom_density() + 
-  scale_x_log10() + 
-  geom_vline(xintercept = 200)
+        ggplot(aes(color=sample, x=nGene, fill= sample)) + 
+        geom_density(alpha = 0.2) + 
+        scale_x_log10() + 
+        geom_vline(xintercept = 250)
 ```
 
-<img src="../img/genes_detected_filtered.png" width="350">
+<p align="center">
+<img src="../img/genes_detected_filtered.png" width="600">
+</p>
 
 ## UMIs vs genes
 ```r
 # UMIs vs genes
 metrics_clean %>% 
-  ggplot(aes(x=nUMI, y=nGene, color=mitoRatio)) + 
-  geom_point() + 
-  stat_smooth(method=lm) +
-  scale_x_log10() + 
-  scale_y_log10() + 
-  geom_vline(xintercept = 800) +
-  facet_wrap(~sample)
+        ggplot(aes(x=nUMI, y=nGene, fill = mitoRatio)) + 
+        geom_point() + 
+        stat_smooth(method=lm) +
+        scale_x_log10() + 
+        scale_y_log10() + 
+        geom_vline(xintercept = 500) +
+        facet_wrap(~sample)
 ```
 
-<img src="../img/UMIs_vs_genes_filtered.png" width="350">
+<p align="center">
+<img src="../img/UMIs_vs_genes_filtered.png" width="600">
+</p>
 
 ## Mitochondrial counts ratio
 ```r
 # Mitochondrial counts ratio
 metrics_clean %>% 
-  ggplot(aes(fill=sample, x=mitoRatio)) + 
-  geom_density() + 
+  ggplot(aes(fill=sample, x=mitoRatio, color=sample)) + 
+  geom_density(alpha = 0.2) + 
   scale_x_log10() + 
-  geom_vline(xintercept = 0.1)
+  geom_vline(xintercept = 0.2)
 ```
 
-<img src="../img/mitoRatio_filtered.png" width="350">
+<p align="center">
+<img src="../img/mitoRatio_filtered.png" width="600">
+</p>
 
 ## Novelty
 ```r
 # Novelty
 metrics_clean %>%
-  ggplot(aes(x=log10GenesPerUMI, fill = sample)) +
-  geom_density()
+        ggplot(aes(x=log10GenesPerUMI, color = sample, fill=sample)) +
+        geom_density(alpha = 0.2)  + 
+  geom_vline(xintercept = 0.8)
 ```
 
-<img src="../img/novelty_filtered.png" width="350">
+<p align="center">
+<img src="../img/novelty_filtered.png" width="600">
+</p>
 
-> ### Evaluating QC in another dataset
-> It can be hard to get an idea of quality steps with this data since for the most part the data appears to be pretty good quality. To get an idea of how the QC might look if we had more than one sample and non-perfect data, we have [this HTML](https://github.com/hbctraining/In-depth-NGS-Data-Analysis-Course/blob/master/sessionIV/lessons/QC_report.html) linked for you . to look through.
+## Saving filtered cells
+
+Based on these QC metrics we would identify any failed samples and move forward with our filtered cells. Often we iterate through the QC metrics using different filtering criteria; it is not necessarily a linear process. When satisfied with the filtering criteria, we would save our filtered cell object for clustering and marker identification.
+
+```r
+# Save cleaned single-cell experimnet as .RData to load at any time
+saveRDS(se_c, file = "data/se_filtered.rds")
+```
 
 ---
 *This lesson has been developed by members of the teaching team at the [Harvard Chan Bioinformatics Core (HBC)](http://bioinformatics.sph.harvard.edu/). These are open access materials distributed under the terms of the [Creative Commons Attribution license](https://creativecommons.org/licenses/by/4.0/) (CC BY 4.0), which permits unrestricted use, distribution, and reproduction in any medium, provided the original author and source are credited.*
