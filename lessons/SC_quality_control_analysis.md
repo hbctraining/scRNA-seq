@@ -478,7 +478,7 @@ Now you are **all setup with the metrics you need to assess the quality of your 
 </p>
 
 
-## Saving metrics to single cell experiment 
+### Saving metrics to single cell experiment 
 
 Before we assess our metrics we are going to save all of the work we have done thus far to a single cell experiment object, which is a standard object for single cell data in R.
 
@@ -491,7 +491,7 @@ se <- SingleCellExperiment(assays=list(counts=counts_c),
 saveRDS(se, "data/raw_se.rds")
 ```
 
-# Assessing the quality metrics
+## Assessing the quality metrics
 
 Now that we have generated the various metrics to assess, we can explore them with visualizations. We will create our metrics file from the metadata stored in the single cell experiments.
 
@@ -511,7 +511,7 @@ We will explore the following metrics through visualizations to decide on which 
 - Novelty
 
 
-## Cell counts
+### Cell counts
 
 The cell counts are determined by the number of unique cellular barcodes detected. 
 
@@ -533,7 +533,7 @@ metrics %>%
 </p>
 
 
-## UMI counts (transcripts) per cell
+### UMI counts (transcripts) per cell
 
 The UMI counts per cell should generally be above 500, although usable, it's still low if between 500-1000 counts. If UMIs per cell is 500-1000 counts, then the cells probably should have been sequenced more deeply. 
 
@@ -551,7 +551,7 @@ metrics %>%
 <img src="../img/nUMIs.png" width="600">
 </p>
    
-## Genes detected per cell
+### Genes detected per cell
 
 Seeing gene detection in the range of 500-5000 is normal for **inDrop** analysis. Similar expectations for gene detection as for UMI detection, although may be a bit lower than UMIs.
 
@@ -578,7 +578,7 @@ metrics %>%
 <img src="../img/Ncells_vs_ngenes.png" width="600">
 </p>
 
-## UMIs vs. genes detected
+### UMIs vs. genes detected
 
 Poor quality cells are likely to have low genes and UMIs per cell. Therefore, a poor sample is likely to have cells in the lower left of the graph. Good cells should exhibit both higher number of genes per cell and higher numbers of UMIs. We also expect similar lines with similar slopes for all samples.
 
@@ -599,7 +599,7 @@ metrics %>%
 <img src="../img/UMIs_vs_genes.png" width="600">
 </p>
 
-## Mitochondrial counts ratio
+### Mitochondrial counts ratio
 
 This metric can identify whether there is a large amount of mitochondrial contamination from dead or dying cells. Poor quality samples for mitochondrial counts would have larger peaks above the 0.1 mitochondrial ratio mark, unless it is expected based on sample type.
 
@@ -615,7 +615,7 @@ metrics %>%
 <img src="../img/mitoRatio.png" width="600">
 </p>
 
-## Novelty
+### Novelty
 
 We can see the samples where we sequenced each cell less have a higher overall novelty, that is because we have not started saturating the sequencing for any given gene for these samples. Outlier cells in these samples might be cells that have a less complex RNA species than other cells. Sometimes we can detect contamination with low complexity cell types like red blood cells via this metric. Generally, we expect the novelty score to be above 0.80.
 
@@ -632,7 +632,7 @@ metrics %>%
 
 > **NOTE:** **Reads per cell** is another metric that can be useful to explore; however, the workflow used would need to save this information to assess. Generally, with this metric you hope to see all of the samples with peaks in relatively the same location between 10,000 and 100,000 reads per cell. 
 
-# Filtering
+## Filtering
 
 Now that we have visualized the various metrics, we can decide on the thresholds to use to remoe the low quality. Often the recommendations mentioned earlier are a rough guideline, but the specific experiment needs to inform the exact thresholds chosen. We will use the following thresholds:
 
@@ -690,7 +690,7 @@ metrics_clean %>%
 </p>
 
 
-## UMI counts
+### UMI counts
 
 The filtering using a threshold of 500 has removed the cells with low numbers of UMIs from the analysis.
 
@@ -709,7 +709,7 @@ metrics_clean %>%
 </p>
 
 
-## Genes detected
+### Genes detected
 
 ```r
 # Genes detected
@@ -724,7 +724,7 @@ metrics_clean %>%
 <img src="../img/genes_detected_filtered.png" width="600">
 </p>
 
-## UMIs vs genes
+### UMIs vs genes
 ```r
 # UMIs vs genes
 metrics_clean %>% 
@@ -741,7 +741,7 @@ metrics_clean %>%
 <img src="../img/UMIs_vs_genes_filtered.png" width="600">
 </p>
 
-## Mitochondrial counts ratio
+### Mitochondrial counts ratio
 ```r
 # Mitochondrial counts ratio
 metrics_clean %>% 
@@ -755,7 +755,7 @@ metrics_clean %>%
 <img src="../img/mitoRatio_filtered.png" width="600">
 </p>
 
-## Novelty
+### Novelty
 ```r
 # Novelty
 metrics_clean %>%
