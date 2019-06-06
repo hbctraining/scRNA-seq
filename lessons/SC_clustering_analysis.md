@@ -815,7 +815,7 @@ Now we have a decent idea as to the cell types corresponding to the majority of 
 
 Marker identification analysis can help us address all of these questions. The next step will be to perform marker identification analysis, which will output the genes that significantly differ in expression between clusters. Using these genes we can determine or improve confidence in the identities of the clusters/subclusters.
 
-[Next lesson]()
+[Click here for next lesson]()
 
 ***
 

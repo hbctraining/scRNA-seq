@@ -172,7 +172,7 @@ The duplicate UMIs are collapsed, and only the unique UMIs are quantified using 
 
 Each value in the matrix represents the number of reads in a cell originating from the corresponding gene. Using the count matrix, we can explore and filter our data, keeping only the higher quality cells.
 
-[Click here for next lesson](https://hbctraining.github.io/scRNA-seq/lessons/SC_quality_control_analysis.html)
+[Click here for next lesson]()
 
 ***
 
