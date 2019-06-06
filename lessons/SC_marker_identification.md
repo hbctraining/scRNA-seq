@@ -14,6 +14,7 @@ Approximate time: 45 minutes
 # Single-cell RNA-seq marker identification
 
 Now that we have the single cells clustered based on different cell types,  we are ready to move forward with identifying cluster markers. 
+After we have identified our desired clusters, we can move on to marker identification, which will allow us to verify the identity of certain clusters and help surmise the identity of any unknown clusters. Since we have two clusters identified as CD4 T cells, we may also want to know which genes are differentially expressed between these two clusters.
 
 <img src="../img/sc_workflow.png" width="800">
 
