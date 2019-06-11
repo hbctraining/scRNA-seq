@@ -541,7 +541,7 @@ The UMI counts per cell should generally be above 500, although usable, it's sti
 # Visualize the number UMIs/transcripts per cell
 metrics %>% 
         ggplot(aes(color=sample, x=nUMI, fill= sample)) + 
-        geom_density() + 
+        geom_density(alpha = 0.2) + 
         scale_x_log10() + 
         ylab("log10 cell density") +
         geom_vline(xintercept = 500)
@@ -559,7 +559,7 @@ Seeing gene detection in the range of 500-5000 is normal for **inDrop** analysis
 # Visualize the distribution of genes detected per cell via histogram
 metrics %>% 
         ggplot(aes(color=sample, x=nGene, fill= sample)) + 
-        geom_density() + 
+        geom_density(alpha = 0.2) + 
         scale_x_log10() + 
         geom_vline(xintercept = 200)
 
@@ -607,7 +607,7 @@ This metric can identify whether there is a large amount of mitochondrial contam
 # Visualize the distribution of mitochondrial gene expression detected per cell
 metrics %>% 
         ggplot(aes(color=sample, x=mitoRatio, fill=sample)) + 
-        geom_density() + 
+        geom_density(alpha = 0.2) + 
         scale_x_log10() + 
         geom_vline(xintercept = 0.1)
 ```
@@ -623,7 +623,7 @@ We can see the samples where we sequenced each cell less have a higher overall n
 # Visualize the overall novelty of the gene expression by visualizing the genes detected per UMI
 metrics %>%
         ggplot(aes(x=log10GenesPerUMI, color = sample, fill=sample)) +
-        geom_density()
+        geom_density(alpha = 0.2)
 ```
 
 <p align="center">
