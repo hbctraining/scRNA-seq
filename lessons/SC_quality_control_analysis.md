@@ -484,8 +484,8 @@ Before we assess our metrics we are going to save all of the work we have done t
 
 ```r
 # Save data to single cell experiment variable
-se <- SingleCellExperiment(assays=list(counts=counts_c), 
-                           colData = metadata_c)
+se <- SingleCellExperiment(assays=list(counts=counts), 
+                           colData = metadata)
                            
 # Create .RData object to load at any time
 saveRDS(se, "data/raw_se.rds")
