@@ -43,7 +43,9 @@ _**Recommendations:**_
 
 For this workshop we will be working with a single-cell RNA-seq dataset which is part of a larger study from [Kang et al, 2017](https://www.nature.com/articles/nbt.4042). In this paper, the authors present a a computational algorithm that harnesses genetic variation (eQTL) to determine the genetic identity of each droplet containing a single cell (singlet) and identify droplets containing two cells from different individuals (doublets).
 
-The data used to test their algorithm and is comprised of **pooled Peripheral Blood Mononuclear Cells (PBMCs) taken from eight lupus patients split into control and interferon beta-treated conditions**. 
+<img src="../img/kangetal_image.png" width="500">
+
+The data used to test their algorithm and is comprised of pooled Peripheral Blood Mononuclear Cells (PBMCs) taken from eight lupus patients split into control and interferon beta-treated conditions. 
 
 
 ### Raw data
@@ -128,7 +130,7 @@ library(scales)
 
 ## Loading single-cell RNA-seq count data 
 
-Regardless of the technology or pipeline used to process your single-cell RNA-seq sequence data, the output will generallu be the same. That is, for each individual sample you will have the following **three files**:
+Regardless of the technology or pipeline used to process your single-cell RNA-seq sequence data, the output will generally be the same. That is, for each individual sample you will have the following **three files**:
 
 1. a file with the **gene IDs**, representing all genes quantified
 2. a file with the **cell IDs**, representing all cells quantified
@@ -161,9 +163,9 @@ This is a text file which contains a matrix of count values. The rows are associ
   </p>
 
 
-Loading this data into R **requires us to use functions that allow us to efficiently combine these three files into a single count matrix.*** However, instead of creating a standard count matrix, we will create a **sparse matrix** to improve the amount of space, memory and CPU required to work with our huge count matrix. 
+Loading this data into R requires us to **use functions that allow us to efficiently combine these three files into a single count matrix.** However, instead of creating a standard count matrix, we will create a **sparse matrix** to improve the amount of space, memory and CPU required to work with our huge count matrix. 
 
-In this workshop we will discuss two different methods for reading in data:
+Different methods for reading in data include:
 
 1. **`readMM()`**: This function is from the **Matrix** package and will turn our standard matrix into a sparse matrix. The `genes.tsv` file and `barcodes.tsv` must first be individually loaded into R and then they are combined. For specific code and instructions on how to do this please see [our additional material]().
 2. **`Read10X()`**: This function is from the **Seurat** package and will use the Cell Ranger output directory as input. In this way individual files do not need to be loaded in, instead the function will load and combine them into a sparse matrix for you. *We will be using this function to load in our data!*
@@ -183,6 +185,9 @@ We are mainly interested in the `raw_feature_bc_matrix` as we wish to perform ou
 If we had a single sample, we could generate the count matrix and then subsequently create a Seurat object:
 
 ```r
+
+## DO NOT RUN THIS CODE ##
+
 # How to read in 10X data for a single sample
 ctrl_counts <- Read10X(data.dir = "data/ctrl_raw_feature_bc_matrix")
 
@@ -236,12 +241,11 @@ We can specify these samples in the *input* part for our `for loop`. The *variab
 for (file in c("ctrl_raw_feature_bc_matrix", "stim_raw_feature_bc_matrix")){
 ```
 
-#### Step 2: Create command to read in data for the input
+#### Step 2: Read in data for the input
 
 We can continue our `for loop` by:
 
-- Creating a variable with the name of our sample called `sample`. We will be using this variable for naming purposes downstream. 
-- Using the path to the files for input to the `Read10X()` function. We need to specify the path to the file, so we will prepend the `data/` directory to our sample folder name using the `paste0()` function.
+- Using the `Read10X()` function. We need to specify the path to the file, so we will prepend the `data/` directory to our sample folder name using the `paste0()` function.
 
 ```r
 # Create each individual Seurat object
@@ -249,9 +253,9 @@ for (file in c("ctrl_raw_feature_bc_matrix", "stim_raw_feature_bc_matrix")){
         seurat_data <- Read10X(data.dir = paste0("data/", file))
 ```
 
-#### Step 3: Create Seurat object from the 10X data
+#### Step 3: Create Seurat object from the 10X count data
 
-Now, we can create the Seurat object by using the `CreateSeuratObject()` function, adding in the argument `project`, where we can add the sample name into the `orig.ident` slot of the metadata.
+Now, we can create the Seurat object by using the `CreateSeuratObject()` function, adding in the argument `project`, where we can add the sample name.
 
 ```r
 for (file in c("ctrl_raw_feature_bc_matrix", "stim_raw_feature_bc_matrix")){
@@ -263,7 +267,7 @@ for (file in c("ctrl_raw_feature_bc_matrix", "stim_raw_feature_bc_matrix")){
 
 #### Step 4: Assign Seurat object to a new variable based on sample
 
-The last command assigns the Seurat object created (`seurat_obj`) to a variable called by the sample name (`sample`). We need to assign the Seurat object to a variable with a new name, otherwise we would overwrite our `seurat_obj` every iteration through the loop.
+The last command assigns the Seurat object created (`seurat_obj`) to a new variable. In this way, when we iterate and move on to the next sample in our `input` we will not overwrite the Seurat object. To assign it to a variable we first need to create a variable called `sample` which is just the file that we are working on (current `input`):
 
 ```r
 for (file in c("ctrl_raw_feature_bc_matrix", "stim_raw_feature_bc_matrix")){
@@ -276,7 +280,7 @@ for (file in c("ctrl_raw_feature_bc_matrix", "stim_raw_feature_bc_matrix")){
 }
 ```
 
-Now that we have our Seurat objects for each sample, we need to merge them together to run QC on them at the same time. We can use the `merge()` function to do this:
+Now that we have our Seurat objects for each sample, we need to merge them together into a single Seurat object. This will make it easier to run QC on the entire dataset rather than one sample at a time. We can use the `merge()` function to do this:
 
 ```r
 # Create a merged Seurat object
@@ -285,7 +289,7 @@ merged_seurat <- merge(x = ctrl_raw_feature_bc_matrix,
                        add.cell.id = c("ctrl", "stim"))
 ```
 
-Because the same cell IDs are used for different samples, we add a sample-specific prefix to each of our cell IDs using the `add.cell.id` argument. Let's take a look at the metadata:
+Because the same cell IDs can be used for different samples, we add a sample-specific prefix to each of our cell IDs using the `add.cell.id` argument. Let's take a look at the metadata:
 
 ```r
 # Explore merged metadata
@@ -298,15 +302,8 @@ View(merged_seurat@meta.data)
 
 You should see each cell has a `ctrl_` or `stim_` prefix and an `orig.ident` matching the sample.
 
-Now, we need to extract the counts for this merged object:
 
-```r
-# Extract counts for merged data
-counts <- GetAssayData(object = merged_seurat, slot = "counts")
-
-```
-
-## Obtaining quality metrics for assessment
+## Generating quality metrics
 
 Throughout the analysis workflow post-QC, we will rely heavily on the Seurat package; however, **Seurat doesn't have all of the functions for exploring the QC in depth**. Therefore, we will perform our own quality assessment outside of Seurat.
 
