@@ -328,7 +328,6 @@ merged_seurat$mitoRatio <- PercentageFeatureSet(object = merged_seurat, pattern 
 merged_seurat$mitoRatio <- merged_seurat@meta.data$mitoRatio / 100
 
 ```
-.
 > **Note 1**: The pattern provided ("^MT-") works for human gene names. You may need to adjust depending on your organism of interest.
 
 > **Note 2:** If you didn't want to use the Seurat function, we have [code available to compute this metric on your own](https://github.com/hbctraining/scRNA-seq/blob/master/lessons/mitoRatio.md).
