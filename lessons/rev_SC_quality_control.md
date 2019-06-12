@@ -289,7 +289,11 @@ merged_seurat <- merge(x = ctrl_raw_feature_bc_matrix,
                        add.cell.id = c("ctrl", "stim"))
 ```
 
-Because the same cell IDs can be used for different samples, we add a sample-specific prefix to each of our cell IDs using the `add.cell.id` argument. Let's take a look at the metadata:
+Because the same cell IDs can be used for different samples, we add a sample-specific prefix to each of our cell IDs using the `add.cell.id` argument. 
+
+## Generating quality metrics
+
+Notice that Seurat automatically creates some metadata for each of the cells:
 
 ```r
 # Explore merged metadata
@@ -300,27 +304,39 @@ View(merged_seurat@meta.data)
 <img src="../img/merged_seurat_meta.png" width="500">
 </p>
 
-You should see each cell has a `ctrl_` or `stim_` prefix and an `orig.ident` matching the sample.
 
+The added columns include:
 
-## Generating quality metrics
+- `orig.ident`: this often contains the sample identity if known, but will default to `project` as we had assigned it
+- `nCount_RNA`: number of UMIs per cell
+- `nFeature_RNA`: number of genes detected per cell
 
-Throughout the analysis workflow post-QC, we will rely heavily on the Seurat package; however, **Seurat doesn't have all of the functions for exploring the QC in depth**. Therefore, we will perform our own quality assessment outside of Seurat.
+You should also see each cell ID has a `ctrl_` or `stim_` prefix as we had specified when we merged the Seurat objects. These prefixes should match the sample listed in `orig.ident`.
 
-### Creating metadata object with some QC metrics
+Seurat has a convenient function that allows us to calculate the **proportion of transcripts mapping to mitochondrial genes**. The `PercentageFeatureSet()` will take a pattern and search the gene identifiers. For each colum (cell) it will take the sum of the counts slot for features belonging to the set, divide by the column sum for all features and multiply by 100. *Since we want the ratio value for plotting, we will reverse that step by then dividing by 100*.
 
-Now that we have a counts matrix with the genes as row names and cells as columns, we can create our metadata with information about the different metrics to evaluate during quality control assessment.
+```r
+
+# Compute percent mito ratio
+merged_seurat$mitoRatio <- PercentageFeatureSet(object = merged_seurat, pattern = "^MT")
+merged_seurat$mitoRatio <- merged_seurat@meta.data$mitoRatio / 100
+
+```
+.
+> **Note 1**: The pattern provided ("^MT-") works for human gene names. You may need to adjust depending on your organism of interest.
+
+> **Note 2:** If you didn't want to use the Seurat function, we have [code available to compute this metric on your own]().
+
+While it is quite easy to **add information directly to the metadata slot in the Seurat object using the `$` operator**, we will extract the dataframe into a separate variable instead. In this way we can continue to insert additional metrics that we need for our QC analysis without the risk of affecting our `merged_seurat` object.
 
 We will create the metadata dataframe by extracting the `meta.data` slot from the Seurat object: 
 
 ```r
-# Create metadata containing only the cell IDs
+# Create metadata dataframe
 metadata <- merged_seurat@meta.data
 ```
 
-This should contain information about the sample (`orig.ident`), number of UMIs (`nCount_RNA`), and number of genes detected (`nFeature_RNA`) for each cell. We can add metrics to this object for QC purposes.
-
-First, let's add a column with our cell IDs and change the column names to be more intuitive:
+Let's begin by **adding a column with our cell IDs** and **change the current column names** to be more intuitive:
 
 ```r
 # Add cell IDs to metadata
@@ -333,7 +349,7 @@ metadata <- metadata %>%
                       nGene = nFeature_RNA)
 ```
 
-Now, let's get sample names for each of the cells based on the cell prefix:
+Now, let's get **sample names for each of the cells** based on the cell prefix:
 
 ```r
 # Create sample column
@@ -342,129 +358,30 @@ metadata$sample[which(str_detect(metadata$cells, "^ctrl_"))] <- "ctrl"
 metadata$sample[which(str_detect(metadata$cells, "^stim_"))] <- "stim"
 ```
 
-Now we need to calculate some metrics for plotting:
-
-- **number of genes detected per UMI:** this metric with give us an idea of the complexity of our dataset (more genes detected per UMI, more complex our data)
-- **mitochondrial ratio:** this metric will give us a percentage of cell reads originating from the mitochondrial genes
-
-The number of genes per UMI for each cell is quite easy to calculate, and we will log10 transform the result for better comparison between samples.
+Next, we need to calculate the **number of genes detected per UMI.** This metric with give us an idea of the complexity of our dataset (more genes detected per UMI, more complex our data). The number of genes per UMI for each cell is quite easy to calculate, and we will log10 transform the result for better comparison between samples.
 
 ```r
 # Add number of UMIs per gene for each cell to metadata
 metadata$log10GenesPerUMI <- log10(metadata$nGene) / log10(metadata$nUMI)
 ```
 
-The determination of mitochondrial ratios is a bit more complex and requires us to use genome annotations to determine which genes originated from the mitochondrial DNA.
-
-### Using annotation file to generate mitochondrial count metrics
-
-We will be using [AnnotationHub](https://bioconductor.org/packages/release/bioc/vignettes/AnnotationHub/inst/doc/AnnotationHub.html), which allows accession to a wide variety of online databases and other resources, to query Ensembl annotations made available through [ensembldb](https://bioconductor.org/packages/release/bioc/vignettes/ensembldb/inst/doc/ensembldb.html). Ensembldb is a package that retrieves annotation for the databases directly from Ensembl.
-
-### Downloading database for organism of interest
-
-To access the various annotations available from Ensembl for human, we need to first connect to AnnotationHub, then specify the organism and database we are interested in.
- 
-```r
-# Connect to AnnotationHub
-ah <- AnnotationHub()
-
-# Access the Ensembl database for organism
-ahDb <- query(ah, 
-              pattern = c("Homo sapiens", "EnsDb"), 
-              ignore.case = TRUE)
-
-```
-
-Next, we acquire the latest annotation files from this Ensembl database. 
-
-We can first check which annotation versions are available:
-
-```r
-# Check versions of databases available
-ahDb %>% 
-  mcols()
-```
-
-Since we want the most recent, we will return the AnnotationHub ID for this database:
-
-```r
-# Acquire the latest annotation files
-id <- ahDb %>%
-  mcols() %>%
-  rownames() %>%
-  tail(n = 1)
-```
-  
-Finally, we can use the AnnotationHub connection to download the appropriate Ensembl database, which should be version GRCh38.92.
-
-```r
-# Download the appropriate Ensembldb database
-edb <- ah[[id]]
-```
-
-And to extract gene-level information we can use the Ensembldb function `genes()` to return a data frame of annotations.
-
-```r
-# Extract gene-level information from database
-annotations <- genes(edb, 
-                     return.type = "data.frame")                
-```
-
-### Exracting IDs for mitochondrial genes
-
-We aren't interested in all of the information present in this `annotations` file, so we are going to extract that which is useful to us.
-
-```r
-# Select annotations of interest
-annotations <- annotations %>%
-  dplyr::select(gene_id, gene_name, gene_biotype, seq_name, description, entrezid)
-                         
-View(annotations)    
-```
-
-<p align="center">
-<img src="../img/annotations.png" width="800">
-</p>
-
-Now we can retrieve the genes associated with the different biotypes of interest:
-
-```r
-# Extract IDs for mitochondrial genes
-mt <- annotations %>%
-        dplyr::filter(seq_name == "MT") %>%
-        dplyr::pull(gene_name)
-```
-
-### Adding metrics to metadata
-
-Now that we have information about which genes are mitochondrial, we can quanitify whether we have contamination.
-
-```r
-# Number of UMIs assigned to mitochondrial genes
-metadata$mtUMI <- Matrix::colSums(counts[which(rownames(counts) %in% mt),], na.rm = T)
-
-# Calculate of mitoRatio per cell
-metadata$mitoRatio <- metadata$mtUMI/metadata$nUMI
-```
-
 Now you are **all setup with the metrics you need to assess the quality of your data**! Your final metadata table will have rows that correspond to each cell, and columns with information about those cells:
 
 <p align="center">
-<img src="../img/metadata_scrnaseq.png" width="900">
+<img src="../img/metadata_scrnaseq_new.png" width="900">
 </p>
 
 
-### Saving metrics to single cell experiment 
+### Saving the updated metadata to our Seurat object
 
-Before we assess our metrics we are going to save all of the work we have done thus far to a single cell experiment object, which is a standard object for single cell data in R.
+Before we assess our metrics we are going to save all of the work we have done thus far back into our Seurat object. We can do this by simply assigning the dataframe into the `meta.data` slot:
 
 ```r
-# Save data to single cell experiment variable
-se <- SingleCellExperiment(assays=list(counts=counts), 
-                           colData = metadata)
+# Add metadata back to Seurat object
+merged_seurat@meta.data <- metadata
                            
 # Create .RData object to load at any time
-saveRDS(se, "data/raw_se.rds")
+save(merged_seurat, file="data/raw_seurat.RData")
 ```
 
 ## Assessing the quality metrics
