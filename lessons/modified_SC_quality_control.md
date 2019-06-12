@@ -62,7 +62,7 @@ This dataset is available on GEO ([GSE96583](https://www.ncbi.nlm.nih.gov/geo/qu
 
 ### Metadata
 
-In addition to the raw data we also need to collect **information about the data**; this is known as metadata. We are usually quick to start exploring our data, but how useful is it if we know nothing about the samples that this data originated from? 
+In addition to the raw data we also need to collect **information about the data**; this is known as metadata. We are usually quick to start exploring our data, but it is not very meaningful if we know nothing about the samples that this data originated from.
 
 Some relevant metadata for our dataset is provided below:
 
