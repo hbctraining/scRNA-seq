@@ -325,7 +325,7 @@ merged_seurat$mitoRatio <- merged_seurat@meta.data$mitoRatio / 100
 .
 > **Note 1**: The pattern provided ("^MT-") works for human gene names. You may need to adjust depending on your organism of interest.
 
-> **Note 2:** If you didn't want to use the Seurat function, we have [code available to compute this metric on your own]().
+> **Note 2:** If you didn't want to use the Seurat function, we have [code available to compute this metric on your own](https://github.com/hbctraining/scRNA-seq/blob/master/lessons/mitoRatio.md).
 
 While it is quite easy to **add information directly to the metadata slot in the Seurat object using the `$` operator**, we will extract the dataframe into a separate variable instead. In this way we can continue to insert additional metrics that we need for our QC analysis without the risk of affecting our `merged_seurat` object.
 
@@ -535,10 +535,13 @@ filtered_seurat <- subset(x = merged_seurat,
                            (nGene >= 250) & 
                            (log10GenesPerUMI > 0.80) & 
                            (mitoRatio < 0.25))
+			                          
 ```
 
 
 ```r
+# Not sure what the equivalent is for a Seurat object??
+
 # Output a logical vector for every gene on whether the more than zero counts per cell
 nonzero <- counts(se_c) > 0L
 
@@ -548,14 +551,18 @@ keep_genes <- rowSums(as.matrix(nonzero)) >= 10
 # Only keeping those genes expressed in more than 10 cells
 se_c <- se_c[keep_genes, ]
 
-# Save subset to new metrics variable
-metrics_clean <- colData(se_c) %>%
- as.data.frame()
 ```
 
 ## Re-assess QC metrics
 
-After performing the filtering, it's recommended to look back over the metrics to make sure that your data matches your expectations and is good for downstream analysis.
+After performing the filtering, it's recommended to look back over the metrics to make sure that your data matches your expectations and is good for downstream analysis. We can extract the new metadata from the filtered Seurat object and go through the same plots.
+
+```r
+
+# Save filtered subset to new metadata
+metadata_clean <- filtered_seurat@meta.data
+ 
+ ```
 
 ### Cell counts
 
@@ -563,7 +570,7 @@ After filtering, we should not have more cells than we sequenced. Generally we a
 
 ```r
 ## Cell counts
-metrics_clean %>% 
+metadata_clean %>% 
         ggplot(aes(x=sample, fill=sample)) + 
         geom_bar() + 
         theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)) +
@@ -581,7 +588,7 @@ The filtering using a threshold of 500 has removed the cells with low numbers of
 
 ```r
 # UMI counts
-metrics_clean %>% 
+metadata_clean %>% 
         ggplot(aes(color=sample, x=nUMI, fill= sample)) + 
         geom_density(alpha = 0.2) + 
         scale_x_log10() + 
@@ -598,7 +605,7 @@ metrics_clean %>%
 
 ```r
 # Genes detected
-metrics_clean %>% 
+metadata_clean %>% 
         ggplot(aes(color=sample, x=nGene, fill= sample)) + 
         geom_density(alpha = 0.2) + 
         scale_x_log10() + 
@@ -612,7 +619,7 @@ metrics_clean %>%
 ### UMIs vs genes
 ```r
 # UMIs vs genes
-metrics_clean %>% 
+metadata_clean %>% 
         ggplot(aes(x=nUMI, y=nGene, fill = mitoRatio)) + 
         geom_point() + 
         stat_smooth(method=lm) +
@@ -629,7 +636,7 @@ metrics_clean %>%
 ### Mitochondrial counts ratio
 ```r
 # Mitochondrial counts ratio
-metrics_clean %>% 
+metadata_clean %>% 
   ggplot(aes(fill=sample, x=mitoRatio, color=sample)) + 
   geom_density(alpha = 0.2) + 
   scale_x_log10() + 
@@ -643,7 +650,7 @@ metrics_clean %>%
 ### Novelty
 ```r
 # Novelty
-metrics_clean %>%
+metadata_clean %>%
         ggplot(aes(x=log10GenesPerUMI, color = sample, fill=sample)) +
         geom_density(alpha = 0.2)  + 
   geom_vline(xintercept = 0.8)
@@ -658,8 +665,9 @@ metrics_clean %>%
 Based on these QC metrics we would identify any failed samples and move forward with our filtered cells. Often we iterate through the QC metrics using different filtering criteria; it is not necessarily a linear process. When satisfied with the filtering criteria, we would save our filtered cell object for clustering and marker identification.
 
 ```r
-# Save cleaned single-cell experimnet as .RData to load at any time
-saveRDS(se_c, file = "data/se_filtered.rds")
+# Create .RData object to load at any time
+save(filtered_seurat, file="data/filtered_seurat.RData")
+
 ```
 
 [Click here for next lesson]()
