@@ -1,4 +1,4 @@
-## Calculation proportion of reads mapping to mitochondrial transcripts
+## Calculating proportion of reads mapping to mitochondrial transcripts
 
 The determination of mitochondrial ratios is a bit more complex and requires us to use genome annotations to determine which genes originated from the mitochondrial DNA.
 
@@ -8,7 +8,7 @@ We will be using [AnnotationHub](https://bioconductor.org/packages/release/bioc/
 
 ### Downloading database for organism of interest
 
-To access the various annotations available from Ensembl for human, we need to first connect to AnnotationHub, then specify the organism and database we are interested in.
+To access the various annotations available from Ensembl for human, we need to first connect to `AnnotationHub`, then specify the organism and database we are interested in.
  
 ```r
 # Connect to AnnotationHub
@@ -92,3 +92,7 @@ metadata$mtUMI <- Matrix::colSums(counts[which(rownames(counts) %in% mt),], na.r
 # Calculate of mitoRatio per cell
 metadata$mitoRatio <- metadata$mtUMI/metadata$nUMI
 ```
+
+
+---
+*This lesson has been developed by members of the teaching team at the [Harvard Chan Bioinformatics Core (HBC)](http://bioinformatics.sph.harvard.edu/). These are open access materials distributed under the terms of the [Creative Commons Attribution license](https://creativecommons.org/licenses/by/4.0/) (CC BY 4.0), which permits unrestricted use, distribution, and reproduction in any medium, provided the original author and source are credited.*
