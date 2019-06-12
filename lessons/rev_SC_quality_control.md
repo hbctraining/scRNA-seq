@@ -41,7 +41,7 @@ _**Recommendations:**_
 
 ## Exploring the example dataset
 
-For this workshop we will be working with a single-cell RNA-seq dataset which is part of a larger study from [Kang et al, 2017](https://www.nature.com/articles/nbt.4042. In this paper, the authors present a a computational algorithm that harnesses genetic variation (eQTL) to determine the genetic identity of each droplet containing a single cell (singlet) and identify droplets containing two cells from different individuals (doublets).
+For this workshop we will be working with a single-cell RNA-seq dataset which is part of a larger study from [Kang et al, 2017](https://www.nature.com/articles/nbt.4042). In this paper, the authors present a a computational algorithm that harnesses genetic variation (eQTL) to determine the genetic identity of each droplet containing a single cell (singlet) and identify droplets containing two cells from different individuals (doublets).
 
 The data used to test their algorithm and is comprised of **pooled Peripheral Blood Mononuclear Cells (PBMCs) taken from eight lupus patients split into control and interferon beta-treated conditions**. 
 
@@ -54,7 +54,7 @@ This dataset is available on GEO ([GSE96583]https://www.ncbi.nlm.nih.gov/geo/que
 
 ### Metadata
 
-In addition to the raw data we also need to collect **information about the data**; this is known as metadata. We are usually quick to jump into the analysis and start exploring, but how useful is it if we know nothing about the samples that this data originated from? 
+In addition to the raw data we also need to collect **information about the data**; this is known as metadata. We are usually quick to start exploring our data, but how useful is it if we know nothing about the samples that this data originated from? 
 
 Some relevant metadata for our dataset is provided below:
 
@@ -75,7 +75,11 @@ None of these cell types are low complexity or anticipated to have high mitochon
 
 ## Setting up the R environment
 
-Before we can start our analysis, we need to make sure we have an organized directory structure. Create a new R project entitled `single_cell_rnaseq`. Then, create the following directories:
+One of the most important parts of research that involves large amounts of data, is how best to manage it. We tend to prioritize the analysis, but there are many other important aspects of **data management that are often overlooked** in the excitement to get a first look at new data. The [HMS Data Management Working Group](https://datamanagement.hms.harvard.edu/hms-data-management-working-group), discusses in-depth some things to consider beyond the data creation and analysis.
+
+One important aspect of data management is organization. For each experiment you work on and analyze data for, it is considered best practice to get organized by creating **a planned storage space (directory structure)**. We will do that for our single-cell analysis. 
+
+Create a new R project entitled `single_cell_rnaseq`. Then, create the following directories:
 
 ```
 single_cell_rnaseq/
