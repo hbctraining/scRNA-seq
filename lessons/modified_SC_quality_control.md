@@ -43,7 +43,9 @@ _**Recommendations:**_
 
 For this workshop we will be working with a single-cell RNA-seq dataset which is part of a larger study from [Kang et al, 2017](https://www.nature.com/articles/nbt.4042). In this paper, the authors present a a computational algorithm that harnesses genetic variation (eQTL) to determine the genetic identity of each droplet containing a single cell (singlet) and identify droplets containing two cells from different individuals (doublets).
 
+<p align="center">
 <img src="../img/kangetal_image.png" width="500">
+</p>
 
 *Image obtained from [Kang et al, 2017](https://www.nature.com/articles/nbt.4042)*
 
