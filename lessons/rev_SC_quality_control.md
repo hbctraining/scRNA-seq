@@ -126,70 +126,52 @@ library(ensembldb)
 library(scales)
 ```
 
-## Obtaining quality metrics for assessment
+## Loading single-cell RNA-seq count data 
 
-Throughout the analysis workflow post-QC, we will rely heavily on the Seurat package; however, **Seurat doesn't have all of the functions for exploring the QC in depth**. Therefore, we will perform our own quality assessment outside of Seurat.
-
-### Creating count data object
-
-Generally, all single-cell RNA-seq datasets, regardless of technology or pipeline, will contain **three files**:
+Regardless of the technology or pipeline used to process your single-cell RNA-seq sequence data, the output will generallu be the same. That is, for each individual sample you will have the following **three files**:
 
 1. a file with the **gene IDs**, representing all genes quantified
 2. a file with the **cell IDs**, representing all cells quantified
 3. a **matrix of counts** per gene for every cell
 
 
-We can explore these files by clicking on the `data/ctrl_raw_feature_bc_matrix` folder:
+We can explore these files in our own dataset by clicking on the `data/ctrl_raw_feature_bc_matrix` folder:
 
-- **`barcodes.tsv`:** cellular barcodes present in dataset
+### `barcodes.tsv` 
+This is a text file which contains all cellular barcodes present for that sample. Barcodes are listed in the order of data presented in the matrix file (i.e. these are the column names). 
 
   <p align="center">
-  <img src="../img/cell_ids_new.png" width="180">
+  <img src="../img/cell_ids_new.png" width="130">
   </p>
   
-- **`genes.tsv`:** IDs of quantified genes
+
+### `genes.tsv`
+This is a text file which contains the identifiers of the quantified genes. The source of the identifier can vary depending on what reference (i.e. Ensembl, NCBI, UCSC) you use in the quantification methods, but most often these are official gene symbols. The order of these genes corresponds to the order of the rows in the matrix file (i.e. these are the row names).
 
   <p align="center">
-  <img src="../img/genes.png" width="300">
+  <img src="../img/genes.png" width="200">
   </p>
 
-- **`matrix.mtx`:** a matrix of count values, where rows are associated with the gene IDs above and columns correspond to the cellular barcodes. Note that there are many zero values in this matrix.
+
+### `matrix.mtx`
+This is a text file which contains a matrix of count values. The rows are associated with the gene IDs above and columns correspond to the cellular barcodes. Note that there are **many zero values** in this matrix.
 
   <p align="center">
-  <img src="../img/sparse_matrix.png">
+  <img src="../img/sparse_matrix.png", width="600">
   </p>
 
-We can create a count matrix using these files. However, instead of creating a standard count matrix, we will create a **sparse matrix** to improve the amount of space, memory and CPU required to work with our huge count matrix. 
 
-We will use `readMM()` function from the **Matrix** package to turn our standard matrix into a sparse matrix. The `genes.tsv` file should correspond to the genes or row names of the matrix, while `barcodes.tsv` corresponds to the cells or columns.
+Loading this data into R **requires us to use functions that allow us to efficiently combine these three files into a single count matrix.*** However, instead of creating a standard count matrix, we will create a **sparse matrix** to improve the amount of space, memory and CPU required to work with our huge count matrix. 
 
-```r
-# Read in `matrix.mtx`
-counts <- readMM("data/filtered_gene_bc_matrices/hg19/matrix.mtx")
+In this workshop we will discuss two different methods for reading in data:
 
-# Read in `genes.tsv`
-genes <- read_tsv("data/filtered_gene_bc_matrices/hg19/genes.tsv", col_names = FALSE)
-gene_ids <- genes$X1
+1. **`readMM()`**: This function is from the **Matrix** package and will turn our standard matrix into a sparse matrix. The `genes.tsv` file and `barcodes.tsv` must first be individually loaded into R and then they are combined. For specific code and instructions on how to do this please see [our additional material]().
+2. **`Read10X()`**: This function is from the **Seurat** package and will use the Cell Ranger output directory as input. In this way individual files do not need to be loaded in, instead the function will load and combine them into a sparse matrix for you. *We will be using this function to load in our data!*
 
-# Read in `barcodes.tsv`
-cell_ids <- read_tsv("data/filtered_gene_bc_matrices/hg19/barcodes.tsv", col_names = FALSE)$X1
-```
 
-Then we can add row names to the count matrix to be the gene IDs and the column names of the count matrix to be the cell IDs.
+### Reading in a single sample (`read10X()`)
 
-```r
-# Make the column names as the cell IDs and the row names as the gene IDs
-rownames(counts) <- gene_ids
-colnames(counts) <- cell_ids
-```
-
-We could use this data for downstream QC analysis. However, this would take a long time if we had multiple samples. A quicker way to load multiple samples is to use the Seurat R package, which has a specific function for reading in 10X data, called `read10X()`. 
-
-> **NOTE:** If using other droplet-based methods for library preparation, the above method would be needed to perform the QC. We have [additional materials]() available based on creation of the count matrix in this way.
-
-#### Reading in 10X data
-
-The `read10X()` function from the Seurat R package expects the Cell Ranger sample output folder to have a folder called `outs`. This directory will contain a number of output files including:
+When working with 10X data and it's proprietary software Cell Ranger, you will always have an `outs` directory. Within this directory you will find a number of different files including:
 
 - **`web_summary.html`:** report that explores different QC metrics, including the mapping metrics, filtering thresholds, estimated number of cells after filtering, and information on the number of reads and genes per cell after filtering.
 - **BAM alignment files:** files used for visualization of the mapped reads and for re-creation of FASTQ files, if needed
@@ -198,7 +180,7 @@ The `read10X()` function from the Seurat R package expects the Cell Ranger sampl
 
 We are mainly interested in the `raw_feature_bc_matrix` as we wish to perform our own QC and filtering while accounting about the biology of our experiment.
 
-To read in the 10X data, we will use the `read10X()` function with the path to the `raw_feature_bc_matrix` folder as the argument. Then, we would turn this count matrix into a Seurat object using the `CreateSeuratObject()` function. If we had a single sample, we could run these steps like:
+If we had a single sample, we could generate the count matrix and then subsequently create a Seurat object:
 
 ```r
 # How to read in 10X data for a single sample
@@ -209,38 +191,10 @@ ctrl <- CreateSeuratObject(counts = ctrl_counts,
                            min.features = 100)
 ```
 
-The `min.features` argument specifies the minimum number of genes that need to be detected per cell. This argument will filter out poor quality cells that likely just have random barcodes encapsulated without any cell present. We would not be interested in analyzing any cells with less than 100 genes detected.
+> **NOTE**: The `min.features` argument specifies the minimum number of genes that need to be detected per cell. This argument will filter out poor quality cells that likely just have random barcodes encapsulated without any cell present. We would not be interested in analyzing any cells with less than 100 genes detected.
 
-Notice that Seurat automatically creates some metadata for each of the cells:
 
-```r
-# Explore the metadata
-head(ctrl@meta.data)
-```
-
-The added columns include:
-
-- `orig.ident`: this often contains the sample identity if known, but will default to "SeuratProject"
-- `nCount_RNA`: number of UMIs per cell
-- `nFeature_RNA`: number of genes detected per cell
-
-The data that we would like to perform the QC on is stored inside the `counts` slot of the Seurat object, and in version 3 of Seurat, we can access it using the `GetAssayData()` function.
-
-```r
-# Extract counts
-counts <- GetAssayData(object = ctrl, slot = "counts")
-```
-
-We also need the metadata saved as a separate object:
-
-```r
-# Extract metadata
-metadata <- ctrl@meta.data
-```
-
-This data can be used for downstream QC analysis; however, we have more than one sample and we would like to explore the QC metrics for both samples side-by-side. For more than a single sample it can be helpful to read data into Seurat with a `for loop`.
-
-#### Reading in 10X data with a `for loop`
+### Reading in multiple samples with a `for loop`
 
 A `for loop` interates over a series of commands for each of the inputs given. In R, it has the structure:
 
@@ -252,9 +206,7 @@ for (variable in input){
 }
 ```
 
-The `input` generally has multiple files provided, so the commands 1-3 are run on each of the files, one after the other.
-
-The `for loop` we plan to run creates Seurat objects for each of our samples as follows:
+The `for loop` we plan to use will iterate over our two samples (`input`) and execute two commands for each sample (read in the count data and create a Seurat objects):
 
 ```r
 # Create each individual Seurat object for every sample
@@ -268,9 +220,9 @@ for (file in c("ctrl_raw_feature_bc_matrix", "stim_raw_feature_bc_matrix")){
 }
 ```
 
-Now, let's break down the `for loop` between the different steps:
+Now, let's break down the `for loop` to describe the different steps:
 
-##### Step 1: Specify inputs
+#### Step 1: Specify inputs
 
 For our experiment, we have two samples that we would like to read into R using the `Read10X()` function:
 
@@ -284,7 +236,7 @@ We can specify these samples in the *input* part for our `for loop`. The *variab
 for (file in c("ctrl_raw_feature_bc_matrix", "stim_raw_feature_bc_matrix")){
 ```
 
-##### Step 2: Create command to read in data for the input
+#### Step 2: Create command to read in data for the input
 
 We can continue our `for loop` by:
 
@@ -297,7 +249,7 @@ for (file in c("ctrl_raw_feature_bc_matrix", "stim_raw_feature_bc_matrix")){
         seurat_data <- Read10X(data.dir = paste0("data/", file))
 ```
 
-##### Step 3: Create Seurat object from the 10X data
+#### Step 3: Create Seurat object from the 10X data
 
 Now, we can create the Seurat object by using the `CreateSeuratObject()` function, adding in the argument `project`, where we can add the sample name into the `orig.ident` slot of the metadata.
 
@@ -309,7 +261,7 @@ for (file in c("ctrl_raw_feature_bc_matrix", "stim_raw_feature_bc_matrix")){
                                          project = file)        
 ```
 
-##### Step 4: Assign Seurat object to a new variable based on sample
+#### Step 4: Assign Seurat object to a new variable based on sample
 
 The last command assigns the Seurat object created (`seurat_obj`) to a variable called by the sample name (`sample`). We need to assign the Seurat object to a variable with a new name, otherwise we would overwrite our `seurat_obj` every iteration through the loop.
 
@@ -353,6 +305,10 @@ Now, we need to extract the counts for this merged object:
 counts <- GetAssayData(object = merged_seurat, slot = "counts")
 
 ```
+
+## Obtaining quality metrics for assessment
+
+Throughout the analysis workflow post-QC, we will rely heavily on the Seurat package; however, **Seurat doesn't have all of the functions for exploring the QC in depth**. Therefore, we will perform our own quality assessment outside of Seurat.
 
 ### Creating metadata object with some QC metrics
 
