@@ -45,6 +45,8 @@ For this workshop we will be working with a single-cell RNA-seq dataset which is
 
 <img src="../img/kangetal_image.png" width="500">
 
+*Image obtained from [Kang et al, 2017](https://www.nature.com/articles/nbt.4042)*
+
 The data used to test their algorithm and is comprised of pooled Peripheral Blood Mononuclear Cells (PBMCs) taken from eight lupus patients split into control and interferon beta-treated conditions. 
 
 
