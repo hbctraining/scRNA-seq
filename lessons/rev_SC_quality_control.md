@@ -386,15 +386,7 @@ save(merged_seurat, file="data/raw_seurat.RData")
 
 ## Assessing the quality metrics
 
-Now that we have generated the various metrics to assess, we can explore them with visualizations. We will create our metrics file from the metadata stored in the single cell experiments.
-
-```r
-# Create a data frame containing the metrics for visualizations
-metrics <- colData(se) %>%
-  as.data.frame
-```
-
-We will explore the following metrics through visualizations to decide on which cells are low quality and should be removed from the analysis:
+Now that we have generated the various metrics to assess, we can explore them with visualizations. We will assess various metrics and then decide on which cells are low quality and should be removed from the analysis:
 
 - Cell counts
 - UMI counts per cell
@@ -414,7 +406,7 @@ You expect the number of unique cellular barcodes to be around the number of seq
 
 ```r
 # Visualize the number of cell counts per cell
-metrics %>% 
+metadata %>% 
   ggplot(aes(x=sample, fill=sample)) + 
   geom_bar() + 
   ggtitle("NCells")
@@ -432,7 +424,7 @@ The UMI counts per cell should generally be above 500, although usable, it's sti
 
 ```r
 # Visualize the number UMIs/transcripts per cell
-metrics %>% 
+metadata %>% 
         ggplot(aes(color=sample, x=nUMI, fill= sample)) + 
         geom_density(alpha = 0.2) + 
         scale_x_log10() + 
@@ -450,14 +442,14 @@ Seeing gene detection in the range of 500-5000 is normal for **inDrop** analysis
 
 ```r
 # Visualize the distribution of genes detected per cell via histogram
-metrics %>% 
+metadata %>% 
         ggplot(aes(color=sample, x=nGene, fill= sample)) + 
         geom_density(alpha = 0.2) + 
         scale_x_log10() + 
         geom_vline(xintercept = 200)
 
 # Visualize the distribution of genes detected per cell via boxplot
-metrics %>% 
+metadata %>% 
         ggplot(aes(x=sample, y=log10(nGene), fill=sample)) + 
         geom_boxplot() + 
         ggtitle("NCells vs NGenes")
@@ -477,7 +469,7 @@ Poor quality cells are likely to have low genes and UMIs per cell. Therefore, a 
 
 ```r
 # Visualize the correlation between genes detected and number of UMIs and determine whether strong presence of cells with low numbers of genes/UMIs
-metrics %>% 
+metadata %>% 
         ggplot(aes(x=nUMI, y=nGene, color=mitoRatio)) + 
         geom_point() + 
         stat_smooth(method=lm) +
@@ -498,7 +490,7 @@ This metric can identify whether there is a large amount of mitochondrial contam
 
 ```r
 # Visualize the distribution of mitochondrial gene expression detected per cell
-metrics %>% 
+metadata %>% 
         ggplot(aes(color=sample, x=mitoRatio, fill=sample)) + 
         geom_density(alpha = 0.2) + 
         scale_x_log10() + 
@@ -514,7 +506,7 @@ We can see the samples where we sequenced each cell less have a higher overall n
 
 ```r
 # Visualize the overall novelty of the gene expression by visualizing the genes detected per UMI
-metrics %>%
+metadata %>%
         ggplot(aes(x=log10GenesPerUMI, color = sample, fill=sample)) +
         geom_density(alpha = 0.2)
 ```
@@ -527,26 +519,26 @@ metrics %>%
 
 ## Filtering
 
-Now that we have visualized the various metrics, we can decide on the thresholds to use to remoe the low quality. Often the recommendations mentioned earlier are a rough guideline, but the specific experiment needs to inform the exact thresholds chosen. We will use the following thresholds:
+Now that we have visualized the various metrics, we can decide on the thresholds to apply which will result in the removal of low quality cells. Often the recommendations mentioned earlier are a rough guideline, and the specific experiment needs to inform the exact thresholds chosen. We will use the following thresholds:
 
 - nUMI > 500
 - nGene > 250
 - log10GenesPerUMI > 0.8
 - mitoRatio < 0.2
 
+To filter, we wil go back to our Seurat object and use the `subset()` function:
+
 ```r
 # Filter out low quality reads using selected thresholds - these will change with experiment
-keep_cells <- metrics %>%
-  dplyr::filter(nUMI >= 500 , 
-                nGene >= 250,
-                log10GenesPerUMI > 0.8,
-                mitoRatio < 0.2,
-                ) %>% 
-  pull(cells)
+filtered_seurat <- subset(x = merged_seurat, 
+                         subset= (nUMI >= 500) & 
+                           (nGene >= 250) & 
+                           (log10GenesPerUMI > 0.80) & 
+                           (mitoRatio < 0.25))
+```
 
-# Subset the cells to only include those that meet the thresholds specified
-se_c <- se[ ,keep_cells]
 
+```r
 # Output a logical vector for every gene on whether the more than zero counts per cell
 nonzero <- counts(se_c) > 0L
 
