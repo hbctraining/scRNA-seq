@@ -9,8 +9,8 @@ Approximate time: 90 minutes
 ## Learning Objectives:
 
 * Understand how to bring in data from single-cell RNA-seq experiments
-* Construct QC metrics to explore visually
-* Evaluate the QC metrics to filter out low quality cells
+* Construct QC metrics and associated plots to visually explore the quality of the data
+* Evaluate the QC metrics and set filters to remove low quality cells
 
 # Single-cell RNA-seq: Quality control
 
@@ -18,6 +18,8 @@ Approximate time: 90 minutes
 <p align="center">
 <img src="../img/sc_workflow.png" width="800">
 </p>
+
+***
 
 Each step of this workflow has its own goals and challenges. For QC of our raw count data, they include:
 
@@ -35,28 +37,57 @@ _**Recommendations:**_
  
  - _Have a good idea of your expectations for the **cell types to be present** prior to performing the QC. For instance, do you expect to have low complexity cells or cells with higher levels of mitochondrial expression in your sample? If so, then we need to account for this biology when assessing the quality of our data._
 
+***
 
-## Biology of our dataset
+## Exploring the example dataset
 
-The dataset we will be working with is from [Kang et al, 2017](https://www.nature.com/articles/nbt.4042) and is comprised of pooled Peripheral Blood Mononuclear Cells (PBMCs) taken from eight lupus patients split into control and interferon beta-treated conditions. The libraries were prepared using 10X Genomics version 2 chemistry and sequenced on the Illumina NextSeq 500. This dataset is freely available from 10X Genomics and is used as part of the [Seurat tutorial](https://satijalab.org/seurat/v3.0/immune_alignment.html). 
+For this workshop we will be working with a single-cell RNA-seq dataset which is part of a larger study from [Kang et al, 2017](https://www.nature.com/articles/nbt.4042). In this paper, the authors present a a computational algorithm that harnesses genetic variation (eQTL) to determine the genetic identity of each droplet containing a single cell (singlet) and identify droplets containing two cells from different individuals (doublets).
 
-Since the samples are PBMCs, we will expect immune cells, such as:
+The data used to test their algorithm is comprised of pooled Peripheral Blood Mononuclear Cells (PBMCs) taken from eight lupus patients, split into control and interferon beta-treated conditions. 
 
-- B cells
-- T cells
-- NK cells
-- monocytes
-- macrophages
-- possibly megakaryocytes
+
+<p align="center">
+<img src="../img/kangetal_image.png" width="500">
+</p>
+
+*Image obtained from [Kang et al, 2017](https://www.nature.com/articles/nbt.4042)*
+
+
+
+### Raw data
+
+This dataset is available on GEO ([GSE96583](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE96583)), however the available counts matrix lacked mitochondrial reads, so we downloaded the BAM files from the SRA ([SRP102802](https://www-ncbi-nlm-nih-gov.ezp-prod1.hul.harvard.edu/sra?term=SRP102802)). These BAM files were converted back to FASTQ files, then run through Cell Ranger to obtain the count data that we will be using. 
+
+> **NOTE:**  This dataset is also freely available from 10X Genomics and is used as part of the [Seurat tutorial](https://satijalab.org/seurat/v3.0/immune_alignment.html). 
+
+### Metadata
+
+In addition to the raw data we also need to collect **information about the data**; this is known as metadata. We are usually quick to start exploring our data, but it is not very meaningful if we know nothing about the samples that this data originated from.
+
+Some relevant metadata for our dataset is provided below:
+
+* The libraries were prepared using 10X Genomics version 2 chemistry
+* The samples were sequenced on the Illumina NextSeq 500
+* PBMC samples from eight individual lupus patients were separated into two aliquots each. One aliquot of PBMCs was activated by 100 U/mL of recombinant IFN-β for 6 hours. The second aliquot was left untreated. After 6 hours, the eight samples for each condition were pooled together in two final pools (stimulated cells and control cells).
+
+* Since the samples are PBMCs, we will expect immune cells, such as:
+  * B cells
+  * T cells
+  * NK cells
+  * monocytes
+  * macrophages
+  * possibly megakaryocytes
 
 None of these cell types are low complexity or anticipated to have high mitochondrial content.
-
-> **NOTE:** The matrix files for this dataset on GEO ([GSE96583](http://www-ncbi-nlm-nih-gov.ezp-prod1.hul.harvard.edu/geo/query/acc.cgi?acc=GSE96583)) lacked mitochondrial reads, so we downloaded the BAM files from the SRA ([SRP102802](https://www-ncbi-nlm-nih-gov.ezp-prod1.hul.harvard.edu/sra?term=SRP102802)), converted the BAM files back to FASTQ files, then re-ran Cell Ranger. 
 
 
 ## Setting up the R environment
 
-Before we can start our analysis, we need to make sure we have an organized directory structure. Create a new R project entitled `single_cell_rnaseq`. Then, create the following directories:
+One of the most important parts of research that involves large amounts of data, is how best to manage it. We tend to prioritize the analysis, but there are many other important aspects of **data management that are often overlooked** in the excitement to get a first look at new data. The [HMS Data Management Working Group](https://datamanagement.hms.harvard.edu/hms-data-management-working-group), discusses in-depth some things to consider beyond the data creation and analysis.
+
+One important aspect of data management is organization. For each experiment you work on and analyze data for, it is considered best practice to get organized by creating **a planned storage space (directory structure)**. We will do that for our single-cell analysis. 
+
+Create a new R project entitled `single_cell_rnaseq`. Then, create the following directories:
 
 ```
 single_cell_rnaseq/
@@ -103,70 +134,52 @@ library(ensembldb)
 library(scales)
 ```
 
-## Obtaining quality metrics for assessment
+## Loading single-cell RNA-seq count data 
 
-Throughout the analysis workflow post-QC, we will rely heavily on the Seurat package; however, **Seurat doesn't have all of the functions for exploring the QC in depth**. Therefore, we will perform our own quality assessment outside of Seurat.
-
-### Creating count data object
-
-Generally, all single-cell RNA-seq datasets, regardless of technology or pipeline, will contain **three files**:
+Regardless of the technology or pipeline used to process your single-cell RNA-seq sequence data, the output will generally be the same. That is, for each individual sample you will have the following **three files**:
 
 1. a file with the **gene IDs**, representing all genes quantified
 2. a file with the **cell IDs**, representing all cells quantified
 3. a **matrix of counts** per gene for every cell
 
 
-We can explore these files by clicking on the `data/ctrl_raw_feature_bc_matrix` folder:
+We can explore these files in our own dataset by clicking on the `data/ctrl_raw_feature_bc_matrix` folder:
 
-- **`barcodes.tsv`:** cellular barcodes present in dataset
+### `barcodes.tsv` 
+This is a text file which contains all cellular barcodes present for that sample. Barcodes are listed in the order of data presented in the matrix file (i.e. these are the column names). 
 
   <p align="center">
-  <img src="../img/cell_ids_new.png" width="180">
+  <img src="../img/cell_ids_new.png" width="130">
   </p>
   
-- **`genes.tsv`:** IDs of quantified genes
+
+### `genes.tsv`
+This is a text file which contains the identifiers of the quantified genes. The source of the identifier can vary depending on what reference (i.e. Ensembl, NCBI, UCSC) you use in the quantification methods, but most often these are official gene symbols. The order of these genes corresponds to the order of the rows in the matrix file (i.e. these are the row names).
 
   <p align="center">
-  <img src="../img/genes.png" width="300">
+  <img src="../img/genes.png" width="200">
   </p>
 
-- **`matrix.mtx`:** a matrix of count values, where rows are associated with the gene IDs above and columns correspond to the cellular barcodes. Note that there are many zero values in this matrix.
+
+### `matrix.mtx`
+This is a text file which contains a matrix of count values. The rows are associated with the gene IDs above and columns correspond to the cellular barcodes. Note that there are **many zero values** in this matrix.
 
   <p align="center">
-  <img src="../img/sparse_matrix.png">
+  <img src="../img/sparse_matrix.png", width="600">
   </p>
 
-We can create a count matrix using these files. However, instead of creating a standard count matrix, we will create a **sparse matrix** to improve the amount of space, memory and CPU required to work with our huge count matrix. 
 
-We will use `readMM()` function from the **Matrix** package to turn our standard matrix into a sparse matrix. The `genes.tsv` file should correspond to the genes or row names of the matrix, while `barcodes.tsv` corresponds to the cells or columns.
+Loading this data into R requires us to **use functions that allow us to efficiently combine these three files into a single count matrix.** However, instead of creating a standard count matrix, we will create a **sparse matrix** to improve the amount of space, memory and CPU required to work with our huge count matrix. 
 
-```r
-# Read in `matrix.mtx`
-counts <- readMM("data/filtered_gene_bc_matrices/hg19/matrix.mtx")
+Different methods for reading in data include:
 
-# Read in `genes.tsv`
-genes <- read_tsv("data/filtered_gene_bc_matrices/hg19/genes.tsv", col_names = FALSE)
-gene_ids <- genes$X1
+1. **`readMM()`**: This function is from the **Matrix** package and will turn our standard matrix into a sparse matrix. The `genes.tsv` file and `barcodes.tsv` must first be individually loaded into R and then they are combined. For specific code and instructions on how to do this please see [our additional material]().
+2. **`Read10X()`**: This function is from the **Seurat** package and will use the Cell Ranger output directory as input. In this way individual files do not need to be loaded in, instead the function will load and combine them into a sparse matrix for you. *We will be using this function to load in our data!*
 
-# Read in `barcodes.tsv`
-cell_ids <- read_tsv("data/filtered_gene_bc_matrices/hg19/barcodes.tsv", col_names = FALSE)$X1
-```
 
-Then we can add row names to the count matrix to be the gene IDs and the column names of the count matrix to be the cell IDs.
+### Reading in a single sample (`read10X()`)
 
-```r
-# Make the column names as the cell IDs and the row names as the gene IDs
-rownames(counts) <- gene_ids
-colnames(counts) <- cell_ids
-```
-
-We could use this data for downstream QC analysis. However, this would take a long time if we had multiple samples. A quicker way to load multiple samples is to use the Seurat R package, which has a specific function for reading in 10X data, called `read10X()`. 
-
-> **NOTE:** If using other droplet-based methods for library preparation, the above method would be needed to perform the QC. We have [additional materials]() available based on creation of the count matrix in this way.
-
-#### Reading in 10X data
-
-The `read10X()` function from the Seurat R package expects the Cell Ranger sample output folder to have a folder called `outs`. This directory will contain a number of output files including:
+When working with 10X data and it's proprietary software Cell Ranger, you will always have an `outs` directory. Within this directory you will find a number of different files including:
 
 - **`web_summary.html`:** report that explores different QC metrics, including the mapping metrics, filtering thresholds, estimated number of cells after filtering, and information on the number of reads and genes per cell after filtering.
 - **BAM alignment files:** files used for visualization of the mapped reads and for re-creation of FASTQ files, if needed
@@ -175,9 +188,12 @@ The `read10X()` function from the Seurat R package expects the Cell Ranger sampl
 
 We are mainly interested in the `raw_feature_bc_matrix` as we wish to perform our own QC and filtering while accounting about the biology of our experiment.
 
-To read in the 10X data, we will use the `read10X()` function with the path to the `raw_feature_bc_matrix` folder as the argument. Then, we would turn this count matrix into a Seurat object using the `CreateSeuratObject()` function. If we had a single sample, we could run these steps like:
+If we had a single sample, we could generate the count matrix and then subsequently create a Seurat object:
 
 ```r
+
+## DO NOT RUN THIS CODE ##
+
 # How to read in 10X data for a single sample
 ctrl_counts <- Read10X(data.dir = "data/ctrl_raw_feature_bc_matrix")
 
@@ -186,38 +202,10 @@ ctrl <- CreateSeuratObject(counts = ctrl_counts,
                            min.features = 100)
 ```
 
-The `min.features` argument specifies the minimum number of genes that need to be detected per cell. This argument will filter out poor quality cells that likely just have random barcodes encapsulated without any cell present. We would not be interested in analyzing any cells with less than 100 genes detected.
+> **NOTE**: The `min.features` argument specifies the minimum number of genes that need to be detected per cell. This argument will filter out poor quality cells that likely just have random barcodes encapsulated without any cell present. We would not be interested in analyzing any cells with less than 100 genes detected.
 
-Notice that Seurat automatically creates some metadata for each of the cells:
 
-```r
-# Explore the metadata
-head(ctrl@meta.data)
-```
-
-The added columns include:
-
-- `orig.ident`: this often contains the sample identity if known, but will default to "SeuratProject"
-- `nCount_RNA`: number of UMIs per cell
-- `nFeature_RNA`: number of genes detected per cell
-
-The data that we would like to perform the QC on is stored inside the `counts` slot of the Seurat object, and in version 3 of Seurat, we can access it using the `GetAssayData()` function.
-
-```r
-# Extract counts
-counts <- GetAssayData(object = ctrl, slot = "counts")
-```
-
-We also need the metadata saved as a separate object:
-
-```r
-# Extract metadata
-metadata <- ctrl@meta.data
-```
-
-This data can be used for downstream QC analysis; however, we have more than one sample and we would like to explore the QC metrics for both samples side-by-side. For more than a single sample it can be helpful to read data into Seurat with a `for loop`.
-
-#### Reading in 10X data with a `for loop`
+### Reading in multiple samples with a `for loop`
 
 A `for loop` interates over a series of commands for each of the inputs given. In R, it has the structure:
 
@@ -229,9 +217,7 @@ for (variable in input){
 }
 ```
 
-The `input` generally has multiple files provided, so the commands 1-3 are run on each of the files, one after the other.
-
-The `for loop` we plan to run creates Seurat objects for each of our samples as follows:
+The `for loop` we plan to use will iterate over our two samples (`input`) and execute two commands for each sample (read in the count data and create a Seurat objects):
 
 ```r
 # Create each individual Seurat object for every sample
@@ -245,9 +231,9 @@ for (file in c("ctrl_raw_feature_bc_matrix", "stim_raw_feature_bc_matrix")){
 }
 ```
 
-Now, let's break down the `for loop` between the different steps:
+Now, let's break down the `for loop` to describe the different steps:
 
-##### Step 1: Specify inputs
+#### Step 1: Specify inputs
 
 For our experiment, we have two samples that we would like to read into R using the `Read10X()` function:
 
@@ -261,12 +247,11 @@ We can specify these samples in the *input* part for our `for loop`. The *variab
 for (file in c("ctrl_raw_feature_bc_matrix", "stim_raw_feature_bc_matrix")){
 ```
 
-##### Step 2: Create command to read in data for the input
+#### Step 2: Read in data for the input
 
 We can continue our `for loop` by:
 
-- Creating a variable with the name of our sample called `sample`. We will be using this variable for naming purposes downstream. 
-- Using the path to the files for input to the `Read10X()` function. We need to specify the path to the file, so we will prepend the `data/` directory to our sample folder name using the `paste0()` function.
+- Using the `Read10X()` function. We need to specify the path to the file, so we will prepend the `data/` directory to our sample folder name using the `paste0()` function.
 
 ```r
 # Create each individual Seurat object
@@ -274,9 +259,9 @@ for (file in c("ctrl_raw_feature_bc_matrix", "stim_raw_feature_bc_matrix")){
         seurat_data <- Read10X(data.dir = paste0("data/", file))
 ```
 
-##### Step 3: Create Seurat object from the 10X data
+#### Step 3: Create Seurat object from the 10X count data
 
-Now, we can create the Seurat object by using the `CreateSeuratObject()` function, adding in the argument `project`, where we can add the sample name into the `orig.ident` slot of the metadata.
+Now, we can create the Seurat object by using the `CreateSeuratObject()` function, adding in the argument `project`, where we can add the sample name.
 
 ```r
 for (file in c("ctrl_raw_feature_bc_matrix", "stim_raw_feature_bc_matrix")){
@@ -286,9 +271,9 @@ for (file in c("ctrl_raw_feature_bc_matrix", "stim_raw_feature_bc_matrix")){
                                          project = file)        
 ```
 
-##### Step 4: Assign Seurat object to a new variable based on sample
+#### Step 4: Assign Seurat object to a new variable based on sample
 
-The last command assigns the Seurat object created (`seurat_obj`) to a variable called by the sample name (`sample`). We need to assign the Seurat object to a variable with a new name, otherwise we would overwrite our `seurat_obj` every iteration through the loop.
+The last command assigns the Seurat object created (`seurat_obj`) to a new variable. In this way, when we iterate and move on to the next sample in our `input` we will not overwrite the Seurat object. To assign it to a variable we first need to create a variable called `sample` which is just the file that we are working on (current `input`):
 
 ```r
 for (file in c("ctrl_raw_feature_bc_matrix", "stim_raw_feature_bc_matrix")){
@@ -301,7 +286,7 @@ for (file in c("ctrl_raw_feature_bc_matrix", "stim_raw_feature_bc_matrix")){
 }
 ```
 
-Now that we have our Seurat objects for each sample, we need to merge them together to run QC on them at the same time. We can use the `merge()` function to do this:
+Now that we have our Seurat objects for each sample, we need to merge them together into a single Seurat object. This will make it easier to run QC on the entire dataset rather than one sample at a time. We can use the `merge()` function to do this:
 
 ```r
 # Create a merged Seurat object
@@ -310,7 +295,11 @@ merged_seurat <- merge(x = ctrl_raw_feature_bc_matrix,
                        add.cell.id = c("ctrl", "stim"))
 ```
 
-Because the same cell IDs are used for different samples, we add a sample-specific prefix to each of our cell IDs using the `add.cell.id` argument. Let's take a look at the metadata:
+Because the same cell IDs can be used for different samples, we add a sample-specific prefix to each of our cell IDs using the `add.cell.id` argument. 
+
+## Generating quality metrics
+
+Notice that Seurat automatically creates some metadata for each of the cells:
 
 ```r
 # Explore merged metadata
@@ -321,30 +310,38 @@ View(merged_seurat@meta.data)
 <img src="../img/merged_seurat_meta.png" width="500">
 </p>
 
-You should see each cell has a `ctrl_` or `stim_` prefix and an `orig.ident` matching the sample.
 
-Now, we need to extract the counts for this merged object:
+The added columns include:
+
+- `orig.ident`: this often contains the sample identity if known, but will default to `project` as we had assigned it
+- `nCount_RNA`: number of UMIs per cell
+- `nFeature_RNA`: number of genes detected per cell
+
+You should also see each cell ID has a `ctrl_` or `stim_` prefix as we had specified when we merged the Seurat objects. These prefixes should match the sample listed in `orig.ident`.
+
+Seurat has a convenient function that allows us to calculate the **proportion of transcripts mapping to mitochondrial genes**. The `PercentageFeatureSet()` will take a pattern and search the gene identifiers. For each colum (cell) it will take the sum of the counts slot for features belonging to the set, divide by the column sum for all features and multiply by 100. *Since we want the ratio value for plotting, we will reverse that step by then dividing by 100*.
 
 ```r
-# Extract counts for merged data
-counts <- GetAssayData(object = merged_seurat, slot = "counts")
+
+# Compute percent mito ratio
+merged_seurat$mitoRatio <- PercentageFeatureSet(object = merged_seurat, pattern = "^MT")
+merged_seurat$mitoRatio <- merged_seurat@meta.data$mitoRatio / 100
 
 ```
+> **Note 1**: The pattern provided ("^MT-") works for human gene names. You may need to adjust depending on your organism of interest.
 
-### Creating metadata object with some QC metrics
+> **Note 2:** If you didn't want to use the Seurat function, we have [code available to compute this metric on your own](https://github.com/hbctraining/scRNA-seq/blob/master/lessons/mitoRatio.md).
 
-Now that we have a counts matrix with the genes as row names and cells as columns, we can create our metadata with information about the different metrics to evaluate during quality control assessment.
+While it is quite easy to **add information directly to the metadata slot in the Seurat object using the `$` operator**, we will extract the dataframe into a separate variable instead. In this way we can continue to insert additional metrics that we need for our QC analysis without the risk of affecting our `merged_seurat` object.
 
 We will create the metadata dataframe by extracting the `meta.data` slot from the Seurat object: 
 
 ```r
-# Create metadata containing only the cell IDs
+# Create metadata dataframe
 metadata <- merged_seurat@meta.data
 ```
 
-This should contain information about the sample (`orig.ident`), number of UMIs (`nCount_RNA`), and number of genes detected (`nFeature_RNA`) for each cell. We can add metrics to this object for QC purposes.
-
-First, let's add a column with our cell IDs and change the column names to be more intuitive:
+Let's begin by **adding a column with our cell IDs** and **change the current column names** to be more intuitive:
 
 ```r
 # Add cell IDs to metadata
@@ -357,7 +354,7 @@ metadata <- metadata %>%
                       nGene = nFeature_RNA)
 ```
 
-Now, let's get sample names for each of the cells based on the cell prefix:
+Now, let's get **sample names for each of the cells** based on the cell prefix:
 
 ```r
 # Create sample column
@@ -366,142 +363,35 @@ metadata$sample[which(str_detect(metadata$cells, "^ctrl_"))] <- "ctrl"
 metadata$sample[which(str_detect(metadata$cells, "^stim_"))] <- "stim"
 ```
 
-Now we need to calculate some metrics for plotting:
-
-- **number of genes detected per UMI:** this metric with give us an idea of the complexity of our dataset (more genes detected per UMI, more complex our data)
-- **mitochondrial ratio:** this metric will give us a percentage of cell reads originating from the mitochondrial genes
-
-The number of genes per UMI for each cell is quite easy to calculate, and we will log10 transform the result for better comparison between samples.
+Next, we need to calculate the **number of genes detected per UMI.** This metric with give us an idea of the complexity of our dataset (more genes detected per UMI, more complex our data). The number of genes per UMI for each cell is quite easy to calculate, and we will log10 transform the result for better comparison between samples.
 
 ```r
 # Add number of UMIs per gene for each cell to metadata
 metadata$log10GenesPerUMI <- log10(metadata$nGene) / log10(metadata$nUMI)
 ```
 
-The determination of mitochondrial ratios is a bit more complex and requires us to use genome annotations to determine which genes originated from the mitochondrial DNA.
-
-### Using annotation file to generate mitochondrial count metrics
-
-We will be using [AnnotationHub](https://bioconductor.org/packages/release/bioc/vignettes/AnnotationHub/inst/doc/AnnotationHub.html), which allows accession to a wide variety of online databases and other resources, to query Ensembl annotations made available through [ensembldb](https://bioconductor.org/packages/release/bioc/vignettes/ensembldb/inst/doc/ensembldb.html). Ensembldb is a package that retrieves annotation for the databases directly from Ensembl.
-
-### Downloading database for organism of interest
-
-To access the various annotations available from Ensembl for human, we need to first connect to AnnotationHub, then specify the organism and database we are interested in.
- 
-```r
-# Connect to AnnotationHub
-ah <- AnnotationHub()
-
-# Access the Ensembl database for organism
-ahDb <- query(ah, 
-              pattern = c("Homo sapiens", "EnsDb"), 
-              ignore.case = TRUE)
-
-```
-
-Next, we acquire the latest annotation files from this Ensembl database. 
-
-We can first check which annotation versions are available:
-
-```r
-# Check versions of databases available
-ahDb %>% 
-  mcols()
-```
-
-Since we want the most recent, we will return the AnnotationHub ID for this database:
-
-```r
-# Acquire the latest annotation files
-id <- ahDb %>%
-  mcols() %>%
-  rownames() %>%
-  tail(n = 1)
-```
-  
-Finally, we can use the AnnotationHub connection to download the appropriate Ensembl database, which should be version GRCh38.92.
-
-```r
-# Download the appropriate Ensembldb database
-edb <- ah[[id]]
-```
-
-And to extract gene-level information we can use the Ensembldb function `genes()` to return a data frame of annotations.
-
-```r
-# Extract gene-level information from database
-annotations <- genes(edb, 
-                     return.type = "data.frame")                
-```
-
-### Exracting IDs for mitochondrial genes
-
-We aren't interested in all of the information present in this `annotations` file, so we are going to extract that which is useful to us.
-
-```r
-# Select annotations of interest
-annotations <- annotations %>%
-  dplyr::select(gene_id, gene_name, gene_biotype, seq_name, description, entrezid)
-                         
-View(annotations)    
-```
-
-<p align="center">
-<img src="../img/annotations.png" width="800">
-</p>
-
-Now we can retrieve the genes associated with the different biotypes of interest:
-
-```r
-# Extract IDs for mitochondrial genes
-mt <- annotations %>%
-        dplyr::filter(seq_name == "MT") %>%
-        dplyr::pull(gene_name)
-```
-
-### Adding metrics to metadata
-
-Now that we have information about which genes are mitochondrial, we can quanitify whether we have contamination.
-
-```r
-# Number of UMIs assigned to mitochondrial genes
-metadata$mtUMI <- Matrix::colSums(counts[which(rownames(counts) %in% mt),], na.rm = T)
-
-# Calculate of mitoRatio per cell
-metadata$mitoRatio <- metadata$mtUMI/metadata$nUMI
-```
-
 Now you are **all setup with the metrics you need to assess the quality of your data**! Your final metadata table will have rows that correspond to each cell, and columns with information about those cells:
 
 <p align="center">
-<img src="../img/metadata_scrnaseq.png" width="900">
+<img src="../img/metadata_scrnaseq_new.png" width="900">
 </p>
 
 
-### Saving metrics to single cell experiment 
+### Saving the updated metadata to our Seurat object
 
-Before we assess our metrics we are going to save all of the work we have done thus far to a single cell experiment object, which is a standard object for single cell data in R.
+Before we assess our metrics we are going to save all of the work we have done thus far back into our Seurat object. We can do this by simply assigning the dataframe into the `meta.data` slot:
 
 ```r
-# Save data to single cell experiment variable
-se <- SingleCellExperiment(assays=list(counts=counts), 
-                           colData = metadata)
+# Add metadata back to Seurat object
+merged_seurat@meta.data <- metadata
                            
 # Create .RData object to load at any time
-saveRDS(se, "data/raw_se.rds")
+save(merged_seurat, file="data/raw_seurat.RData")
 ```
 
 ## Assessing the quality metrics
 
-Now that we have generated the various metrics to assess, we can explore them with visualizations. We will create our metrics file from the metadata stored in the single cell experiments.
-
-```r
-# Create a data frame containing the metrics for visualizations
-metrics <- colData(se) %>%
-  as.data.frame
-```
-
-We will explore the following metrics through visualizations to decide on which cells are low quality and should be removed from the analysis:
+Now that we have generated the various metrics to assess, we can explore them with visualizations. We will assess various metrics and then decide on which cells are low quality and should be removed from the analysis:
 
 - Cell counts
 - UMI counts per cell
@@ -521,7 +411,7 @@ You expect the number of unique cellular barcodes to be around the number of seq
 
 ```r
 # Visualize the number of cell counts per cell
-metrics %>% 
+metadata %>% 
   ggplot(aes(x=sample, fill=sample)) + 
   geom_bar() + 
   ggtitle("NCells")
@@ -539,7 +429,7 @@ The UMI counts per cell should generally be above 500, although usable, it's sti
 
 ```r
 # Visualize the number UMIs/transcripts per cell
-metrics %>% 
+metadata %>% 
         ggplot(aes(color=sample, x=nUMI, fill= sample)) + 
         geom_density(alpha = 0.2) + 
         scale_x_log10() + 
@@ -557,14 +447,14 @@ Seeing gene detection in the range of 500-5000 is normal for **inDrop** analysis
 
 ```r
 # Visualize the distribution of genes detected per cell via histogram
-metrics %>% 
+metadata %>% 
         ggplot(aes(color=sample, x=nGene, fill= sample)) + 
         geom_density(alpha = 0.2) + 
         scale_x_log10() + 
         geom_vline(xintercept = 200)
 
 # Visualize the distribution of genes detected per cell via boxplot
-metrics %>% 
+metadata %>% 
         ggplot(aes(x=sample, y=log10(nGene), fill=sample)) + 
         geom_boxplot() + 
         ggtitle("NCells vs NGenes")
@@ -584,7 +474,7 @@ Poor quality cells are likely to have low genes and UMIs per cell. Therefore, a 
 
 ```r
 # Visualize the correlation between genes detected and number of UMIs and determine whether strong presence of cells with low numbers of genes/UMIs
-metrics %>% 
+metadata %>% 
         ggplot(aes(x=nUMI, y=nGene, color=mitoRatio)) + 
         geom_point() + 
         stat_smooth(method=lm) +
@@ -605,7 +495,7 @@ This metric can identify whether there is a large amount of mitochondrial contam
 
 ```r
 # Visualize the distribution of mitochondrial gene expression detected per cell
-metrics %>% 
+metadata %>% 
         ggplot(aes(color=sample, x=mitoRatio, fill=sample)) + 
         geom_density(alpha = 0.2) + 
         scale_x_log10() + 
@@ -621,7 +511,7 @@ We can see the samples where we sequenced each cell less have a higher overall n
 
 ```r
 # Visualize the overall novelty of the gene expression by visualizing the genes detected per UMI
-metrics %>%
+metadata %>%
         ggplot(aes(x=log10GenesPerUMI, color = sample, fill=sample)) +
         geom_density(alpha = 0.2)
 ```
@@ -634,25 +524,28 @@ metrics %>%
 
 ## Filtering
 
-Now that we have visualized the various metrics, we can decide on the thresholds to use to remoe the low quality. Often the recommendations mentioned earlier are a rough guideline, but the specific experiment needs to inform the exact thresholds chosen. We will use the following thresholds:
+Now that we have visualized the various metrics, we can decide on the thresholds to apply which will result in the removal of low quality cells. Often the recommendations mentioned earlier are a rough guideline, and the specific experiment needs to inform the exact thresholds chosen. We will use the following thresholds:
 
 - nUMI > 500
 - nGene > 250
 - log10GenesPerUMI > 0.8
 - mitoRatio < 0.2
 
+To filter, we wil go back to our Seurat object and use the `subset()` function:
+
 ```r
 # Filter out low quality reads using selected thresholds - these will change with experiment
-keep_cells <- metrics %>%
-  dplyr::filter(nUMI >= 500 , 
-                nGene >= 250,
-                log10GenesPerUMI > 0.8,
-                mitoRatio < 0.2,
-                ) %>% 
-  pull(cells)
+filtered_seurat <- subset(x = merged_seurat, 
+                         subset= (nUMI >= 500) & 
+                           (nGene >= 250) & 
+                           (log10GenesPerUMI > 0.80) & 
+                           (mitoRatio < 0.25))
+			                          
+```
 
-# Subset the cells to only include those that meet the thresholds specified
-se_c <- se[ ,keep_cells]
+
+```r
+# Not sure what the equivalent is for a Seurat object??
 
 # Output a logical vector for every gene on whether the more than zero counts per cell
 nonzero <- counts(se_c) > 0L
@@ -663,14 +556,18 @@ keep_genes <- rowSums(as.matrix(nonzero)) >= 10
 # Only keeping those genes expressed in more than 10 cells
 se_c <- se_c[keep_genes, ]
 
-# Save subset to new metrics variable
-metrics_clean <- colData(se_c) %>%
- as.data.frame()
 ```
 
 ## Re-assess QC metrics
 
-After performing the filtering, it's recommended to look back over the metrics to make sure that your data matches your expectations and is good for downstream analysis.
+After performing the filtering, it's recommended to look back over the metrics to make sure that your data matches your expectations and is good for downstream analysis. We can extract the new metadata from the filtered Seurat object and go through the same plots.
+
+```r
+
+# Save filtered subset to new metadata
+metadata_clean <- filtered_seurat@meta.data
+ 
+ ```
 
 ### Cell counts
 
@@ -678,7 +575,7 @@ After filtering, we should not have more cells than we sequenced. Generally we a
 
 ```r
 ## Cell counts
-metrics_clean %>% 
+metadata_clean %>% 
         ggplot(aes(x=sample, fill=sample)) + 
         geom_bar() + 
         theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)) +
@@ -696,7 +593,7 @@ The filtering using a threshold of 500 has removed the cells with low numbers of
 
 ```r
 # UMI counts
-metrics_clean %>% 
+metadata_clean %>% 
         ggplot(aes(color=sample, x=nUMI, fill= sample)) + 
         geom_density(alpha = 0.2) + 
         scale_x_log10() + 
@@ -713,7 +610,7 @@ metrics_clean %>%
 
 ```r
 # Genes detected
-metrics_clean %>% 
+metadata_clean %>% 
         ggplot(aes(color=sample, x=nGene, fill= sample)) + 
         geom_density(alpha = 0.2) + 
         scale_x_log10() + 
@@ -727,7 +624,7 @@ metrics_clean %>%
 ### UMIs vs genes
 ```r
 # UMIs vs genes
-metrics_clean %>% 
+metadata_clean %>% 
         ggplot(aes(x=nUMI, y=nGene, fill = mitoRatio)) + 
         geom_point() + 
         stat_smooth(method=lm) +
@@ -744,7 +641,7 @@ metrics_clean %>%
 ### Mitochondrial counts ratio
 ```r
 # Mitochondrial counts ratio
-metrics_clean %>% 
+metadata_clean %>% 
   ggplot(aes(fill=sample, x=mitoRatio, color=sample)) + 
   geom_density(alpha = 0.2) + 
   scale_x_log10() + 
@@ -758,7 +655,7 @@ metrics_clean %>%
 ### Novelty
 ```r
 # Novelty
-metrics_clean %>%
+metadata_clean %>%
         ggplot(aes(x=log10GenesPerUMI, color = sample, fill=sample)) +
         geom_density(alpha = 0.2)  + 
   geom_vline(xintercept = 0.8)
@@ -773,8 +670,9 @@ metrics_clean %>%
 Based on these QC metrics we would identify any failed samples and move forward with our filtered cells. Often we iterate through the QC metrics using different filtering criteria; it is not necessarily a linear process. When satisfied with the filtering criteria, we would save our filtered cell object for clustering and marker identification.
 
 ```r
-# Save cleaned single-cell experimnet as .RData to load at any time
-saveRDS(se_c, file = "data/se_filtered.rds")
+# Create .RData object to load at any time
+save(filtered_seurat, file="data/filtered_seurat.RData")
+
 ```
 
 [Click here for next lesson]()
