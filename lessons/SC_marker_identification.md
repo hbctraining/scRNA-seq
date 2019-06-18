@@ -35,7 +35,14 @@ _**Recommendations:**_
  - _Identify markers that are differentially expressed between specific clusters_
 
 
-There are a few different types of marker identification that we can explore using Seurat. Each with their own benefits and drawbacks:
+Remember that we had the following questions from the clustering analysis:
+
+1. *What is the cell type identity of cluster 9?*
+2. *Is cluster 7 a CD8+ T cell or an NK cell? Perhaps an NK T cell?*
+3. *Do the clusters corresponding to the same cell types have biologically meaningful differences? Are there subpopulations of these cell types?*
+4. *Can we acquire higher confidence in these cell type identities by identifying other marker genes for these clusters?*
+
+There are a few different types of marker identification that we can explore using Seurat to get to the answer of these questions. Each with their own benefits and drawbacks:
 
 1. **Identification of all markers for each cluster:** this analysis compares each cluster against all others and outputs the genes that are differentially expressed/present. 
 	- *Useful for identifying unkown clusters and improving confidence in hypothesized cell types.*
@@ -126,120 +133,41 @@ View(top5)
 ```
 
 <p align="center">
-<img src="../img/top5_markers.png" width="800">
+<img src="../img/sc_top5_markers.png" width="800">
 </p>
 
-Based on my marker results, if there were any questions about the identity of any clusters, exploring the cluster's markers would be the first step. If we look at the markers of cluster 9,
+Based on these marker results, we can determine whether the markers make sense for our hypothesized identities for each cluster:
 
+| Cell Type | Clusters |
+|:---:|:---:|
+| CD14+ Monocytes | 0, 5 | 
+| FCGR3A+ Monocytes | 11 |
+| Dendritic Cells | 10 |
+| B cells | 4, 13 |
+| T cells | 1, 2, 3, 7, 8, 14, 15 |
+| CD4+ T cells | 1, 2, 3, 14, 15 |
+| CD8+ T cells| 7, 8 |
+| NK cells | 6, 7 |
+| Megakaryocytes | 12 |
+| Unknown | 9 |
 
+If there were any questions about the identity of any clusters, exploring the cluster's markers would be the first step. Let's look at the `ann_markers` and filter for cluster 9.
 
-## Identifying gene markers for each cluster
+<p align="center">
+<img src="../img/sc_cluster9_markers.png" width="800">
+</p>
 
-Seurat has the functionality to perform a variety of analyses for marker identification; for instance, we can identify markers of each cluster relative to all other clusters by using the `FindAllMarkers()` function. This function essentially performs a differential expression test of the expression level in a single cluster versus the average expression in all other clusters.
+We see a lot of heat shock proteins and DNA damage genes appear. Based on these markers, it is likely that these are stressed or dying cells. We could explore the quality metrics for these cells in more detail before removing just to support that argument. 
 
-To be identified as a cluster or cell type marker, within the `FindAllMarkers()` function, we can specify thresholds for the minimum percentage of cells expressing the gene in either of the two groups of cells (`min.pct`) and minimum difference in expression between the two groups (`min.dff.pct`). 
+We also had questions regarding the identity of cluster 7. Is cluster 7 a CD8+ T cell, an NK cell, or an NK T cell?
 
+We can look at the markers of cluster 7 to try to resolve the identity:
 
-```r
-# Identify gene markers
-all_markers <-FindAllMarkers(seurat, 
-                             min.pct =  0.25, 
-                             min.diff.pct = 0.25)
-```
+<p align="center">
+<img src="../img/sc_cluster7_markers.png" width="800">
+</p>
 
-The results table output contains the following columns:
-
-- **`p_val`:** p-value not adjusted for multiple test correction
-- **`avg_logFC`:** average log2 fold change. Positive values indicate that the gene is more highly expressed in the cluster.
-- **`pct.1`**: The percentage of cells where the gene is detected in the cluster
-- **`pct.2`**: The percentage of cells where the gene is detected on average in the other clusters
-- **`p_val_adj`:** Adjusted p-value, based on bonferroni correction using all genes in the dataset, used to determine significance
-- **`cluster`:** identity of cluster
-- **`gene`:** Ensembl gene ID
-- **`symbol`:** gene symbol
-- **`biotype`:** type of gene
-- **`description`:** gene description
-
-```
-View(all_markers)
-```
-<img src="../img/all_markers1.png" width="750">
-
-## Interpretation of the marker results
-
-Using Seurat for marker identification is a rather quick and dirty way to identify markers. Usually the top markers are relatively trustworthy; however, because of inflated p-values, many of the less significant genes are not so trustworthy as markers. 
-
-When looking at the output, we suggest looking for marker genes with large differences in expression between `pct.1` and `pct.2` and larger fold changes. For instance if `pct.1` = 0.90 and `pct.2` = 0.80 and had lower log2 fold changes, that marker might not be as exciting. However, if `pct.2` = 0.1 instead, then it would be a lot more exciting. 
-
-When trying to understand the biology of the marker results it's helpful to have the gene names instead of the Ensembl IDs, so we can merge our results with our annotations acquired previously:
-
-```r
-# Merge gene annotations to marker results
-all_markers <- left_join(all_markers, 
-                         annotations[, c(1:2, 3, 5)], 
-                         by = c("gene" = "gene_id"))
-
-View(all_markers)                         
-```
-<img src="../img/all_markers2.png" width="750">
-
-After the merge, the order of the columns is not as intuitive, so we will reorder the columns to make the results table more readable.
-
-```r
-# Rearrange order of columns to make clearer
-all_markers <- all_markers[, c(6:8, 1:5, 9:10)]
-
-View(all_markers)
-```
-<img src="../img/all_markers3.png" width="750">
-
-Usually, we would want to save all of the identified markers to file.
-
-```r
-# Write results to file
-write.csv(all_markers, "results/all_markers.csv", quote = F)
-```
-
-In addition to all of the markers, it can be helpful to explore the most significant marker genes. Let's return the top 10 marker genes per cluster.
-
-```r
-# Return top 10 markers for cluster specified 'x'
-gen_marker_table <- function(x){
-  all_markers[all_markers$cluster == x, ] %>%
-  head(n=10)
-}
-
-# Create a data frame of results for clusters 0-6
-top10_markers <- map_dfr(0:6, gen_marker_table)
-
-View(top10_markers)
-```
-<img src="../img/all_markers4.png" width="750">
-
-We can write these results to file as well:
-
-```r
-# Write results to file
-write.csv(top10_markers, "results/top10_markers.csv", quote = F)
-```
-
-# Assigning cell type identity to clusters
-
-We can often go through the top markers to identify the cell types. We have to use what we know about the biology of the expected cells to determine the cell populations represented by each cluster. 
-
-Let's remind ourselves of the different clusters:
-
-```r
-DimPlot(
-  seurat,
-  "tsne",
-  do.label = TRUE,
-  do.return = TRUE, 
-  label.size = 8) +
-  ggtitle("tSNE")
-```
-
-<img src="../img/tSNE.png" width="600">
+There are definitely T cell receptors that are enriched among cluster 7; therefore, it cannot be an NK cell. Likely it represents activated CD8+ T cells (cytotoxic T cells).
 
 To get a better idea of cell type identity we can explore the expression of different identified markers by cluster using the `FeaturePlot()` function. For example, we can look at the cluster 3 markers by cluster:
 
@@ -264,44 +192,56 @@ VlnPlot(object = seurat,
 
 These results and plots can help us determine the identity of these clusters or verify what we hypothesize the identity to be after exploring the canonical markers of expected cell types previously.
 
-Sometimes the list of markers returned don't sufficiently separate some of the clusters. For instance, we had previously identified clusters 0 and 1 , if we would like to determine the genes that are differentially expressed between these specific clusters, we can use the `FindMarkers()` function. 
+
+
+## Identifying gene markers for each cluster
+
+The last set of questions we had regarding the analysis involved whether the clusters corresponding to the same cell types have biologically meaningful differences. Sometimes the list of markers returned don't sufficiently separate some of the clusters. For instance, we had previously identified clusters 0 and 5 as CD14+ monocytes, but are there biologically relevant differences between these two clusters of cells? We can use the FindMarkers()` function to determine the genes that are differentially expressed between these specific clusters. 
 
 ```r
-# Determine differentiating markers for CD4 T cell clusters 0 versus 1
-markers_0vs1 <- FindMarkers(object = seurat, ident.1 = 0, ident.2 = 1)
-
-View(markers_0vs1)
+# Determine differentiating markers for CD14+ monocytes - clusters 0 versus 5
+cd14_monos <- FindMarkers(seurat_control,
+                          ident.1 = 0,
+                          ident.2 = 5)
 ```
 
-<img src="../img/t-cell_markers.png" width="450">
+Now we can add the gene descriptions and reorder the columns to be more intuitive.
 
 ```r
 # Add gene symbols to the DE table
-markers_0vs1$gene <- rownames(markers_0vs1)
-markers_0vs1 <- left_join(markers_0vs1, 
-                         annotations[, c(1:2, 3, 5)], 
-                         by = c("gene" = "gene_id"))
+cd14_monos_markers <- cd14_monos %>%
+        rownames_to_column("gene") %>%
+        inner_join(y = annotations[, c("gene_name", "description")],
+                   by = c("gene" = "gene_name")) %>%
+        unique()
 
-View(markers_0vs1)
+# Reorder columns and sort by log2 fold change        
+cd14_monos_markers <- cd14_monos_markers[, c(1, 3:5,2,6:7)]
+
+cd14_monos_markers <- cd14_monos_markers %>%
+        dplyr::arrange(avg_logFC)
+        
+
+View(cd14_monos_markers)
 ```
 
 <img src="../img/t-cell_markers2.png" width="750">
 
-When looking through the results, the most significant marker is `ENSG00000196154`, which corresponds to **S100A4**, a gene exclusively expressed by memory T cells of CD4+ or CD8+ subpopulations. Other markers listed also indicate that cluster 0 represents naive T cells, while cluster 1 represents memory T cells.
+When looking through the results, there appear to be many `CCL` genes that are differentially expressed between the clusters. If this were biologically meaningful we would keep the two distinct clusters, but if not, we would merge them.
 
 While we are not going to explore these genes in more depth, you would probably want to explore the expression of these genes in more depth visually using feature plots and violin plots.
 
 Now taking all of this information, we can surmise the cell types of the different clusters. Some of the canonical markers for the different cell types were found to be differentially expressed for certain clusters as detailed below.
 
-| Cluster ID	| Markers	| Cell Type |
+| Cluster ID	| Cell Type |
 |:-----:|:-----:|:-----:|
-|0	|IL7R	|CD4+ Naive T cells|
-|1	|IL7R	|CD4+ Memory T cells|
-|2	|CD14, LYZ	|CD14+ Monocytes|
-|3	|MS4A1	|B cells|
-|4	|CD8A	|CD8+ T cells|
-|5	|FCGR3A, MS4A7	|FCGR3A+ Monocytes|
-|6	|GNLY, NKG7	|NK cells|
+|0	|CD4+ Naive T cells|
+|1	|CD4+ Memory T cells|
+|2	|CD14+ Monocytes|
+|3	|B cells|
+|4	|CD8+ T cells|
+|5	|FCGR3A+ Monocytes|
+|6	|NK cells|
 
 We can then reassign the identity of the clusters to these cell types:
 
