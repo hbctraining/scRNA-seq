@@ -345,7 +345,7 @@ Seurat has a convenient function that allows us to calculate the **proportion of
 
 ```r
 # Compute percent mito ratio
-merged_seurat$mitoRatio <- PercentageFeatureSet(object = merged_seurat, pattern = "^MT")
+merged_seurat$mitoRatio <- PercentageFeatureSet(object = merged_seurat, pattern = "^MT-")
 merged_seurat$mitoRatio <- merged_seurat@meta.data$mitoRatio / 100
 
 ```
@@ -446,11 +446,12 @@ The UMI counts per cell should generally be above 500, although usable, it's sti
 ```r
 # Visualize the number UMIs/transcripts per cell
 metadata %>% 
-        ggplot(aes(color=sample, x=nUMI, fill= sample)) + 
-        geom_density(alpha = 0.2) + 
-        scale_x_log10() + 
-        ylab("log10 cell density") +
-        geom_vline(xintercept = 500)
+  	ggplot(aes(color=sample, x=nUMI, fill= sample)) + 
+  	geom_density(alpha = 0.2) + 
+  	scale_x_log10() + 
+  	theme_classic() +
+  	ylab("log10 cell density") +
+  	geom_vline(xintercept = 500)
 ```
 
 <p align="center">
@@ -464,16 +465,20 @@ Seeing gene detection in the range of 500-5000 is normal for **inDrop** analysis
 ```r
 # Visualize the distribution of genes detected per cell via histogram
 metadata %>% 
-        ggplot(aes(color=sample, x=nGene, fill= sample)) + 
-        geom_density(alpha = 0.2) + 
-        scale_x_log10() + 
-        geom_vline(xintercept = 200)
+  	ggplot(aes(color=sample, x=nGene, fill= sample)) + 
+  	geom_density(alpha = 0.2) + 
+  	theme_classic() +
+  	scale_x_log10() + 
+  	geom_vline(xintercept = 250)
 
 # Visualize the distribution of genes detected per cell via boxplot
 metadata %>% 
-        ggplot(aes(x=sample, y=log10(nGene), fill=sample)) + 
-        geom_boxplot() + 
-        ggtitle("NCells vs NGenes")
+  	ggplot(aes(x=sample, y=log10(nGene), fill=sample)) + 
+  	geom_boxplot() + 
+  	theme_classic() +
+  	theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)) +
+  	theme(plot.title = element_text(hjust=0.5, face="bold")) +
+  	ggtitle("NCells vs NGenes")
 ```
 
 <p align="center">
@@ -491,14 +496,15 @@ Poor quality cells are likely to have low genes and UMIs per cell. Therefore, a 
 ```r
 # Visualize the correlation between genes detected and number of UMIs and determine whether strong presence of cells with low numbers of genes/UMIs
 metadata %>% 
-        ggplot(aes(x=nUMI, y=nGene, color=mitoRatio)) + 
-        geom_point() + 
-        stat_smooth(method=lm) +
-        scale_x_log10() + 
-        scale_y_log10() + 
-        geom_vline(xintercept = 500) +
-        geom_hline(yintercept = 250) +
-        facet_wrap(~sample)
+  	ggplot(aes(x=nUMI, y=nGene, color=mitoRatio)) + 
+  	geom_point() + 
+  	stat_smooth(method=lm) +
+  	scale_x_log10() + 
+  	scale_y_log10() + 
+  	theme_classic() +
+  	geom_vline(xintercept = 500) +
+  	geom_hline(yintercept = 250) +
+  	facet_wrap(~sample)
 ```
 
 <p align="center">
@@ -512,11 +518,13 @@ This metric can identify whether there is a large amount of mitochondrial contam
 ```r
 # Visualize the distribution of mitochondrial gene expression detected per cell
 metadata %>% 
-        ggplot(aes(color=sample, x=mitoRatio, fill=sample)) + 
-        geom_density(alpha = 0.2) + 
-        scale_x_log10() + 
-        geom_vline(xintercept = 0.1)
+  	ggplot(aes(color=sample, x=mitoRatio, fill=sample)) + 
+  	geom_density(alpha = 0.2) + 
+  	scale_x_log10() + 
+  	theme_classic() +
+  	geom_vline(xintercept = 0.2)
 ```
+
 <p align="center">
 <img src="../img/mitoRatio.png" width="600">
 </p>
@@ -528,8 +536,10 @@ We can see the samples where we sequenced each cell less have a higher overall n
 ```r
 # Visualize the overall novelty of the gene expression by visualizing the genes detected per UMI
 metadata %>%
-        ggplot(aes(x=log10GenesPerUMI, color = sample, fill=sample)) +
-        geom_density(alpha = 0.2)
+  	ggplot(aes(x=log10GenesPerUMI, color = sample, fill=sample)) +
+  	geom_density(alpha = 0.2) +
+  	theme_classic() +
+  	geom_vline(xintercept = 0.8)
 ```
 
 <p align="center">
@@ -599,10 +609,12 @@ After filtering, we should not have more cells than we sequenced. Generally we a
 ```r
 ## Cell counts
 metadata_clean %>% 
-        ggplot(aes(x=sample, fill=sample)) + 
-        geom_bar() + 
-        theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)) +
-        ggtitle("NCells")
+  	ggplot(aes(x=sample, fill=sample)) + 
+  	geom_bar() +
+  	theme_classic() +
+  	theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)) +
+  	theme(plot.title = element_text(hjust=0.5, face="bold")) +
+  	ggtitle("NCells")
 ```
 
 <p align="center">
@@ -617,11 +629,12 @@ The filtering using a threshold of 500 has removed the cells with low numbers of
 ```r
 # UMI counts
 metadata_clean %>% 
-        ggplot(aes(color=sample, x=nUMI, fill= sample)) + 
-        geom_density(alpha = 0.2) + 
-        scale_x_log10() + 
-        ylab("log10 cell density") +
-        geom_vline(xintercept = 500)
+  	ggplot(aes(color=sample, x=nUMI, fill= sample)) + 
+  	geom_density(alpha = 0.2) + 
+  	scale_x_log10() + 
+  	theme_classic() +
+  	ylab("log10 cell density") +
+  	geom_vline(xintercept = 500)
 ```
 
 <p align="center">
@@ -634,10 +647,11 @@ metadata_clean %>%
 ```r
 # Genes detected
 metadata_clean %>% 
-        ggplot(aes(color=sample, x=nGene, fill= sample)) + 
-        geom_density(alpha = 0.2) + 
-        scale_x_log10() + 
-        geom_vline(xintercept = 250)
+  	ggplot(aes(color=sample, x=nGene, fill= sample)) + 
+  	geom_density(alpha = 0.2) + 
+  	theme_classic() +
+  	scale_x_log10() + 
+  	geom_vline(xintercept = 250)
 ```
 
 <p align="center">
@@ -648,13 +662,14 @@ metadata_clean %>%
 ```r
 # UMIs vs genes
 metadata_clean %>% 
-        ggplot(aes(x=nUMI, y=nGene, fill = mitoRatio)) + 
-        geom_point() + 
-        stat_smooth(method=lm) +
-        scale_x_log10() + 
-        scale_y_log10() + 
-        geom_vline(xintercept = 500) +
-        facet_wrap(~sample)
+  	ggplot(aes(x=nUMI, y=nGene, color=mitoRatio)) + 
+  	geom_point() + 
+  	stat_smooth(method=lm) +
+  	scale_x_log10() + 
+  	scale_y_log10() + 
+  	theme_classic() +
+  	geom_vline(xintercept = 500) +
+  	facet_wrap(~sample)
 ```
 
 <p align="center">
@@ -665,10 +680,11 @@ metadata_clean %>%
 ```r
 # Mitochondrial counts ratio
 metadata_clean %>% 
-  ggplot(aes(fill=sample, x=mitoRatio, color=sample)) + 
-  geom_density(alpha = 0.2) + 
-  scale_x_log10() + 
-  geom_vline(xintercept = 0.2)
+  	ggplot(aes(color=sample, x=mitoRatio, fill=sample)) + 
+  	geom_density(alpha = 0.2) + 
+  	scale_x_log10() + 
+  	theme_classic() +
+  	geom_vline(xintercept = 0.2)
 ```
 
 <p align="center">
@@ -679,9 +695,10 @@ metadata_clean %>%
 ```r
 # Novelty
 metadata_clean %>%
-        ggplot(aes(x=log10GenesPerUMI, color = sample, fill=sample)) +
-        geom_density(alpha = 0.2)  + 
-  geom_vline(xintercept = 0.8)
+  	ggplot(aes(x=log10GenesPerUMI, color = sample, fill=sample)) +
+  	geom_density(alpha = 0.2) +
+  	theme_classic() +
+  	geom_vline(xintercept = 0.8)
 ```
 
 <p align="center">
@@ -698,7 +715,7 @@ save(clean_seurat, file="data/clean_seurat.RData")
 
 ```
 
-[Click here for next lesson]()
+[Click here for next lesson](SC_clustering_analysis.md)
 
 ---
 *This lesson has been developed by members of the teaching team at the [Harvard Chan Bioinformatics Core (HBC)](http://bioinformatics.sph.harvard.edu/). These are open access materials distributed under the terms of the [Creative Commons Attribution license](https://creativecommons.org/licenses/by/4.0/) (CC BY 4.0), which permits unrestricted use, distribution, and reproduction in any medium, provided the original author and source are credited.*
