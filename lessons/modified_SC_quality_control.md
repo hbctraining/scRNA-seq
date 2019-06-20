@@ -427,10 +427,12 @@ You expect the number of unique cellular barcodes to be around the number of seq
 # Visualize the number of cell counts per cell
 metadata %>% 
   ggplot(aes(x=sample, fill=sample)) + 
-  geom_bar() + 
+  geom_bar() +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)) +
+  theme(plot.title = element_text(hjust=0.5, face="bold")) +
   ggtitle("NCells")
 ```
-
 
 <p align="center">
 <img src="../img/cell_counts.png" width="600">
