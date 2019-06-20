@@ -109,10 +109,10 @@ When looking at the output, we suggest looking for markers with large difference
 - **pct.1**: The percentage of cells where the gene is detected in the cluster
 - **pct.2**: The percentage of cells where the gene is detected on average in the other clusters
 - **p_val:** p-value not adjusted for multiple test correction
-- **p_val_adj:** Adjusted p-value, based on bonferroni correction using all genes in the dataset, used to determine significance
+- **p_val\_adj:** Adjusted p-value, based on bonferroni correction using all genes in the dataset, used to determine significance
 
 
-If the format looks good, we can save our marker analysis results to file and output the top 5 markers by log2 fold change for each cluster for a quick perusal.
+If the format looks good, we can save our marker analysis results to file.
 
 ```r
 # Save markers to file
@@ -120,7 +120,11 @@ write.csv(ann_markers,
           file = "results/control_all_markers.csv", 
           quote = FALSE, 
           row.names = FALSE)
+```
 
+We can also output the top 5 markers by log2 fold change for each cluster for a quick perusal.
+
+```r
 # Extract top 5 markers per cluster
 top5 <- ann_markers %>% 
         group_by(cluster) %>% 
@@ -151,13 +155,13 @@ Based on these marker results, we can determine whether the markers make sense f
 | Megakaryocytes | 12 |
 | Unknown | 9 |
 
-If there were any questions about the identity of any clusters, exploring the cluster's markers would be the first step. Let's look at the `ann_markers` and filter for cluster 9.
+If there were any questions about the identity of any clusters, exploring the cluster's markers would be the first step. Let's look at the `ann_markers`, filtering for cluster 9.
 
 <p align="center">
 <img src="../img/sc_cluster9_markers.png" width="800">
 </p>
 
-We see a lot of heat shock proteins and DNA damage genes appear. Based on these markers, it is likely that these are stressed or dying cells. We could explore the quality metrics for these cells in more detail before removing just to support that argument. 
+We see a lot of heat shock and DNA damage genes appear. Based on these markers, it is likely that these are stressed or dying cells. We could explore the quality metrics for these cells in more detail before removing just to support that argument. 
 
 We also had questions regarding the identity of cluster 7. Is cluster 7 a CD8+ T cell, an NK cell, or an NK T cell?
 
