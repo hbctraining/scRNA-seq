@@ -145,7 +145,7 @@ Regardless of the technology or pipeline used to process your single-cell RNA-se
 
 We can explore these files in our own dataset by clicking on the `data/ctrl_raw_feature_bc_matrix` folder:
 
-### `barcodes.tsv` 
+### 1. `barcodes.tsv` 
 This is a text file which contains all cellular barcodes present for that sample. Barcodes are listed in the order of data presented in the matrix file (i.e. these are the column names). 
 
   <p align="center">
@@ -153,7 +153,7 @@ This is a text file which contains all cellular barcodes present for that sample
   </p>
   
 
-### `genes.tsv`
+### 2. `genes.tsv`
 This is a text file which contains the identifiers of the quantified genes. The source of the identifier can vary depending on what reference (i.e. Ensembl, NCBI, UCSC) you use in the quantification methods, but most often these are official gene symbols. The order of these genes corresponds to the order of the rows in the matrix file (i.e. these are the row names).
 
   <p align="center">
@@ -161,7 +161,7 @@ This is a text file which contains the identifiers of the quantified genes. The 
   </p>
 
 
-### `matrix.mtx`
+### 3. `matrix.mtx`
 This is a text file which contains a matrix of count values. The rows are associated with the gene IDs above and columns correspond to the cellular barcodes. Note that there are **many zero values** in this matrix.
 
   <p align="center">
@@ -192,8 +192,6 @@ If we had a single sample, we could generate the count matrix and then subsequen
 
 ```r
 
-## DO NOT RUN THIS CODE ##
-
 # How to read in 10X data for a single sample
 ctrl_counts <- Read10X(data.dir = "data/ctrl_raw_feature_bc_matrix")
 
@@ -203,6 +201,21 @@ ctrl <- CreateSeuratObject(counts = ctrl_counts,
 ```
 
 > **NOTE**: The `min.features` argument specifies the minimum number of genes that need to be detected per cell. This argument will filter out poor quality cells that likely just have random barcodes encapsulated without any cell present. We would not be interested in analyzing any cells with less than 100 genes detected.
+
+
+Notice that **Seurat automatically creates some metadata** for each of the cells:
+
+```r
+# Explore the metadata
+head(ctrl@meta.data)
+```
+
+The added columns include:
+
+- `orig.ident`: this often contains the sample identity if known, but will default to "SeuratProject"
+- `nCount_RNA`: number of UMIs per cell
+- `nFeature_RNA`: number of genes detected per cell
+
 
 
 ### Reading in multiple samples with a `for loop`
@@ -299,7 +312,7 @@ Because the same cell IDs can be used for different samples, we add a sample-spe
 
 ## Generating quality metrics
 
-Notice that Seurat automatically creates some metadata for each of the cells:
+Remember that Seurat automatically creates some metadata for each of the cells:
 
 ```r
 # Explore merged metadata
@@ -562,8 +575,7 @@ keep_genes <- rowSums(as.matrix(nonzero)) >= 10
 filtered_counts <- counts[keep_genes, ]
 
 # Create a new Seurat object
-clean_seurat <- CreateSeuratObject(filtered_counts)
-clean_seurat <- AddMetaData(clean_seurat, metadata = filtered_seurat@meta.data)
+clean_seurat <- CreateSeuratObject(filtered_counts, meta.data = filtered_seurat@meta.data)
 
 ```
 
@@ -574,7 +586,7 @@ After performing the filtering, it's recommended to look back over the metrics t
 ```r
 
 # Save filtered subset to new metadata
-metadata_clean <- filtered_seurat@meta.data
+metadata_clean <- clean_seurat@meta.data
  
  ```
 
