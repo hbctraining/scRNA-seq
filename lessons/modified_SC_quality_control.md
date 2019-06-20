@@ -482,7 +482,7 @@ metadata %>%
 ```
 
 <p align="center">
-<img src="../img/genes_detected2.png" width="600">
+<img src="../img/genes_detected3.png" width="600">
 </p>
 
 <p align="center">
