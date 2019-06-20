@@ -469,7 +469,7 @@ metadata %>%
   	geom_density(alpha = 0.2) + 
   	theme_classic() +
   	scale_x_log10() + 
-  	geom_vline(xintercept = 250)
+  	geom_vline(xintercept = 300)
 
 # Visualize the distribution of genes detected per cell via boxplot
 metadata %>% 
@@ -482,7 +482,7 @@ metadata %>%
 ```
 
 <p align="center">
-<img src="../img/genes_detected3.png" width="600">
+<img src="../img/genes_detected.png" width="600">
 </p>
 
 <p align="center">
