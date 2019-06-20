@@ -310,7 +310,6 @@ View(merged_seurat@meta.data)
 <img src="../img/merged_seurat_meta.png" width="500">
 </p>
 
-
 The added columns include:
 
 - `orig.ident`: this often contains the sample identity if known, but will default to `project` as we had assigned it
@@ -319,20 +318,7 @@ The added columns include:
 
 You should also see each cell ID has a `ctrl_` or `stim_` prefix as we had specified when we merged the Seurat objects. These prefixes should match the sample listed in `orig.ident`.
 
-Seurat has a convenient function that allows us to calculate the **proportion of transcripts mapping to mitochondrial genes**. The `PercentageFeatureSet()` will take a pattern and search the gene identifiers. For each colum (cell) it will take the sum of the counts slot for features belonging to the set, divide by the column sum for all features and multiply by 100. *Since we want the ratio value for plotting, we will reverse that step by then dividing by 100*.
-
-```r
-
-# Compute percent mito ratio
-merged_seurat$mitoRatio <- PercentageFeatureSet(object = merged_seurat, pattern = "^MT")
-merged_seurat$mitoRatio <- merged_seurat@meta.data$mitoRatio / 100
-
-```
-> **Note 1**: The pattern provided ("^MT-") works for human gene names. You may need to adjust depending on your organism of interest.
-
-> **Note 2:** If you didn't want to use the Seurat function, we have [code available to compute this metric on your own](https://github.com/hbctraining/scRNA-seq/blob/master/lessons/mitoRatio.md).
-
-While it is quite easy to **add information directly to the metadata slot in the Seurat object using the `$` operator**, we will extract the dataframe into a separate variable instead. In this way we can continue to insert additional metrics that we need for our QC analysis without the risk of affecting our `merged_seurat` object.
+*We need to add additional information to our metadata for our QC metrics, such as the cell IDs, condition information, and various metrics.* While it is quite easy to **add information directly to the metadata slot in the Seurat object using the `$` operator**, we will extract the dataframe into a separate variable instead. In this way we can continue to insert additional metrics that we need for our QC analysis without the risk of affecting our `merged_seurat` object.
 
 We will create the metadata dataframe by extracting the `meta.data` slot from the Seurat object: 
 
@@ -341,7 +327,7 @@ We will create the metadata dataframe by extracting the `meta.data` slot from th
 metadata <- merged_seurat@meta.data
 ```
 
-Let's begin by **adding a column with our cell IDs** and **change the current column names** to be more intuitive:
+Let's begin by **adding a column with our cell IDs** and **changing the current column names** to be more intuitive:
 
 ```r
 # Add cell IDs to metadata
@@ -363,12 +349,27 @@ metadata$sample[which(str_detect(metadata$cells, "^ctrl_"))] <- "ctrl"
 metadata$sample[which(str_detect(metadata$cells, "^stim_"))] <- "stim"
 ```
 
-Next, we need to calculate the **number of genes detected per UMI.** This metric with give us an idea of the complexity of our dataset (more genes detected per UMI, more complex our data). The number of genes per UMI for each cell is quite easy to calculate, and we will log10 transform the result for better comparison between samples.
+Now we need to calculate some additional metrics for plotting:
+
+- **number of genes detected per UMI:** this metric with give us an idea of the complexity of our dataset (more genes detected per UMI, more complex our data)
+- **mitochondrial ratio:** this metric will give us a percentage of cell reads originating from the mitochondrial genes
+
+The number of genes per UMI for each cell is quite easy to calculate, and we will log10 transform the result for better comparison between samples.
 
 ```r
 # Add number of UMIs per gene for each cell to metadata
 metadata$log10GenesPerUMI <- log10(metadata$nGene) / log10(metadata$nUMI)
 ```
+
+Seurat has a convenient function that allows us to calculate the **proportion of transcripts mapping to mitochondrial genes**. The `PercentageFeatureSet()` will take a pattern and search the gene identifiers. For each column (cell) it will take the sum of the counts slot for features belonging to the set, divide by the column sum for all features and multiply by 100. *Since we want the ratio value for plotting, we will reverse that step by then dividing by 100*.
+
+```r
+# Compute percent mito ratio
+merged_seurat$mitoRatio <- PercentageFeatureSet(object = merged_seurat, pattern = "^MT")
+merged_seurat$mitoRatio <- merged_seurat@meta.data$mitoRatio / 100
+
+```
+> **NOTE:** The pattern provided ("^MT-") works for human gene names. You may need to adjust depending on your organism of interest. If you weren't using gene names as the gene ID, then this function wouldn't work. We have [code available to compute this metric on your own](https://github.com/hbctraining/scRNA-seq/blob/master/lessons/mitoRatio.md).
 
 Now you are **all setup with the metrics you need to assess the quality of your data**! Your final metadata table will have rows that correspond to each cell, and columns with information about those cells:
 
