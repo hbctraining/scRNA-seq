@@ -692,7 +692,7 @@ Based on these QC metrics we would identify any failed samples and move forward 
 
 ```r
 # Create .RData object to load at any time
-save(filtered_seurat, file="data/filtered_seurat.RData")
+save(clean_seurat, file="data/clean_seurat.RData")
 
 ```
 
