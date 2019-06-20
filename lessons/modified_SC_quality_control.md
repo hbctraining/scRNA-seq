@@ -544,18 +544,26 @@ filtered_seurat <- subset(x = merged_seurat,
 			                          
 ```
 
+We will do some additional filtering to **keep only genes which are expressed in 10 or more cells.**
 
 ```r
-# Not sure what the equivalent is for a Seurat object??
 
 # Output a logical vector for every gene on whether the more than zero counts per cell
-nonzero <- counts(se_c) > 0L
+# Extract counts
+counts <- GetAssayData(object = filtered_seurat, slot = "counts")
+
+# Output a logical vector for every gene on whether the more than zero counts per cell
+nonzero <- counts > 0L
 
 # Sums all TRUE values and returns TRUE if more than 10 TRUE values per gene
 keep_genes <- rowSums(as.matrix(nonzero)) >= 10
 
 # Only keeping those genes expressed in more than 10 cells
-se_c <- se_c[keep_genes, ]
+filtered_counts <- counts[keep_genes, ]
+
+# Create a new Seurat object
+clean_seurat <- CreateSeuratObject(filtered_counts)
+clean_seurat <- AddMetaData(clean_seurat, metadata = filtered_seurat@meta.data)
 
 ```
 
