@@ -140,7 +140,7 @@ LabelPoints(plot = unlabelled,
 ```
 
 <p align="center">
-<img src="../img/Ctrl_integ_var_genes_plot.png" width="800">
+<img src="../img/Ctrl_integ_var_genes_plot.png" width="500">
 </p>
 
 **Interferon-stimulated**
@@ -159,7 +159,7 @@ LabelPoints(plot = unlabelled,
 ```
 
 <p align="center">
-<img src="../img/Stim_integ_var_genes_plot.png" width="800">
+<img src="../img/Stim_integ_var_genes_plot.png" width="500">
 </p>
 
 You will notice that many of the most highly variable genes are present between the two samples.
