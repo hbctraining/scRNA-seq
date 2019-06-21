@@ -15,7 +15,7 @@ Approximate time: 90 minutes
 
 After determining the cell types expected in the control sample, we would like to include the interferon-stimulated sample together with the control to compare the cell types present and/or genes differentially expressed between conditions. 
 
-Oftentimes, if samples are created using different conditions (or batches), the effect of the condition can be so great that the cells will cluster by condition instead of cell type. To ensure the same cell types cluster together, we can perform an integration analysis detailed in the paper by [Stuart and Bulter et al. (2018)](https://www.biorxiv.org/content/early/2018/11/02/460147). 
+Oftentimes, if samples are created using different conditions (or batches), the effect of the condition can be so great that the cells will cluster by condition instead of cell type. To ensure the same cell types align similarly for each condition, we can perform an integration analysis detailed in the paper by [Stuart and Bulter et al. (2018)](https://www.biorxiv.org/content/early/2018/11/02/460147). 
 Therefore, we are going to integrate the cells from our control and stimulated samples together.
 
 <img src="../img/sc_workflow.png" width="800">
