@@ -311,7 +311,7 @@ merged_seurat <- merge(x = ctrl_raw_feature_bc_matrix,
 Because the same cell IDs can be used for different samples, we add a sample-specific prefix to each of our cell IDs using the `add.cell.id` argument. 
 
 
-[Click here for next lesson](03_SC_clustering_analysis.md)
+[Click here for next lesson](03_SC_quality_control.md)
 
 ---
 *This lesson has been developed by members of the teaching team at the [Harvard Chan Bioinformatics Core (HBC)](http://bioinformatics.sph.harvard.edu/). These are open access materials distributed under the terms of the [Creative Commons Attribution license](https://creativecommons.org/licenses/by/4.0/) (CC BY 4.0), which permits unrestricted use, distribution, and reproduction in any medium, provided the original author and source are credited.*
