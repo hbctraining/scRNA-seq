@@ -185,7 +185,7 @@ Cell cycle variation is a common source of uninteresting variation in single-cel
 > - **M:** M phase is the nuclear division of the cell (consisting of prophase, metaphase, anaphase and telophase).
 	
 
-The [Cell-Cycle Scoring and Regression tutorial](https://satijalab.org/seurat/v3.0/cell_cycle_vignette.html) from Seurat makes available a list of cell cycle phase marker genes for humans and performs phase scoring based on the paper from [Tirosh, I. et al.](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4944528/). We have used this list to perform orthology searches to create [compiled cell cycle gene lists](https://github.com/hbc/tinyatlas/tree/master/cell_cycle) for other organisms.
+The [Cell-Cycle Scoring and Regression tutorial](https://satijalab.org/seurat/v3.0/cell_cycle_vignette.html) from Seurat makes available a list of cell cycle phase marker genes for humans and performs phase scoring based on the paper from [Tirosh, I. et al.](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4944528/). We have used this list to perform orthology searches to create [compiled cell cycle gene lists](https://github.com/hbc/tinyatlas/tree/master/cell_cycle) for other organisms, as well.
 
 After scoring each gene for cell cycle phase, we can perform PCA using the expression of cell cycle genes. If the cells group by cell cycle in the PCA, then we would want to regress out cell cycle variation, **unless cells are differentiating**. 
 
@@ -195,6 +195,44 @@ After scoring each gene for cell cycle phase, we can perform PCA using the expre
 # Download cell cycle genes for organism at https://github.com/hbc/tinyatlas/tree/master/cell_cycle. Read it in with:
 cell_cycle_genes <- read.csv(file.path(data_dir, "Homo_sapiens.csv"))
 
+View(cell_cycle_genes)
+```
+
+All of the cell cycle genes are Ensembl IDs, but our gene IDs are the gene names. To score the genes in our count matrix for cell cycle, we need to obtain the gene names for the cell cycle genes. 
+
+We can use annotation databases to acquire these IDs. While there are many different options, including BioMart, AnnotationDBI, and AnnotationHub. We will use the `AnnotationHub` R package to query Ensembl using the `ensembldb` R package.
+
+```r
+# Connect to AnnotationHub
+ah <- AnnotationHub()
+
+# Access the Ensembl database for organism
+ahDb <- query(ah, 
+              pattern = c("Homo sapiens", "EnsDb"), 
+              ignore.case = TRUE)
+
+# Acquire the latest annotation files
+id <- ahDb %>%
+        mcols() %>%
+        rownames() %>%
+        tail(n = 1)
+
+# Download the appropriate Ensembldb database
+edb <- ah[[id]]
+
+# Extract gene-level information from database
+annotations <- genes(edb, 
+                     return.type = "data.frame")
+
+# Select annotations of interest
+annotations <- annotations %>%
+        dplyr::select(gene_id, gene_name, seq_name, gene_biotype, description)
+```
+
+Now we can use these annotations to get the corresponding gene names for the Ensembl IDs of the cell cycle genes.
+
+
+```r
 # Get gene names for Ensembl IDs for each gene
 cell_cycle_markers <- dplyr::left_join(cell_cycle_genes, annotations, by = c("geneID" = "gene_id"))
 
@@ -207,7 +245,11 @@ s_genes <- cell_cycle_markers %>%
 g2m_genes <- cell_cycle_markers %>%
         dplyr::filter(phase == "G2/M") %>%
         pull("gene_name")
-        
+```
+
+Taking the gene names for the cell cycle genes we can score each cell based which stage of the cell cycle it is most likely to be in.
+
+```r        
 # Perform cell cycle scoring
 seurat_control <- CellCycleScoring(seurat_control,
                                    g2m.features = g2m_genes,
@@ -222,7 +264,6 @@ DimPlot(seurat_control,
         reduction = "pca",
         group.by= "Phase")
 ```
-
 
 <p align="center">
 <img src="../img/PCA_CC_genes_preregress.png" width="800">
@@ -280,7 +321,7 @@ DimHeatmap(seurat_control,
            dims = 1:6, 
            cells = 500, 
            balanced = TRUE)
- ```
+```
 
 <img src="../img/dimheatmap.png" width="700">
 

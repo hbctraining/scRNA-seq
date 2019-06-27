@@ -15,7 +15,7 @@ Approximate time: 90 minutes
 
 After determining the cell types expected in the control sample, we would like to include the interferon-stimulated sample together with the control to compare the cell types present and/or genes differentially expressed between conditions. 
 
-Oftentimes, if samples are created using different conditions (or batches), the effect of the condition can be so great that the cells will cluster by condition instead of cell type. To ensure the same cell types align similarly for each condition, we can perform an integration analysis detailed in the paper by [Stuart and Bulter et al. (2018)](https://www.biorxiv.org/content/early/2018/11/02/460147). 
+Oftentimes, if samples are created using different conditions (or batches), the effect of the condition can be so great that the cells will cluster by condition instead of cell type. To ensure the same cell types cluster together, we can perform an integration analysis detailed in the paper by [Stuart and Bulter et al. (2018)](https://www.biorxiv.org/content/early/2018/11/02/460147). 
 Therefore, we are going to integrate the cells from our control and stimulated samples together.
 
 <img src="../img/sc_workflow.png" width="800">
@@ -43,7 +43,7 @@ To integrate multiple samples together, we need to perform the following steps:
 1. **Extract each sample** as a Seurat object
 2. **Normalize** the cell counts for library depth
 3. Identify **highly variable genes** for each sample
-4. **Integrate** samples, conditions, or technologies using shared highly variable genes
+4. **Integrate** samples using shared highly variable genes
 
 ### Extract each sample as a Seurat object
 
@@ -79,7 +79,7 @@ for (sample in sample_names){
 
         # Subset the Seurat object to single sample
         seurat_obj <- subset(seurat_raw,
-                     cells = cell_ids)
+                     		  cells = cell_ids)
 
         # Save sample names to a variable
         seurat_sample <- sample
@@ -108,7 +108,7 @@ stim <- NormalizeData(stim,
                       scale.factor = 10000)                      
 ```
 
-Then, to align similar cells across samples we will use the most variable genes for each of the samples. Similar to previously, the mean-variance relationship of the data is modeled and the 2,000 most variable genes are returned.
+Then, to align similar cells across samples we need to identify the most variable genes for each of the samples. Similar to previously, the mean-variance relationship of the data is modeled and the 2,000 most variable genes are returned.
 
 ```r
 # Identify most variable genes for control sample
@@ -140,7 +140,7 @@ LabelPoints(plot = unlabelled,
 ```
 
 <p align="center">
-<img src="../img/Ctrl_integ_var_genes_plot.png" width="500">
+<img src="../img/Ctrl_integ_var_genes_plot.png" width="800">
 </p>
 
 **Interferon-stimulated**
@@ -159,14 +159,14 @@ LabelPoints(plot = unlabelled,
 ```
 
 <p align="center">
-<img src="../img/Stim_integ_var_genes_plot.png" width="500">
+<img src="../img/Stim_integ_var_genes_plot.png" width="800">
 </p>
 
 You will notice that many of the most highly variable genes are present between the two samples.
 
 
 
-### **Integrate** samples, conditions, or technologies using shared highly variable genes
+### **Integrate** samples using shared highly variable genes
 
 _**This step can greatly improve your clustering when you have multiple samples**. It can help to first run samples individually if unsure what clusters to expect, but when clustering the cells from multiple conditions, integration can help ensure the same cell types cluster together._
 
@@ -188,39 +188,70 @@ If cell types are present in one dataset, but not the other, then the cells will
 
 _Image credit: Stuart T and Butler A, et al. Comprehensive integration of single cell data, bioRxiv 2018 (https://doi.org/10.1101/460147)_
 
+```r
+# Identify anchors
+anchors <- FindIntegrationAnchors(object.list = list(ctrl, stim), 
+                                  dims = 1:30)
+
+# Integrate samples
+combined <- IntegrateData(anchorset = anchors, 
+                          dims = 1:30)
+                          
+DefaultAssay(object = combined) <- "integrated"                                                            
+```
+
 ## Scaling and regression of sources of unwanted variation
 
-In addition to the interesting variation in your dataset that separates the different cell types, there is also "uninteresting" sources of variation present that can obscure the cell type-specific differences. This can include technical noise, batch effects, and/or uncontrolled biological variation (e.g. cell cycle).
+In addition to there being interesting variation that separates the different cell types in your dataset, there is also "uninteresting" sources of variation present that can obscure the cell type-specific differences. This can include technical noise, batch effects, and/or uncontrolled biological variation (e.g. cell cycle).
 
 ### Cell cycle scoring
 
-Cell cycle variation is a common source of uninteresting variation in single-cell RNA-seq data. To examine cell cycle variation in our data, we assign each cell a score, based on its expression of G2/M and S phase markers. 
-
-> An overview of the cell cycle phases is given in the image below:
-> 
-> <p align="center">
-><img src="../img/cell_cycle.png" width="200">
-></p> 	
-> 
-> _Adapted from [Wikipedia](https://en.wikipedia.org/wiki/Cell_cycle) (Image License is [CC BY-SA 3.0](https://en.wikipedia.org/wiki/Wikipedia:Text_of_Creative_Commons_Attribution-ShareAlike_3.0_Unported_License))_
-> 
-> - **G0:** Quiescence or resting phase. The cell is not actively dividing, which is common for cells that are fully differentiated. Some types of cells enter G0 for long periods of time (many neuronal cells), while other cell types never enter G0 by continuously dividing (epithelial cells).
-> - **G1:** Gap 1 phase represents the **beginning of interphase**. During G1 there is growth of the non-chromosomal components of the cells. From this phase, the cell may enter G0 or S phase.
-> - **S:** Synthesis phase for the replication of the chromosomes (also part of interphase).
-> - **G2:** Gap 2 phase represents the **end of interphase**, prior to entering the mitotic phase. During this phase th cell grows in preparation for mitosis and the spindle forms.
-> - **M:** M phase is the nuclear division of the cell (consisting of prophase, metaphase, anaphase and telophase).
-	
-
-The [Cell-Cycle Scoring and Regression tutorial](https://satijalab.org/seurat/v3.0/cell_cycle_vignette.html) from Seurat makes available a list of cell cycle phase marker genes for humans, while the HBC core has [compiled lists](https://github.com/hbc/tinyatlas/tree/master/cell_cycle) for other organisms.
-
-After scoring each gene for cell cycle phase, we can perform PCA using the expression of cell cycle genes. If the cells group by cell cycle in the PCA, then we would want to regress out cell cycle variation, **unless cells are differentiating**.  
+Let's score each gene for cell cycle phase, then perform PCA using the expression of cell cycle genes. Remember, if the cells group by cell cycle in the PCA, then we would want to regress out cell cycle variation, **unless cells are differentiating**.  
 
 <p align="center">
 <img src="../img/SC_preregressed_phase_pca.png" width="400">
 </p>
 
+```r
+combined <- ScaleData(object = combined, 
+                      verbose = FALSE)
 
-> **NOTE:** If cells are known to be differentiating and there is clear clustering differences between G2M and S phases, then you may want to regress out by the difference between the G2M and S phase scores as described in the [Seurat tutorial](https://satijalab.org/seurat/v3.0/cell_cycle_vignette.html), thereby still differentiating the cycling from the non-cycling cells.
+cycle_genes <- read.csv("data/Homo_sapiens.txt")
+
+cycle_genes <- inner_join(cycle_genes, annotations, by = c("geneID" = "gene_id"))
+
+g2m_genes <- cycle_genes %>%
+        dplyr::filter(phase == "G2/M") %>%
+        pull(gene_name)
+
+s_genes <- cycle_genes %>%
+        dplyr::filter(phase == "S") %>%
+        pull(gene_name)
+
+
+# Perform cell cycle scoring
+combined <- CellCycleScoring(
+        combined,
+        g2m.features = g2m_genes,
+        s.features = s_genes)
+
+# Perform PCA and color by cell cycle phase
+combined <- RunPCA(combined,
+                   features = c(s_genes, g2m_genes),
+                   verbose = FALSE)
+
+DimPlot(object = combined, 
+        reduction = "pca",
+        group.by= "Phase")
+
+# Define variables in metadata to regress
+vars_to_regress <- c("nUMI", "mitoRatio", "S.Score", "G2M.Score")
+
+# Regress out the uninteresting sources of variation in the data
+combined <- ScaleData(combined, 
+                      vars.to.regress = vars_to_regress)
+
+```
 
 ### Apply regression variables
 
