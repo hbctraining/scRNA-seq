@@ -345,6 +345,12 @@ We only specified 10 dimensions, but we could easily include as many as we wish 
 
 The elbow plot is helpful when determining how many PCs to use for the downstream analysis. The elbow plot visualizes the standard deviation of each PC, and where the elbow appears is usually the threshold for identifying the significant PCs. However, this method can be a bit subjective about where the elbow is located.
 
+```r
+# Plot the elbow plot
+ElbowPlot(object = seurat_control, 
+          ndims = 30)
+```
+
 <p align="center">
 <img src="../img/SC_elbowplot.png" width="500">
 </p>
