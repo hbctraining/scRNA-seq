@@ -53,14 +53,6 @@ The first thing we do is extract each sample as an individual Seurat object.
 # Create Seurat object from filtered SingleCellExperiment object
 data_dir <- "data"
 
-# Read in filtered counts
-se_c <- readRDS(file.path(data_dir, "se_filtered.rds"))
-
-# Create Seurat object
-seurat_raw <- CreateSeuratObject(counts = counts(se_c),
-                                 meta.data = colData(se_c) %>% 
-                                         data.frame())
-
 # Check names of samples
 levels(factor(seurat_raw@meta.data$sample))
 ```
@@ -96,30 +88,17 @@ We should now have variables/objects in our environment called `ctrl` and `stim`
 
 Before comparing expression profiles of cells to determine similarity, we need to normalize the cell counts for sequencing depth per cell for each sample separately. We perform this step as done previously using the `LogNormalize` method.
 
-```r
-# Normalize the control sample
-ctrl <- NormalizeData(ctrl,
-                      normalization.method = "LogNormalize",
-                      scale.factor = 10000)
-                      
-# Normalize the interferon-stimulated sample
-stim <- NormalizeData(stim,
-                      normalization.method = "LogNormalize",
-                      scale.factor = 10000)                      
-```
-
 Then, to align similar cells across samples we need to identify the most variable genes for each of the samples. Similar to previously, the mean-variance relationship of the data is modeled and the 2,000 most variable genes are returned.
 
 ```r
-# Identify most variable genes for control sample
-ctrl <- FindVariableFeatures(object = ctrl, 
-                             selection.method = "vst", 
-                             nfeatures = 2000)
-                             
-# Identify most variable genes for interferon-stimulated sample
-stim <- FindVariableFeatures(object = stim, 
-                             selection.method = "vst", 
-                             nfeatures = 2000)                             
+for (i in 1:length(seurat_list)) {
+        seurat_list[[i]] <- NormalizeData(seurat_list[[i]], 
+                                          verbose = FALSE)
+        seurat_list[[i]] <- FindVariableFeatures(seurat_list[[i]], 
+                                                 selection.method = "vst", 
+                                                 nfeatures = 2000,
+                                                 verbose = FALSE)
+}                         
 ```
 
 We can check the most highly variable genes for each sample, to see if the genes make sense regarding the cell types expected.
@@ -128,7 +107,8 @@ We can check the most highly variable genes for each sample, to see if the genes
 
 ```r
 # Identify the 20 most highly variable genes
-top20 <- head(x = VariableFeatures(object = ctrl), 20)
+top20 <- head(x = VariableFeatures(object = seurat_list$ctrl), 
+              n = 20)
 
 # Variable gene plot
 unlabelled <- VariableFeaturePlot(object = ctrl)
@@ -147,7 +127,8 @@ LabelPoints(plot = unlabelled,
 
 ```r
 # Identify the 20 most highly variable genes
-top20 <- head(x = VariableFeatures(object = stim), 20)
+top20 <- head(x = VariableFeatures(object = seurat_list$stim), 
+              n = 20)
 
 # Variable gene plot
 unlabelled <- VariableFeaturePlot(object = stim)
@@ -162,20 +143,20 @@ LabelPoints(plot = unlabelled,
 <img src="../img/Stim_integ_var_genes_plot.png" width="800">
 </p>
 
-You will notice that many of the most highly variable genes are present between the two samples.
-
+You will notice that many of the most highly variable genes are present between the two samples, which is a good sign for aligning cells.
 
 
 ### **Integrate** samples using shared highly variable genes
 
 _**This step can greatly improve your clustering when you have multiple samples**. It can help to first run samples individually if unsure what clusters to expect, but when clustering the cells from multiple conditions, integration can help ensure the same cell types cluster together._
 
-Using the shared highly variable genes from each sample, we integrate the samples to overlay cells that are similar or have a "common set of biological features". The process of integration uses canonical correlation analysis (CCA) and mutual nearest neighbors (MNN) to identify shared subpopulations across samples or datasets [[Stuart and Bulter et al. (2018)](https://www.biorxiv.org/content/early/2018/11/02/460147)]. 
+Using the shared highly variable genes from each sample, we integrate the samples to overlay cells that are similar or have a "common set of biological features". The process of integration uses canonical correlation analysis (CCA) and mutual nearest neighbors (MNN) methods to identify shared subpopulations across samples or datasets [[Stuart and Bulter et al. (2018)](https://www.biorxiv.org/content/early/2018/11/02/460147)]. 
 
-Specifically, this method expects "correspondences" or **shared biological states** among at least a subset of single cells across the samples. 
+Specifically, this integration method expects "correspondences" or **shared biological states** among at least a subset of single cells across the samples. The steps applied are as follows:
 
-1. CCA uses **shared highly variable genes** to reduce the dimensionality of the data and align the cells in each sample into the maximally correlated space (based on sets of genes exhibiting robust correlation in expression).
+1. CCA is performed, which uses **shared highly variable genes** to reduce the dimensionality of the data and align the cells in each sample into the maximally correlated space (based on sets of genes exhibiting robust correlation in expression). **Shared highly variable genes are most likely to represent those genes distinguishing the different cell types present.**
 2. Identify mutual nearest neighbors, or 'anchors' across datasets (sometimes incorrect anchors are identified)
+	> MNNs identify the cells that are most similar to each other across samples or conditions. "The difference in expression values between cells in an MNN pair provides an estimate of the batch effect, which is made more precise by averaging across many such pairs. A correction vector is obtained from the estimated batch effect and applied to the expression values to perform batch correction. Our approach automatically identifies overlaps in population composition between batches and uses only the overlapping subsets for correction, thus avoiding the assumption of equal composition required by other methods." 
 3. Assess the similarity between anchor pairs by the overlap in their local neighborhoods (incorrect anchors will have low scores)
 4. Use anchors and corresponding scores to transform cell expression values, allowing for the integration of the datasets (different samples, datasets, modalities)
 	- Transformation of each cell uses a weighted average of the two cells of each anchor across anchors of the datasets. Weights determined by cell similarity score (distance between cell and k nearest anchors) and anchor scores, so cells in the same neighborhood should have similar correction values.
@@ -190,7 +171,7 @@ _Image credit: Stuart T and Butler A, et al. Comprehensive integration of single
 
 ```r
 # Identify anchors
-anchors <- FindIntegrationAnchors(object.list = list(ctrl, stim), 
+anchors <- FindIntegrationAnchors(object.list = seurat_list, 
                                   dims = 1:30)
 
 # Integrate samples
@@ -209,7 +190,7 @@ In addition to there being interesting variation that separates the different ce
 Let's score each gene for cell cycle phase, then perform PCA using the expression of cell cycle genes. Remember, if the cells group by cell cycle in the PCA, then we would want to regress out cell cycle variation, **unless cells are differentiating**.  
 
 <p align="center">
-<img src="../img/SC_preregressed_phase_pca.png" width="400">
+<img src="../img/SC_preregressed_phase_pca.png" width="600">
 </p>
 
 ```r
@@ -244,131 +225,411 @@ DimPlot(object = combined,
         reduction = "pca",
         group.by= "Phase")
 
+```
+
+<p align="center">
+<img src="../img/pca_cellcycle_pre_regress.png" width="600">
+</p>
+
+### Apply regression variables
+
+Similar to the analysis with the `control` sample, we will regress the uninteresting sources of variation, including number of UMIs, mitochondrial ratio, and cell cycle scores to **improve downstream identification of principal components and clustering.** 
+
+```r
 # Define variables in metadata to regress
 vars_to_regress <- c("nUMI", "mitoRatio", "S.Score", "G2M.Score")
 
 # Regress out the uninteresting sources of variation in the data
 combined <- ScaleData(combined, 
                       vars.to.regress = vars_to_regress)
+                      
+# Perform PCA and color by cell cycle phase
+combined <- RunPCA(combined,
+                   verbose = FALSE)
 
+DimPlot(object = combined, 
+        reduction = "pca",
+        group.by= "Phase")
 ```
 
-### Apply regression variables
-
-**Regressing variation due to uninteresting sources can improve downstream identification of principal components and clustering.** To mitigate the effects of these signals, Seurat constructs linear models to predict gene expression based on the variables to regress.
-
-We generally recommend regressing out **number of UMIs, mitochondrial ratio, and possibly cell cycle** if needed, as a standard first-pass approach. However, if the differences in mitochondrial gene expression represent a biological phenomenon that may help to distinguish cell clusters, then we advise not regressing the mitochondrial expression.
-
-When regressing out the effects of cell-cycle variation, include S-phase score and G2M-phase score for regression. Cell-cycle regression is generally recommended but should be avoided for samples containing cells undergoing differentiation.
-
-> **NOTE:** If using the `sctransform` tool, there is no need to regress out number of UMIs as it is corrected for in the function.
+<p align="center">
+<img src="../img/pca_cellcycle_post_regress.png" width="600">
+</p>
 
 ## Clustering cells based on top PCs (metagenes)
 
 ### Identify significant PCs
 
-To overcome the extensive technical noise in any single gene for scRNA-seq data, Seurat clusters cells based on their PCA scores, with each PC essentially representing a "metagene" that combines information across a correlated gene set. Determining how many PCs to include downstream is therefore an important step. Often it is useful to explore the PCs prior to identifying the significant principal components to include for the downstream clustering analysis.
+For integrated data, we usually use the number of PCs utilized in the integration of the data. In addition, having a higher number of PCs does not normally change the clustering drastically after about 30 PCs. However, it's always a good idea to double-check to make sure that the majority of the variation is explained.
 
-We can also explore the expression of the top most variant genes for select PCs using a heatmap with the genes and cells ordered by PC scores:
-
-<img src="../img/SC_pc_heatmap.png" width="700">
-
-However, the main analysis used to determine how many PCs to use for the downstream analysis is done through plotting the standard deviation of each PC as an elbow plot. 
-Where the elbow appears is usually the threshold for identifying the most significant PCs to include.
+Let's to make sure that 30 PCs capture the most significant PCs by plotting the elbow plot.
 
 <p align="center">
-<img src="../img/SC_elbowplot.png" width="500">
+<img src="../img/sc_integ_elbow_plot.png" width="600">
 </p>
 
-While this gives us a good idea of the number of PCs to include, a more quantitative approach may be a bit more reliable.
+Based on this elbow plot, it appears that 30 PCs capture the majority of the variation. We could quantify just to make sure:
 
-PC selection — identifying the true dimensionality of a dataset — is an important step for our clustering analysis, but can be challenging/uncertain. While there are a variety of ways to choose a threshold, we're going to calculate where the principal components start to elbow by taking the larger value of:
+```r
+# Determine percent of variation associated with each PC
+pct <- combined[["pca"]]@stdev / sum(combined[["pca"]]@stdev) * 100
 
-1. The point where the principal components only contribute 5% of standard deviation and the principal components cumulatively contribute 90% of the standard deviation.
-2. The point where the percent change in variation between the consequtive PCs is less than 0.1%.
+# Calculate cumulative percents for each PC
+cumu <- cumsum(pct)
 
-### Cluster the cells
+# Determine which PC exhibits cumulative percent greater than 90% and % variation associated with the PC as less than 5
+co1 <- which(cumu > 90 & pct < 5)[1]
 
-We can now use these significant PCs identified  to determine which cells exhibit similar expression patterns for clustering. To do this, Seurat uses a graph-based clustering approach, which embeds cells in a graph structure, using a K-nearest neighbor (KNN) graph (by default), with edges drawn between cells with similar gene expression patterns. Then, it attempts to partition this graph into highly interconnected ‘quasi-cliques’ or ‘communities’ [[Seurat - Guided Clustering Tutorial](https://satijalab.org/seurat/v3.0/pbmc3k_tutorial.html)].
+co1
 
-The `resolution` is an important argument that sets the "granularity" of the downstream clustering and will need to be optimized to the experiment.  For datasets of 3,000 - 5,000 cells, the `resolution` set between `0.4`-`1.4` generally yields good clustering. Increased resolution values lead to a greater number of clusters, which is often required for larger datasets. 
+# Determine the difference between variation of PC and subsequent PC
+co2 <- sort(which((pct[1:length(pct)-1] - pct[2:length(pct)]) > 0.1),
+            decreasing = T)[1] + 1 
+# last point where change of % of variation is more than 0.1%.
+co2
 
-We often provide a series of resolution options during clustering, which can be used downstream to choose the best resolution.
+# Minimum of the two calculations
+min(co1, co2)
+```
 
-## Creating non-linear dimensional reduction (UMAP/tSNE)
+Quantification indicates that 30 PCs more than captures the majority of the variation based on the difference in variation between subsequent PCs. We will continue to use the 30 PCs that we had initially used for the integration.
 
-To visualize the clusters, there are a few different options that can be helpful, including t-distributed stochastic neighbor embedding (t-SNE), Uniform Manifold Approximation and Projection (UMAP), and PCA. The goals of these methods is to have similar cells closer together in low-dimensional space.
+## Cluster the cells
 
-For t-SNE, the cells within the graph-based clusters just determined should co-localize on the t-SNE plot. This is because the t-SNE aims to place cells with similar local neighborhoods in high-dimensional space together in low-dimensional space. **Note that distance between clusters on the t-SNE plots does not represent degree of similarity between clusters.**
+We can now use these PCs to determine which cells exhibit similar expression patterns for clustering using the K-nearest neighbor (KNN) graph, with edges drawn between cells with similar gene expression patterns partitioned into highly interconnected ‘quasi-cliques’ or ‘communities’.
 
-UMAP is a dimensionality reduction technique that is similar to t-SNE, but where the distances between cells represent similarity in expression. While more informative about distances, sometimes the UMAP plot can make the visualization of different clusters less spread out and differences between clusters can be hard to see. Therefore we often run both UMAP and tSNE.
+```r
+# Determine the K-nearest neighbor graph
+combined <- FindNeighbors(object = combined, 
+                                dims = 1:30)
+
+# Determine the clusters for various resolutions                                
+combined <- FindClusters(object = combined,
+                               resolution = c(0.4, 0.6, 0.8, 1.2, 1.8))
+```                               
+
+
+### Creating non-linear dimensional reduction (UMAP/tSNE)
+
+To visualize the clusters, we will use UMAP and PCA. The goals of these methods is to have similar cells closer together in low-dimensional space.
+
+```r
+# Choose clustering resolution for first round of analysis
+colnames(combined@meta.data)
+
+Idents(object = combined) <- "integrated_snn_res.0.8"
+
+# Calculate UMAP coordinates
+combined <- RunUMAP(combined,
+                    reduction = "pca",
+                    dims = 1:30)
+
+# Plot UMAP
+DimPlot(combined,
+        reduction = "umap",
+        label = TRUE,
+        label.size = 6,
+        plot.title = "UMAP")
+```
+
 
 <p align="center">
-<img src="../img/SC_dimplot_tsne.png" width="600">
+<img src="../img/integ_umap.png" width="800">
 </p>
 
-To explore similarity in gene expression between the clusters, plotting the clusters in PCA space can be more informative.
-
-<p align="center">
-<img src="../img/SC_dimplot_pca.png" width="600">
-</p>
+This may be too many clusters, but we can re-analyze with a lower resolution if it appears like we have too many after the marker identification. 
 
 
 # Exploration of quality control metrics
 
 To determine whether our clusters might be due to artifacts such as cell cycle phase or mitochondrial expression, it can be useful to explore these metrics visually to see if any clusters exhibit enrichment or are different from the other clusters. However, if enrichment or differences are observed for particular clusters it may not be worrisome if it can be explained by the cell type. 
 
-First, we can explore cell cycle by cluster. We would also want to see if we have sample-specific clusters.
+First we will check the number of cells per cluster in each sample.
+
+```r
+# Extract identity and sample information from seurat object to determine the number of cells per cluster per sample
+n_cells <- FetchData(combined, 
+                     vars = c("ident", "sample")) %>%
+        group_by(sample) %>%
+        dplyr::count(ident) %>% 
+        spread(ident, n) 
+
+# View table
+View(n_cells)
+```
 
 <p align="center">
-<img src="../img/SC_phase_tsne_pca.png" width="600">
+<img src="../img/integ_ncells.png" width="800">
+</p>
+
+We can additionally visualize whether we have any sample-specific clusters by using the `split.by` argument:
+
+```r
+# Plot UMAP split by sample
+DimPlot(combined,
+        reduction = "umap",
+        split.by = "sample",
+        label = TRUE,
+        label.size = 6,
+        plot.title = "UMAP")
+
+```
+
+<p align="center">
+<img src="../img/integ_umap_split.png" width="800">
+</p>
+
+There doesn't appear to be any sample-specific clusters present. 
+
+We can also perform the standard QC that we had gone through previously with the control sample.
+
+
+We can explore cell cycle by cluster by splitting by `Phase`. 
+
+```r
+DimPlot(combined,
+        reduction = "umap",
+        split.by = "Phase",
+        label = TRUE,
+        label.size = 6,
+        plot.title = "UMAP")
+```
+<p align="center">
+<img src="../img/integ_cluster_phase.png" width="800">
 </p>
 
 Next, we will explore additional metrics, such as the number of UMIs and genes per cell, S-phase and G2M-phase markers, and mitochondrial gene expression:
 
-<img src="../img/SC_metrics_tsne.png" width="600">
+<img src="../img/integ_cluster_qc.png" width="800">
 
 We can also explore how well our clusters separate by the different PCs; we hope that the defined PCs separate the cell types well. In the tSNE plots below, the cells are colored by their PC score for each respective principal component.
 
 <p align="center">
-<img src="../img/SC_clusters_by_pc.png" width="600">
+<img src="../img/integ_cluster_qc_pcs.png" width="600">
 </p>
 
 # Evaluating clustering
 
 To determine whether our clustering and resolution are appropriate for our experiment, it is helpful to explore a handful of markers for each of the major cell types that we expect to be in our data and see how they segregate.
 
-For example if we were interested in exploring known immune cell markers, such as:
+We will explore known immune cell markers for expected clusters:
 
-|Marker| Cell Type|
+| Cell Type | Marker |
 |:---:|:---:|
-|IL7R	|CD4 T cells|
-|CD14, LYZ|	CD14+ Monocytes|
-|MS4A1|	B cells|
-|CD8A|	CD8 T cells|
-|FCGR3A, MS4A7	|FCGR3A+ Monocytes|
-|GNLY, NKG7|	NK cells|
-|FCER1A, CST3	|Dendritic Cells|
-|PPBP|	Megakaryocytes|
+| CD14+ Monocytes | CD14, LYZ | 
+| FCGR3A+ Monocytes | FCGR3A, MS4A7 |
+| Dendritic Cells | FCER1A, CST3 |
+|	B cells | CD79A, MS4A1 |
+| T cells | CD3D |
+| CD4+ T cells | CD3D, IL7R, CCR7 |
+| CD8+ T cells| CD3D, CD8A |
+| NK cells | GNLY, NKG7 |
+| Megakaryocytes | PPBP |
+| Erythrocytes | HBB, HBA2 |
+
+Let's remind ourselves of our clusters:
+
+```r
+# Plot UMAP
+DimPlot(combined,
+        reduction = "umap",
+        label = TRUE,
+        label.size = 6,
+        plot.title = "UMAP")
+```
 
 
-We can plot the expression of these genes with darker blue representing higher levels of expression. 
+<p align="center">
+<img src="../img/integ_umap.png" width="800">
+</p>
 
 
-<img src="../img/SC_custom_genes_tsne.png" width="600">
+**CD14+ monocyte markers**
 
-Based on these markers, we can conjecture the identity of each of the clusters based on the canonical cell type markers:
+```r
+FeaturePlot(combined, 
+            reduction = "umap", 
+            features = c("CD14", "LYZ"))
+```
 
-| Cluster|Marker| Cell Type|
-|:---:|:---:|:---:|
-| 0-1|IL7R	|CD4 T cells|
-| 2|CD14, LYZ|	CD14+ Monocytes|
-| 3|MS4A1|	B cells|
-| 4|CD8A|	CD8 T cells|
-| 5|FCGR3A, MS4A7	|FCGR3A+ Monocytes|
-| 6|GNLY, NKG7|	NK cells|
-| Unidentified |FCER1A, CST3	|Dendritic Cells|
-| Unidentified |PPBP|	Megakaryocytes|
+<p align="center">
+<img src="../img/integ_markers_CD14_monocytes.png" width="800">
+</p>
+
+Cluster 0 appears to have expression of both CD14 and LYZ. Cluster 7 also appears to express both markers, but at a lower level.
+
+**FCGR3A+ monocyte markers**
+
+```r
+FeaturePlot(combined, 
+            reduction = "umap", 
+            features = c("FCGR3A", "MS4A7"))
+```
+
+<p align="center">
+<img src="../img/integ_markers_FCGR3A_monocytes.png" width="800">
+</p>
+
+Expression is strong for only cluster 7. Therefore, we will surmise that cluster 0 is CD14+ monocytes, while cluster 7 represents FCGR3A+ (CD16+) monocytes.
+
+**Dendritic cell markers**
+
+```r
+FeaturePlot(combined, 
+            reduction = "umap", 
+            features = c("FCER1A", "CST3"))
+```
+
+<p align="center">
+<img src="../img/integ_markers_DCs.png" width="800">
+</p>
+
+Although the expression is not that impressive, the only cluster to exhibit expression of both markers is cluster 13. Since these markers are weak, we would likely want to explore the marker identification markers in more detail for this cell type.
+
+**B cell markers**
+
+```r
+FeaturePlot(combined, 
+            reduction = "umap", 
+            features = c("CD79A", "MS4A1"))
+```
+
+<p align="center">
+<img src="../img/integ_markers_Bcells.png" width="800">
+</p>
+
+These B cell markers have a good amount of expression for both markers for clusters 4, 14, and 15.
+
+**T cell markers**
+
+```r
+FeaturePlot(combined, 
+            reduction = "umap", 
+            features = c("CD3D"))
+```
+
+<p align="center">
+<img src="../img/integ_markers_Tcells.png" width="600">
+</p>
+
+The T cell marker maps to many clusters, including 1, 2, 3, 6, 9, 10, 12, 16, 17, and 19.
+
+**CD4+ T cell markers**
+
+```r
+FeaturePlot(combined, 
+            reduction = "umap", 
+            features = c("CD3D", "IL7R", "CCR7"))
+```
+
+<p align="center">
+<img src="../img/integ_markers_CD4Tcells.png" width="800">
+</p>
+
+These markers correspond to clusters 1, 2, 3, and 9. IL7R appears to map to cluster 10 as well, but CCR7 does not. Again, we may want to explore cluster 10 in marker identification in more detail.
+
+**CD8+ T cell markers**
+
+```r
+FeaturePlot(combined, 
+            reduction = "umap", 
+            features = c("CD3D", "CD8A"))
+```
+
+<p align="center">
+<img src="../img/integ_markers_CD8Tcells.png" width="800">
+</p>
+
+Markers for CD8+ T cells map to clusters 6 and 10.
+
+**NK cell markers**
+
+```r
+FeaturePlot(combined, 
+            reduction = "umap", 
+            features = c("GNLY", "NKG7"))
+```
+
+<p align="center">
+<img src="../img/integ_markers_NKcells.png" width="800">
+</p>
+
+The NK cell markers correspond to clusters 5 and 6. However, we know that cluster 6 has T cell markers, therefore, this cluster is not representing NK cells.
+
+**Megakaryocyte markers**
+
+```r
+FeaturePlot(combined, 
+            reduction = "umap", 
+            features = c("PPBP"))
+```
+
+<p align="center">
+<img src="../img/integ_markers_megakaryocytes.png" width="600">
+</p>
+
+This marker distinguishes cluster 12 as megakaryocytes.
+
+**Erythrocyte markers**
+
+```r
+FeaturePlot(combined, 
+            reduction = "umap", 
+            features = c("HBB", "HBA2"))
+```
+<p align="center">
+<img src="../img/integ_markers_erythrocytes.png" width="600">
+</p>
+
+Erythocytes correspond to cluster 19.
+
+We identified in the Control analysis that we had markers differentiating the naive from the activated T cells. We can look whether specific clusters correspond to these subsets.
+
+**Naive T cells**
+
+```r
+FeaturePlot(combined, 
+            reduction = "umap", 
+            features = c( "CCR7", "SELL"))
+```
+
+<p align="center">
+<img src="../img/integ_markers_t_naive.png" width="600">
+</p>
+
+The naive CD4+ T cells correspond to clusters 1, 2, and 9.
+
+**Activated T and B cells**
+
+```r
+FeaturePlot(combined, 
+            reduction = "umap", 
+            features = c("CREM", "CD69"))
+```            
+
+<p align="center">
+<img src="../img/integ_markers_activated_t_cells.png" width="600">
+</p>
+
+Activated CD4+ T cells correspond to cluster 3, while activated B cells correspond to cluster 14.
+
+Based on these results, we can associate clusters with the cell types. However, we would like to perform a deeper analysis using marker identification before performing a final assignment of the clusters to a cell type.
+
+
+| Cell Type | Clusters |
+|:---:|:---:|
+| CD14+ Monocytes | 0, 5 | 
+| FCGR3A+ Monocytes | 11 |
+| Dendritic Cells | 10 |
+| B cells | 4, 13 |
+| Activated B cells | 4, 13 |
+| Naive CD4+ T cells | 1, 2, 9 |
+| Activated CD4+ T cells | 3 |
+| CD8+ T cells| 7, 8 |
+| NK cells | 6, 7 |
+| Megakaryocytes | 12 |
+| Unknown | 9 |
+
 
 Based on these results, it indicates that there are some clusters that we are not identifying that appear to be separate cell types. The megakaryocytes and the dendritic cells appear clustered with other cell type clusters, so what do we do with them? 
 
