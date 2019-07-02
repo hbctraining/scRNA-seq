@@ -41,8 +41,7 @@ _**Recommendations:**_
 To integrate multiple samples together, we need to perform the following steps:
 
 1. **Extract each sample** as a Seurat object
-2. **Normalize** the cell counts for library depth
-3. Identify **highly variable genes** for each sample
+2. **Normalize** the cell counts for library depth and identify **highly variable genes** for each sample
 4. **Integrate** samples using shared highly variable genes
 
 ### Extract each sample as a Seurat object
@@ -84,7 +83,7 @@ for (sample in sample_names){
 
 We should now have variables/objects in our environment called `ctrl` and `stim`.
 
-### Normalize the cell counts for library depth
+### Normalize the cell counts for library depth and identify highly variable genes
 
 Before comparing expression profiles of cells to determine similarity, we need to normalize the cell counts for sequencing depth per cell for each sample separately. We perform this step as done previously using the `LogNormalize` method.
 
@@ -472,7 +471,7 @@ FeaturePlot(combined,
 
 Expression is strong for only cluster 7. Therefore, we will surmise that cluster 0 is CD14+ monocytes, while cluster 7 represents FCGR3A+ (CD16+) monocytes.
 
-**Dendritic cell markers**
+**Dendritic cell (DC) markers**
 
 ```r
 FeaturePlot(combined, 
@@ -486,6 +485,20 @@ FeaturePlot(combined,
 
 Although the expression is not that impressive, the only cluster to exhibit expression of both markers is cluster 13. Since these markers are weak, we would likely want to explore the marker identification markers in more detail for this cell type.
 
+**Plasmacytoid DCs**
+
+```r
+FeaturePlot(combined, 
+            reduction = "umap", 
+            features = c("IL3RA", "GZMB", "SERPINF1", "ITM2C"))
+```
+
+<p align="center">
+<img src="../img/integ_markers_pDCs.png" width="800">
+</p>
+
+The expression of several markers suggest cluster 18 corresponds to plasmacytoid DCs.
+            
 **B cell markers**
 
 ```r
@@ -519,14 +532,14 @@ The T cell marker maps to many clusters, including 1, 2, 3, 6, 9, 10, 12, 16, 17
 ```r
 FeaturePlot(combined, 
             reduction = "umap", 
-            features = c("CD3D", "IL7R", "CCR7"))
+            features = c("CD3D", "IL7R"))
 ```
 
 <p align="center">
 <img src="../img/integ_markers_CD4Tcells.png" width="800">
 </p>
 
-These markers correspond to clusters 1, 2, 3, and 9. IL7R appears to map to cluster 10 as well, but CCR7 does not. Again, we may want to explore cluster 10 in marker identification in more detail.
+These markers correspond to clusters 1, 2, 3, 9 and 16. IL7R appears to map to cluster 10.
 
 **CD8+ T cell markers**
 
@@ -540,7 +553,7 @@ FeaturePlot(combined,
 <img src="../img/integ_markers_CD8Tcells.png" width="800">
 </p>
 
-Markers for CD8+ T cells map to clusters 6 and 10.
+Markers for CD8+ T cells map to clusters 6, 10 and 11.
 
 **NK cell markers**
 
@@ -554,7 +567,7 @@ FeaturePlot(combined,
 <img src="../img/integ_markers_NKcells.png" width="800">
 </p>
 
-The NK cell markers correspond to clusters 5 and 6. However, we know that cluster 6 has T cell markers, therefore, this cluster is not representing NK cells.
+The NK cell markers correspond to clusters 5 and 6. However, we know that cluster 6 has T cell markers, therefore, this cluster is not representing NK cells. Likely cluster 6 represents activated CD8+ T cells.
 
 **Megakaryocyte markers**
 
@@ -585,7 +598,7 @@ Erythocytes correspond to cluster 19.
 
 We identified in the Control analysis that we had markers differentiating the naive from the activated T cells. We can look whether specific clusters correspond to these subsets.
 
-**Naive T cells**
+**Naive or memory T cells**
 
 ```r
 FeaturePlot(combined, 
@@ -597,7 +610,7 @@ FeaturePlot(combined,
 <img src="../img/integ_markers_t_naive.png" width="600">
 </p>
 
-The naive CD4+ T cells correspond to clusters 1, 2, and 9.
+The naive CD4+ T cells correspond to clusters 1, 2, 9, and 11.
 
 **Activated T and B cells**
 
@@ -613,31 +626,46 @@ FeaturePlot(combined,
 
 Activated CD4+ T cells correspond to cluster 3, while activated B cells correspond to cluster 14.
 
+**Stressed or dying cells**
+
+Based on our previous analysis with the control sample, we know there should be a cluster containing the stressed or dying cells with heat shock genes, cell cycle arrest genes, and DNA damage genes overexpressed. We can determine which cluster corresponds to these cells using the identified markers from the previous analysis.
+
+```r
+FeaturePlot(combined, 
+            reduction = "umap", 
+            features = c("HSPB1", "DNAJB6", "HSPH1", "GADD45B"))
+```           
+        
+<p align="center">
+<img src="../img/integ_markers_stressed.png" width="600">
+</p>
+
+This cluster of stressed cells corresponds to cluster 8.
+            
 Based on these results, we can associate clusters with the cell types. However, we would like to perform a deeper analysis using marker identification before performing a final assignment of the clusters to a cell type.
 
 
 | Cell Type | Clusters |
 |:---:|:---:|
-| CD14+ Monocytes | 0, 5 | 
-| FCGR3A+ Monocytes | 11 |
-| Dendritic Cells | 10 |
-| B cells | 4, 13 |
-| Activated B cells | 4, 13 |
+| CD14+ Monocytes | 0 | 
+| FCGR3A+ Monocytes | 7 |
+| Conventional dendritic cells | 13 |
+| Plasmacytoid dendritic cells | 18 |
+| Naive B cells | 4, 15 |
+| Activated B cells | 14 |
 | Naive CD4+ T cells | 1, 2, 9 |
 | Activated CD4+ T cells | 3 |
-| CD8+ T cells| 7, 8 |
-| NK cells | 6, 7 |
+| Naive CD8+ T cells| 11 |
+| Activated CD8+ T cells| 6, 10 |
+| NK cells | 5 |
 | Megakaryocytes | 12 |
-| Unknown | 9 |
+| Erythrocytes | 19 |
+| Stressed / dying cells | 8 |
+| Unknown | 16, 17, 20 |
 
+While we have a good idea of the cell types for the different clusters, it's always a good idea to perform marker identification to ensure the hypothesized cell identities make sense with the enriched genes. Also, we can explore identities for the unknown clusters 16, 17, and 20.
 
-Based on these results, it indicates that there are some clusters that we are not identifying that appear to be separate cell types. The megakaryocytes and the dendritic cells appear clustered with other cell type clusters, so what do we do with them? 
-
-We would generally want to go back through the clustering, but change parameters. Did we use too few principal components that we are just not separating out these cells? We can look at our PC gene expression overlapping the tSNE plots and see these cell populations separate by PC6 and PC8, so the variation seems to be captured by our PCs. However, we might not have had a high enough resolution for our tSNE when we performed the clustering. We would want to try to re-run the tSNE with higher resolution. 
-
-After we have identified our desired clusters, we can move on to marker identification, which will allow us to verify the identity of certain clusters and help surmise the identity of any unknown clusters. Since we have two clusters identified as CD4 T cells, we may also want to know which genes are differentially expressed between these two clusters.
-
-[Click here for next lesson](https://github.com/marypiper/WIB_scRNA-seq/blob/master/lessons/SC_marker_identification.md)
+[Click here for next lesson]()
 
 ***
 
