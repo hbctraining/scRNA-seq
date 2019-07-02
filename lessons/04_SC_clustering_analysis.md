@@ -73,13 +73,10 @@ library(Seurat)
 library(tidyverse)
 ```
 
-To perform the analysis, Seurat requires the data to be present as a `seurat` object. To create the `seurat` object, we will be extracting the **filtered counts** and **metadata** stored in our `se_c` SingleCellExperiment object created during quality control. 
-To access the counts from our SingleCellExperiment, we can use the `counts()` function:
+To perform the analysis, Seurat requires the data to be present as a `seurat` object. We have created this object in the QC lesson, so we can use that and just reassign it to a new variable name:
 
 ```r
-# Create Seurat object from filtered SingleCellExperiment object
-seurat_raw <- CreateSeuratObject(raw.data = counts(se_c),
-                                 meta.data = colData(se_c) %>% data.frame())
+seurat_raw <- clean_seurat
 ```
 
 We are interested in only analyzing the `ctrl` sample by itself as a first pass. To do this we need to subset the Seurat object. We can use the `subset()` function to extract a subset of samples, cells, or genes. To extract only the cells from the `ctrl` sample we can run the following:
