@@ -18,7 +18,7 @@ After determining the cell types expected in the control sample, we would like t
 Oftentimes, if samples are created using different conditions (or batches), the effect of the condition can be so great that the cells will cluster by condition instead of cell type. To ensure the same cell types cluster together, we can perform an integration analysis detailed in the paper by [Stuart and Bulter et al. (2018)](https://www.biorxiv.org/content/early/2018/11/02/460147). 
 Therefore, we are going to integrate the cells from our control and stimulated samples together.
 
-<img src="../img/sc_workflow.png" width="800">
+<img src="../img/sc_workflow_integration.png" width="800">
 
 _**Goals:**_ 
  
@@ -664,7 +664,7 @@ Based on these results, we can associate the majority of the clusters with cell 
 | Plasmacytoid dendritic cells | 18 |
 | Naive B cells | 4, 15 |
 | Activated B cells | 14 |
-| Naive CD4+ T cells | 1, 2, 9 |
+| Naive CD4+ T cells | 1, 2, 9, 16 |
 | Activated CD4+ T cells | 3 |
 | Naive CD8+ T cells| 11 |
 | Activated (cytotoxic) CD8+ T cells| 6, 10 |
@@ -672,7 +672,7 @@ Based on these results, we can associate the majority of the clusters with cell 
 | Megakaryocytes | 12 |
 | Erythrocytes | 19 |
 | Stressed / dying cells | 8 |
-| Unknown | 16, 17, 20 |
+| Unknown | 17, 20 |
 
 While we have a good idea of the cell types for the different clusters, it's always a good idea to perform marker identification to ensure the hypothesized cell identities make sense with the enriched genes. Also, we can explore identities for the unknown clusters 16, 17, and 20.
 

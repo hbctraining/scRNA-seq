@@ -15,7 +15,7 @@ Approximate time: 45 minutes
 
 Now that we have identified our desired clusters, we can move on to marker identification, which will allow us to verify the identity of certain clusters and help surmise the identity of any unknown clusters. 
 
-<img src="../img/sc_workflow.png" width="800">
+<img src="../img/sc_workflow_integration.png" width="800">
 
 _**Goals:**_ 
  
@@ -46,77 +46,56 @@ Remember that we have a few different types of marker identification, each with 
 1. **Identification of all markers for each cluster:** this analysis compares each cluster against all others and outputs the genes that are differentially expressed/present. 
 	- *Useful for identifying unknown clusters and improving confidence in hypothesized cell types.*
 
-2. **Identification of conserved markers for each cluster regardless of condition:** This analysis looks for those genes that are conserved in the cluster across all conditions. This analysis will output genes that are consistently differentially expressed/present for all of the sample groups. These genes can help to figure out the identity for the cluster. Often, this analysis is performed only for those clusters whose identity is uncertain or novel.
-	- *Useful for identifying unknown clusters and improving confidence in cell type identities when more than one condition. Returns fewer, but higher confidence markers of cell type.*  	
+2. **Identification of conserved markers for each cluster regardless of condition:** this analysis looks for those genes that are conserved in the cluster across all conditions. This analysis will output genes that are consistently differentially expressed/present for all of the sample groups. These genes can help to figure out the identity for the cluster. Often, this analysis is performed only for those clusters whose identity is uncertain or novel.
+	- *Useful for identifying unknown clusters and improving confidence in cell type identities when more than one condition. Returns fewer, but higher confidence markers of cell type. Tends to take much longer to run.*  	
+
 3. **Marker identification between specific clusters:** this analysis explores differentially expressed genes between specific clusters. 
 	- *Useful for determining differences in gene expression between clusters with markers that are similar in the above analyses.*
 
-Since we have more than a single condition, we can explore conserved markers for identifying unknown clusters, but we will investigate all markers for each cluster and tease out markers differentiating specific clusters.
+Since we have more than a single condition, we can explore conserved markers for identifying unknown clusters, in addition to identifying all markers for each cluster and exploring differences between clusters.
 
 ## Identification of all markers for each cluster
 
-For this analysis we are comparing each cluster against all other clusters to identify cluster markers using the ` FindAllMarkers()` function. This function has two important arguments which provide thresholds for determining whether a gene is a marker:
-
-- `logfc.threshold`: minimum log2 foldchange for average expression of gene in cluster relative to the average expression in all other clusters combined
-	- **Cons:** 
-		- could miss those cell markers that are expressed in the cluster being compared, but not in the other clusters, if the average log2FC doesn't meet the threshold
-		- could return a lot of metabolic/ribosomal genes due to slight differences in metabolic output by different cell types, which are not as useful to distinguish cell type identities
-- `min.diff.pct`: minimum percent difference between the percent of cells expressing the gene in the cluster and the percent of cells expressing gene in all other clusters combined
-	- **Cons:** could miss those cell markers that are expressed in all cells, but are highly up-regulated in this specific cell type
-	
-You could use one or the other of these arguments or both. We will be a bit lenient and use only the log2 fold change threshold greater than 0.25. We will also specify to return only the positive markers for each cluster
+For this analysis we are comparing each cluster against all other clusters to identify cluster markers using the ` FindAllMarkers()` function, similar to previously. 
 
 ```r
 # Find markers for every cluster compared to all remaining cells, report only the positive ones
-markers <- FindAllMarkers(object = seurat_control, 
+combined_markers <- FindAllMarkers(object = combined, 
                           only.pos = TRUE,
-                          logfc.threshold = 0.25)
-                          
-View(markers)                          
+                          logfc.threshold = 0.25)                       
 ```
 
 The order of the columns doesn't seem the most intuitive, so we will reorder the columns with the `cluster` first followed by the `gene`.
 
 ```r
 # Combine markers with gene descriptions 
-ann_markers <- inner_join(x = markers, 
-                          y = annotations[, c("gene_name", "description")],
-                          by = c("gene" = "gene_name")) %>%
+ann_comb_markers <- inner_join(x = combined_markers, 
+                               y = annotations[, c("gene_name", "description")],
+                               by = c("gene" = "gene_name")) %>%
         unique()
 
 # Rearrange the columns to be more intuitive
-ann_markers <- ann_markers[ , c(6, 7, 2:4, 1, 5,8)]
+ann_comb_markers <- ann_comb_markers[ , c(6, 7, 2:4, 1, 5,8)]
 
 # Order the rows by p-adjusted values
-ann_markers <- ann_markers %>%
+ann_comb_markers <- ann_comb_markers %>%
         dplyr::arrange(cluster, p_val_adj)
 
-View(ann_markers)
+View(ann_comb_markers)
 ```
 
 <p align="center">
-<img src="../img/all_markers.png" width="800">
+<img src="../img/all_comb_markers.png" width="800">
 </p>
 
 **Usually the top markers are relatively trustworthy, but because of inflated p-values, many of the less significant genes are not so trustworthy as markers.**
 
-When looking at the output, we suggest looking for markers with large differences in expression between `pct.1` and `pct.2` and larger fold changes. For instance if `pct.1` = 0.90 and `pct.2` = 0.80, I might not be as excited about that marker. However, if `pct.2` = 0.1 instead, then I would be much more excited about it. Also, I look for the majority of cells expressing marker in my cluster of interest. If `pct.1` is low, such as 0.3, I again might not be as interested in it.
-
-- **cluster:** number corresponding to cluster
-- **gene:** gene id
-- **avg_logFC:** average log2 fold change. Positive values indicate that the gene is more highly expressed in the cluster.
-- **pct.1**: The percentage of cells where the gene is detected in the cluster
-- **pct.2**: The percentage of cells where the gene is detected on average in the other clusters
-- **p_val:** p-value not adjusted for multiple test correction
-- **p_val\_adj:** Adjusted p-value, based on bonferroni correction using all genes in the dataset, used to determine significance
-
-
-If the format looks good, we can save our marker analysis results to file.
+Save our marker analysis results to file.
 
 ```r
 # Save markers to file
-write.csv(ann_markers, 
-          file = "results/control_all_markers.csv", 
+write.csv(ann_comb_markers, 
+          file = "results/combined_all_markers.csv", 
           quote = FALSE, 
           row.names = FALSE)
 ```
@@ -125,42 +104,29 @@ We can also output the top 5 markers by log2 fold change for each cluster for a 
 
 ```r
 # Extract top 5 markers per cluster
-top5 <- ann_markers %>% 
-        group_by(cluster) %>% 
-        top_n(n = 5, 
+top5_comb <- ann_comb_markers %>%
+        group_by(cluster) %>%
+        top_n(n = 5,
               wt = avg_logFC)
 
 # Visualize top 5 markers per cluster
-View(top5)
+View(top5_comb)
 
 ```
 
 <p align="center">
-<img src="../img/sc_top5_markers.png" width="800">
+<img src="../img/sc_top5_comb_markers.png" width="800">
 </p>
 
 Based on these marker results, we can determine whether the markers make sense for our hypothesized identities for each cluster:
 
-| Cell Type | Clusters |
-|:---:|:---:|
-| CD14+ Monocytes | 0, 5 | 
-| FCGR3A+ Monocytes | 11 |
-| Dendritic Cells | 10 |
-| B cells | 4, 13 |
-| T cells | 1, 2, 3, 7, 8, 14, 15 |
-| CD4+ T cells | 1, 2, 3, 14, 15 |
-| CD8+ T cells| 7, 8 |
-| NK cells | 6, 7 |
-| Megakaryocytes | 12 |
-| Unknown | 9 |
 
-If there were any questions about the identity of any clusters, exploring the cluster's markers would be the first step. Let's look at the `ann_markers`, filtering for cluster 9.
+
+If there were any questions about the identity of any clusters, exploring the cluster's markers would be the first step. Let's look at the `ann_comb_markers`, filtering for cluster 17.
 
 <p align="center">
 <img src="../img/sc_cluster9_markers.png" width="800">
 </p>
-
-We see a lot of heat shock and DNA damage genes appear. Based on these markers, it is likely that these are stressed or dying cells. We could explore the quality metrics for these cells in more detail before removing just to support that argument. 
 
 We also had questions regarding the identity of cluster 7. Is cluster 7 a CD8+ T cell, an NK cell, or an NK T cell?
 
@@ -170,7 +136,6 @@ We can look at the markers of cluster 7 to try to resolve the identity:
 <img src="../img/sc_cluster7_markers.png" width="800">
 </p>
 
-There are definitely T cell receptors that are enriched among cluster 7; therefore, it cannot be an NK cell. Likely it represents activated CD8+ T cells (cytotoxic T cells).
 
 To get a better idea of cell type identity we can explore the expression of different identified markers by cluster using the `FeaturePlot()` function. For example, we can look at the cluster 7 markers:
 
@@ -198,7 +163,79 @@ VlnPlot(object = seurat_control,
 <img src="../img/sc_markers_cluster7_violin.png" width="800">
 </p>
 
-These results and plots can help us determine the identity of these clusters or verify what we hypothesize the identity to be after exploring the canonical markers of expected cell types previously.
+
+
+## Identification of conserved markers in all conditions
+
+Identifying conserved markers allows for identifying only those genes the are significantly differentially expressed relative to the other clusters for all conditions. This function is most useful to run if unsure of the identity for a cluster after running the `FindAllMarkers()`. You could run it on all clusters if you wanted to, but it takes a while to run, so we are just going to run it on the unknown clusters 17 and 20.
+
+The function we will use is the `FindConservedMarkers()`, which has the following structure:
+
+**`FindConservedMarkers()` syntax:**
+
+```r
+FindConservedMarkers(seurat_obj,
+                     ident.1 = cluster,
+                     grouping.var = "group",
+                     only.pos = TRUE)
+```
+
+The function **accepts a single cluster at a time**, so if we want to have the function run on all clusters, then we can use the `map` family of functions to iterate across clusters. 
+
+Since these functions will **remove our row names** (gene names), we need to transfer the row names to columns before mapping across clusters. We also need a column specifying **to which cluster the significant genes correspond**.
+
+To do that we will create our own function to:
+
+1. Run the `FindConservedMarkers()` function
+2. Transfer row names to a column using `rownames_to_column()` function
+3. Create the column of cluster IDs using the `cbind()` function
+
+```r
+# Create function to get conserved markers for any given cluster
+get_conserved <- function(cluster){
+        FindConservedMarkers(combined,
+                             ident.1 = cluster,
+                             grouping.var = "sample",
+                             only.pos = TRUE) %>%
+                rownames_to_column(var = "gene") %>%
+                cbind(cluster_id = cluster, .)
+}
+```
+
+Since we want the output of the `map` family of functions to be a **dataframe with each cluster output bound together by rows**, we will use the `map_dfr()` function.
+
+Remember the map family of functions uses the following syntax:
+
+**`map` family syntax:**
+
+```r
+map_dfr(inputs_to_function, name_of_function)
+```
+
+Now, let's find the conserved markers for clusters 16, 17, and 20.
+
+```r
+# Iterate function across desired clusters
+conserved_markers <- map_dfr(c(17,20), get_conserved)
+```
+
+To better analyze the output, we can include the gene descriptions as well.
+
+```r
+# Extract the gene descriptions for each gene
+gene_descriptions <- unique(annotations[, c("gene_name", "description")])
+
+# Merge gene descriptions with markers
+ann_conserved_markers <- left_join(x = conserved_markers,
+                                   y = gene_descriptions,
+                                   by = c("gene" = "gene_name"))
+```
+
+<p align="center">
+<img src="../img/sc_integ_marker_unknown.png" width="800">
+</p>
+
+For cluster 17, we see many of the enriched genes encode inhibitory receptors, which can be indicative of exhausted T cells.
 
 ## Identifying gene markers for each cluster
 
