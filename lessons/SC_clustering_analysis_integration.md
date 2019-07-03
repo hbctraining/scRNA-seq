@@ -415,16 +415,18 @@ We will explore known immune cell markers for expected clusters:
 
 | Cell Type | Marker |
 |:---:|:---:|
-| CD14+ Monocytes | CD14, LYZ | 
-| FCGR3A+ Monocytes | FCGR3A, MS4A7 |
-| Dendritic Cells | FCER1A, CST3 |
-|	B cells | CD79A, MS4A1 |
+| CD14+ monocytes | CD14, LYZ | 
+| FCGR3A+ monocytes | FCGR3A, MS4A7 |
+| Conventional dendritic cells | FCER1A, CST3 |
+| Plasmacytoid dendritic cells | IL3RA, GZMB, SERPINF1, ITM2C |
+| B cells | CD79A, MS4A1 |
 | T cells | CD3D |
 | CD4+ T cells | CD3D, IL7R, CCR7 |
 | CD8+ T cells| CD3D, CD8A |
 | NK cells | GNLY, NKG7 |
 | Megakaryocytes | PPBP |
 | Erythrocytes | HBB, HBA2 |
+
 
 Let's remind ourselves of our clusters:
 
@@ -598,6 +600,16 @@ Erythocytes correspond to cluster 19.
 
 We identified in the Control analysis that we had markers differentiating the naive from the activated T cells. We can look whether specific clusters correspond to these subsets.
 
+### Cell state exploration
+
+Based on the analysis with the `Control` sample, we have some additional cell markers to determine **immune cell activation status** and **stressed/dying** cells:
+
+| Cell State | Marker |
+|:---:|:---:|
+| Naive T cells | CCR7, SELL | 
+| Activated B and T cells | CREM, CD69 |
+| Stressed/dying cells | HSPB1, DNAJB6, HSPH1, GADD45B |
+
 **Naive or memory T cells**
 
 ```r
@@ -642,8 +654,7 @@ FeaturePlot(combined,
 
 This cluster of stressed cells corresponds to cluster 8.
             
-Based on these results, we can associate clusters with the cell types. However, we would like to perform a deeper analysis using marker identification before performing a final assignment of the clusters to a cell type.
-
+Based on these results, we can associate the majority of the clusters with cell types. However, we would like to perform a deeper analysis using marker identification before performing a final assignment of the clusters. 
 
 | Cell Type | Clusters |
 |:---:|:---:|
@@ -656,7 +667,7 @@ Based on these results, we can associate clusters with the cell types. However, 
 | Naive CD4+ T cells | 1, 2, 9 |
 | Activated CD4+ T cells | 3 |
 | Naive CD8+ T cells| 11 |
-| Activated CD8+ T cells| 6, 10 |
+| Activated (cytotoxic) CD8+ T cells| 6, 10 |
 | NK cells | 5 |
 | Megakaryocytes | 12 |
 | Erythrocytes | 19 |
