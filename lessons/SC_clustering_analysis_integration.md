@@ -674,7 +674,7 @@ Based on these results, we can associate the majority of the clusters with cell 
 | Stressed / dying cells | 8 |
 | Unknown | 17, 20 |
 
-While we have a good idea of the cell types for the different clusters, it's always a good idea to perform marker identification to ensure the hypothesized cell identities make sense with the enriched genes. Also, we can explore identities for the unknown clusters 16, 17, and 20.
+While we have a good idea of the cell types for the different clusters, it's always a good idea to perform marker identification to ensure the hypothesized cell identities make sense with the enriched genes. Also, we can explore identities for the unknown clusters 17 and 20.
 
 [Click here for next lesson]()
 

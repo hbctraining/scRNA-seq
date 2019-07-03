@@ -235,42 +235,40 @@ ann_conserved_markers <- left_join(x = conserved_markers,
 <img src="../img/sc_integ_marker_unknown.png" width="800">
 </p>
 
-For cluster 17, we see many of the enriched genes encode inhibitory receptors, which can be indicative of exhausted T cells.
+For clusters 17 and 20, we see many of the conserved enriched genes encode inhibitory receptors, such as TIGIT and LAG3, which can be indicative of exhausted T cells.
 
 ## Identifying gene markers for each cluster
 
 The last set of questions we had regarding the analysis involved whether the clusters corresponding to the same cell types have biologically meaningful differences. Sometimes the list of markers returned don't sufficiently separate some of the clusters. For instance, we had previously identified clusters 0 and 5 as CD14+ monocytes, but are there biologically relevant differences between these two clusters of cells? We can use the `FindMarkers()` function to determine the genes that are differentially expressed between these specific clusters. 
 
 ```r
-# Determine differentiating markers for CD14+ monocytes - clusters 0 versus 5
-cd14_monos <- FindMarkers(seurat_control,
-                          ident.1 = 0,
-                          ident.2 = 5)                     
+# Determine differentiating markers for CD8+ T cells - clusters 6 versus 10
+cd8_t <- FindMarkers(combined,
+                     ident.1 = 6,
+                     ident.2 = 10)                     
 
-# Add gene symbols to the DE table
-cd14_monos_markers <- cd14_monos %>%
+# KLRG1 means cluster 6 is more differentiated / effector?
+
+# Add gene descriptions to the DE table
+cd8_t_markers <- cd8_t %>%
         rownames_to_column("gene") %>%
-        inner_join(y = annotations[, c("gene_name", "description")],
+        inner_join(y = gene_descriptions,
                    by = c("gene" = "gene_name")) %>%
         unique()
 
 # Reorder columns and sort by log2 fold change        
-cd14_monos_markers <- cd14_monos_markers[, c(1, 3:5,2,6:7)]
+cd8_t_markers <- cd8_t_markers[, c(1, 3:5,2,6:7)]
 
-cd14_monos_markers <- cd14_monos_markers %>%
+cd8_t_markers <- cd8_t_markers %>%
         dplyr::arrange(avg_logFC)
         
 # View data
-View(cd14_monos_markers)
+View(cd8_t_markers)
 ```
 
 <p align="center">
-<img src="../img/sc_mono14_de_genes.png" width="800">
+<img src="../img/" width="800">
 </p>
-
-When looking through the results, there appear to be many `CCL` genes that are differentially expressed between the clusters. If this were biologically meaningful we would keep the two distinct clusters, but if not, we would merge them.
-
-While we are not going to explore these genes in more depth, you would probably want to explore the expression of these genes in more depth visually using feature plots and violin plots.
 
 Now taking all of this information, we can surmise the cell types of the different clusters and plot the cells with cell type labels. We would have done comparisons between all of the clusters that represent the same cell type (i.e. between clusters 1, 2, and 3 for CD4+ T cells); however, for this lesson, we will merge all of the clusters of the same cell type.
 
