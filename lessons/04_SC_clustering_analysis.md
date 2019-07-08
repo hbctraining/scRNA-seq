@@ -781,8 +781,6 @@ Plasmacytoid dendritic cells (pDCs) correspond to the part of cluster 10 that di
 We could test out different resolutions by running the following code (`seurat_obj` would be `seurat_control`):
 
 ```r
-# DO NOT RUN
-
 # Assign identity of clusters
 Idents(object = seurat_obj) <- "RNA_snn_res.1"
 
@@ -794,7 +792,19 @@ DimPlot(seurat_obj,
         plot.title = "UMAP")
 ```
 
-Then, we would work our way back through the analysis, starting with the **`Exploration of quality control metrics`** section. In the interest of time, we will continue with our current clusters.
+Then, we would work our way back through the analysis, starting with the **`Exploration of quality control metrics`** section. However, in the interest of time, we will continue with our current clusters.
+
+```r
+# Assign identity of clusters
+Idents(object = seurat_obj) <- "RNA_snn_res.0.8"
+
+# Plot the UMAP
+DimPlot(seurat_obj,
+        reduction = "umap",
+        label = TRUE,
+        label.size = 6,
+        plot.title = "UMAP")
+```
 
 **B cell markers**
 
@@ -892,7 +902,7 @@ FeaturePlot(seurat_control,
 <img src="../img/markers_erythrocytes.png" width="600">
 </p>
 
-There does not seem to be a cluster of erythrocytes, as the markers are spread around the different cell types. This is not a bad thing as the blood cells are often cell types to be excluded during the prep, since they are not often informative about the condition of interest.
+There does not seem to be a cluster of erythrocytes, as the markers are spread around the different cell types. This is not a bad thing as the blood cells are often cell types to be excluded from the analysis, since they are not often informative about the condition of interest.
 
 Based on these results, we can associate clusters with the cell types. However, we would like to perform a deeper analysis using marker identification before performing a final assignment of the clusters to a cell type.
 
@@ -912,12 +922,12 @@ Based on these results, we can associate clusters with the cell types. However, 
 | Erythrocytes | - |
 | Unknown | 9 |
 
-> **NOTE:** With the pDCs, or with any other cluster that appears to contain two separate cell types, it's helpful to increase our clustering resolution to properly subset the clusters, as discussed above. Alternatively, if we still can't separate out the clusters using increased resolution, then it's possible that we had used too few principal components such that we are just not separating out these cell types of interest. To inform us, we could look at our PC gene expression overlapping the UMAP plots and determine whether our cell populations are separating by the PCs included.
+> **NOTE:** With the pDCs, in addition to any other cluster that appears to contain two separate cell types, it's helpful to increase our clustering resolution to properly subset the clusters, as discussed above. Alternatively, if we still can't separate out the clusters using increased resolution, then it's possible that we had used too few principal components such that we are just not separating out these cell types of interest. To inform our choice of PCs, we could look at our PC gene expression overlapping the UMAP plots and determine whether our cell populations are separating by the PCs included.
 
 Now we have a decent idea as to the cell types corresponding to the majority of the clusters, but some questions remain:
 
 1. *What is the cell type identity of cluster 9?*
-2. *Is cluster 7 a CD8+ T cell or an NK cell? Perhaps an NK T cell?*
+2. *Is cluster 7 a CD8+ T cell or an NK cell?*
 3. *Do the clusters corresponding to the same cell types have biologically meaningful differences? Are there subpopulations of these cell types?*
 4. *Can we acquire higher confidence in these cell type identities by identifying other marker genes for these clusters?*
 

@@ -37,32 +37,37 @@ _**Recommendations:**_
 
 Remember that we had the following questions from the clustering analysis:
 
-1. *What is the cell type identity of clusters 16, 17, and 20?*
+1. *What is the cell type identity of clusters 17 and 20?*
 3. *Do the clusters corresponding to the same cell types have biologically meaningful differences? Are there subpopulations of these cell types?*
 4. *Can we acquire higher confidence in these cell type identities by identifying other marker genes for these clusters?*
 
 Remember that we have a few different types of marker identification, each with their own benefits and drawbacks:
 
-1. **Identification of all markers for each cluster:** this analysis compares each cluster against all others and outputs the genes that are differentially expressed/present. 
+1. **Identification of all markers for each cluster**
+	
 	- *Useful for identifying unknown clusters and improving confidence in hypothesized cell types.*
 
-2. **Identification of conserved markers for each cluster regardless of condition:** this analysis looks for those genes that are conserved in the cluster across all conditions. This analysis will output genes that are consistently differentially expressed/present for all of the sample groups. These genes can help to figure out the identity for the cluster. Often, this analysis is performed only for those clusters whose identity is uncertain or novel.
+2. **Identification of conserved markers for each cluster regardless of condition** 
+	
 	- *Useful for identifying unknown clusters and improving confidence in cell type identities when more than one condition. Returns fewer, but higher confidence markers of cell type. Tends to take much longer to run.*  	
 
-3. **Marker identification between specific clusters:** this analysis explores differentially expressed genes between specific clusters. 
+3. **Marker identification between specific clusters**
+	
 	- *Useful for determining differences in gene expression between clusters with markers that are similar in the above analyses.*
 
-Since we have more than a single condition, we can explore conserved markers for identifying unknown clusters, in addition to identifying all markers for each cluster and exploring differences between clusters.
+Since we have more than a single condition, we can explore all methods of marker identification.
 
 ## Identification of all markers for each cluster
 
-For this analysis we are comparing each cluster against all other clusters to identify cluster markers using the ` FindAllMarkers()` function, similar to previously. 
+This analysis compares each cluster against all others and outputs the genes that are differentially expressed/present using the `FindAllMarkers()` function. 
 
 ```r
 # Find markers for every cluster compared to all remaining cells, report only the positive ones
 combined_markers <- FindAllMarkers(object = combined, 
                           only.pos = TRUE,
-                          logfc.threshold = 0.25)                       
+                          logfc.threshold = 0.25)  
+
+View(combined_markers)                                               
 ```
 
 The order of the columns doesn't seem the most intuitive, so we will reorder the columns with the `cluster` first followed by the `gene`.
@@ -120,20 +125,34 @@ View(top5_comb)
 
 Based on these marker results, we can determine whether the markers make sense for our hypothesized identities for each cluster:
 
+| Cell Type | Clusters |
+|:---:|:---:|
+| CD14+ Monocytes | 0 | 
+| FCGR3A+ Monocytes | 7 |
+| Conventional dendritic cells | 13 |
+| Plasmacytoid dendritic cells | 18 |
+| Naive B cells | 4, 15 |
+| Activated B cells | 14 |
+| Naive CD4+ T cells | 1, 2, 9, 16 |
+| Activated CD4+ T cells | 3 |
+| Naive CD8+ T cells| 11 |
+| Activated (cytotoxic) CD8+ T cells| 6, 10 |
+| NK cells | 5 |
+| Megakaryocytes | 12 |
+| Erythrocytes | 19 |
+| Stressed / dying cells | 8 |
+| Unknown | 17, 20 |
 
-
-If there were any questions about the identity of any clusters, exploring the cluster's markers would be the first step. Let's look at the `ann_comb_markers`, filtering for cluster 17.
+If there were any questions about the identity of any clusters, exploring the cluster's markers would be the first step. Let's look at the `ann_comb_markers`, filtering for cluster 17. ATAD2 can be associated with activation, so maybe cluster 17 corresponds to activated CD4+ T cells.
 
 <p align="center">
-<img src="../img/sc_cluster9_markers.png" width="800">
+<img src="../img/sc_integ_cluster17.png" width="800">
 </p>
 
-We also had questions regarding the identity of cluster 7. Is cluster 7 a CD8+ T cell, an NK cell, or an NK T cell?
-
-We can look at the markers of cluster 7 to try to resolve the identity:
+We also had questions regarding the identity of cluster 20. We can look at the markers of cluster 20 to try to resolve the identity:
 
 <p align="center">
-<img src="../img/sc_cluster7_markers.png" width="800">
+<img src="../img/sc_integ_cluster20.png" width="800">
 </p>
 
 
