@@ -421,7 +421,7 @@ seurat_control <- FindNeighbors(object = seurat_control,
                                 
 # Determine the clusters for various resolutions                                
 seurat_control <- FindClusters(object = seurat_control,
-                               resolution = c(0.4, 0.6, 0.8, 1.2, 1.8))
+                               resolution = c(0.4, 0.6, 0.8, 1.0, 1.2, 1.8))
 ```
 
 If we look at the metadata of our Seurat object(`seurat_control@metadata`), there is a separate column for each of the different resolutions calculated.
@@ -498,7 +498,7 @@ DimPlot(seurat_control,
 <img src="../img/SC_umap0.4.png" width="800">
 </p>
 
-We'll continue with the 0.8 resolution and check the quality control metrics and known markers for anticipated cell types.
+Based on the number of cell types we expect to be present, we'll continue with the 0.8 resolution and check the quality control metrics and known markers for anticipated cell types.
 
 ```r
 # Assign identity of clusters
@@ -708,15 +708,17 @@ The `FeaturePlot()` function from seurat makes it easy to visualize a handful of
 
 | Cell Type | Marker |
 |:---:|:---:|
-| CD14+ Monocytes | CD14, LYZ | 
-| FCGR3A+ Monocytes | FCGR3A, MS4A7 |
-| Dendritic Cells | FCER1A, CST3 |
-|	B cells | CD79A, MS4A1 |
+| CD14+ monocytes | CD14, LYZ | 
+| FCGR3A+ monocytes | FCGR3A, MS4A7 |
+| Conventional dendritic cells | FCER1A, CST3 |
+| Plasmacytoid dendritic cells | IL3RA, GZMB, SERPINF1, ITM2C |
+| B cells | CD79A, MS4A1 |
 | T cells | CD3D |
 | CD4+ T cells | CD3D, IL7R, CCR7 |
 | CD8+ T cells| CD3D, CD8A |
 | NK cells | GNLY, NKG7 |
 | Megakaryocytes | PPBP |
+| Erythrocytes | HBB, HBA2 |
 
 Seurat's `FeaturePlot()` function let's us easily explore the known markers on top of our t-SNE or UMAP visualizations. Let's go through and determine the identities of the clusters.
 
@@ -732,6 +734,8 @@ FeaturePlot(seurat_control,
 <img src="../img/markers_CD14_monocytes.png" width="800">
 </p>
 
+CD14+ monocytes appear to correspond to clusters 0 and 5, and to a lesser extent, cluster 11.
+
 **FCGR3A+ monocyte markers**
 
 ```r
@@ -744,7 +748,9 @@ FeaturePlot(seurat_control,
 <img src="../img/markers_FCGR3A_monocytes.png" width="800">
 </p>
 
-**Dendritic cell markers**
+FCGR3A+ monocytes markers distinctly highlight cluster 11.
+
+**Conventional dendritic cell markers**
 
 ```r
 FeaturePlot(seurat_control, 
@@ -755,6 +761,40 @@ FeaturePlot(seurat_control,
 <p align="center">
 <img src="../img/markers_DCs.png" width="800">
 </p>
+
+The markers corresponding to conventional dendritic cells identify most of cluster 10.
+
+**Plasmacytoid dendritic cell markers**
+
+```r
+FeaturePlot(seurat_control, 
+            reduction = "umap", 
+            features = c("IL3RA", "GZMB", "SERPINF1", "ITM2C"))
+```
+
+<p align="center">
+<img src="../img/markers_pDCs.png" width="800">
+</p>
+
+Plasmacytoid dendritic cells (pDCs) correspond to the part of cluster 10 that didn't mark the conventional dendritic cells (cDCs). This indicates that we may need to increase our `resolution` clustering parameter to separate out our pDCs from our cDCs. 
+
+We could test out different resolutions by running the following code (`seurat_obj` would be `seurat_control`):
+
+```r
+# DO NOT RUN
+
+# Assign identity of clusters
+Idents(object = seurat_obj) <- "RNA_snn_res.1"
+
+# Plot the UMAP
+DimPlot(seurat_obj,
+        reduction = "umap",
+        label = TRUE,
+        label.size = 6,
+        plot.title = "UMAP")
+```
+
+Then, we would work our way back through the analysis, starting with the **`Exploration of quality control metrics`** section. In the interest of time, we will continue with our current clusters.
 
 **B cell markers**
 
@@ -768,6 +808,8 @@ FeaturePlot(seurat_control,
 <img src="../img/markers_Bcells.png" width="800">
 </p>
 
+Clusters 4 and 13 have good expression of the B cell markers.
+
 **T cell markers**
 
 ```r
@@ -779,6 +821,8 @@ FeaturePlot(seurat_control,
 <p align="center">
 <img src="../img/markers_Tcells.png" width="600">
 </p>
+
+All T cells markers concentrate in clusters 1, 2, 3, 7, 8, 14, and 15.
 
 **CD4+ T cell markers**
 
@@ -792,6 +836,8 @@ FeaturePlot(seurat_control,
 <img src="../img/markers_CD4Tcells.png" width="800">
 </p>
 
+The subset of T cells corresponding to the CD4+ T cells are clusters 1, 2, 3, 14, and 15.
+
 **CD8+ T cell markers**
 
 ```r
@@ -803,6 +849,8 @@ FeaturePlot(seurat_control,
 <p align="center">
 <img src="../img/markers_CD8Tcells.png" width="800">
 </p>
+
+Clusters 7 and 8 have high expression of the CD8+ T cell markers.
 
 **NK cell markers**
 
@@ -816,6 +864,7 @@ FeaturePlot(seurat_control,
 <img src="../img/markers_NKcells.png" width="800">
 </p>
 
+The NK cell markers are expressed in cluster 8, and to a lesser degree, cluster 7.
 
 **Megakaryocyte markers**
 
@@ -829,26 +878,41 @@ FeaturePlot(seurat_control,
 <img src="../img/markers_megakaryocytes.png" width="600">
 </p>
 
+The megakaryocyte markers seem to be expressed mainly in cluster 12.
+
+**Erythrocyte markers**
+
+```r
+FeaturePlot(seurat_control, 
+            reduction = "umap", 
+            features = c("HBB", "HBA2"))
+```
+
+<p align="center">
+<img src="../img/markers_erythrocytes.png" width="600">
+</p>
+
+There does not seem to be a cluster of erythrocytes, as the markers are spread around the different cell types. This is not a bad thing as the blood cells are often cell types to be excluded during the prep, since they are not often informative about the condition of interest.
 
 Based on these results, we can associate clusters with the cell types. However, we would like to perform a deeper analysis using marker identification before performing a final assignment of the clusters to a cell type.
 
 
 | Cell Type | Clusters |
 |:---:|:---:|
-| CD14+ Monocytes | 0, 5 | 
-| FCGR3A+ Monocytes | 11 |
-| Dendritic Cells | 10 |
+| CD14+ monocytes | 0, 5 | 
+| FCGR3A+ monocytes | 11 |
+| Conventional dendritic cells | 10 |
+| Plasmacytoid dendritic cells | 10 |
 | B cells | 4, 13 |
 | T cells | 1, 2, 3, 7, 8, 14, 15 |
 | CD4+ T cells | 1, 2, 3, 14, 15 |
 | CD8+ T cells| 7, 8 |
 | NK cells | 6, 7 |
 | Megakaryocytes | 12 |
+| Erythrocytes | - |
 | Unknown | 9 |
 
-> **NOTE:** If you had known markers for different cell types that recognized different parts of the same cluster (e.g. B cell and T cell markers both marked the same cluster), then this would be an indication that the resolution should be increased, followed by re-clustering of the cells. 
->
-> Also, it's possible to use too few principal components such that we are just not separating out these cell types of interest. We can look at our PC gene expression overlapping the UMAP plots and determine whether our cell populations are separating by the PCs included.
+> **NOTE:** With the pDCs, or with any other cluster that appears to contain two separate cell types, it's helpful to increase our clustering resolution to properly subset the clusters, as discussed above. Alternatively, if we still can't separate out the clusters using increased resolution, then it's possible that we had used too few principal components such that we are just not separating out these cell types of interest. To inform us, we could look at our PC gene expression overlapping the UMAP plots and determine whether our cell populations are separating by the PCs included.
 
 Now we have a decent idea as to the cell types corresponding to the majority of the clusters, but some questions remain:
 
