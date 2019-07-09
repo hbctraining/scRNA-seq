@@ -797,28 +797,32 @@ FeaturePlot(seurat_control,
 
 Plasmacytoid dendritic cells (pDCs) correspond to the part of cluster 10 that didn't mark the conventional dendritic cells (cDCs). This indicates that we may need to increase our `resolution` clustering parameter to separate out our pDCs from our cDCs. 
 
-We could test out different resolutions by running the following code (`seurat_obj` would be `seurat_control`):
+We could test out different resolutions by running the following code:
 
 ```r
 # Assign identity of clusters
-Idents(object = seurat_obj) <- "RNA_snn_res.1"
+Idents(object = seurat_control) <- "RNA_snn_res.1.2"
 
 # Plot the UMAP
-DimPlot(seurat_obj,
+DimPlot(seurat_control,
         reduction = "umap",
         label = TRUE,
         label.size = 6,
         plot.title = "UMAP")
+
+FeaturePlot(seurat_control, 
+        reduction = "umap", 
+        features = c("IL3RA", "GZMB", "SERPINF1", "ITM2C"))
 ```
 
-Then, we would work our way back through the analysis, starting with the **`Exploration of quality control metrics`** section. However, in the interest of time, we will continue with our current clusters.
+Then, we could work our way back through the analysis, starting with the **`Exploration of quality control metrics`** section. However, in the interest of time, we will continue with the clusters we saw earlier, and go back to the resolution of "0.8".
 
 ```r
 # Assign identity of clusters
-Idents(object = seurat_obj) <- "RNA_snn_res.0.8"
+Idents(object = seurat_control) <- "RNA_snn_res.0.8"
 
 # Plot the UMAP
-DimPlot(seurat_obj,
+DimPlot(seurat_control,
         reduction = "umap",
         label = TRUE,
         label.size = 6,
