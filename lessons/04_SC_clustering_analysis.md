@@ -546,7 +546,7 @@ We can start by exploring the distribution of cells per cluster:
 
 ```{r cell_counts}
 # Extract identity and sample information from seurat object to determine the number of cells per cluster per sample
-n_cells <- FetchData(control, 
+n_cells <- FetchData(seurat_control, 
                      vars = c("ident")) %>% 
         dplyr::count(ident) %>% 
         spread(ident, n)
