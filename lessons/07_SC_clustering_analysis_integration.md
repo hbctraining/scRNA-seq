@@ -49,36 +49,7 @@ To integrate multiple samples together, we need to perform the following steps:
 The first thing we do is extract each sample as an individual Seurat object.
 
 ```r
-# Create Seurat object from filtered SingleCellExperiment object
-data_dir <- "data"
-
-# Check names of samples
-levels(factor(seurat_raw@meta.data$sample))
-```
-
-Now we can extract each sample as an individual Seurat object
-
-```r
-# Check names of samples
-sample_names <- levels(factor(seurat_raw@meta.data$sample))
-
-for (sample in sample_names){
-
-        # Determine cell IDs of cells in each sample
-        cell_ids <- seurat_raw@meta.data[which(seurat_raw@meta.data$sample == sample), ] %>%
-                rownames()
-
-        # Subset the Seurat object to single sample
-        seurat_obj <- subset(seurat_raw,
-                     		  cells = cell_ids)
-
-        # Save sample names to a variable
-        seurat_sample <- sample
-		 
-		 # Assign the variable as an object in the environment
-        assign(seurat_sample, seurat_obj)
-}
-
+seurat_list <- SplitObject(seurat_raw, split.by = "sample")
 ```
 
 We should now have variables/objects in our environment called `ctrl` and `stim`.
@@ -110,7 +81,7 @@ top20 <- head(x = VariableFeatures(object = seurat_list$ctrl),
               n = 20)
 
 # Variable gene plot
-unlabelled <- VariableFeaturePlot(object = ctrl)
+unlabelled <- VariableFeaturePlot(object = seurat_list$ctrl)
 
 # With labels
 LabelPoints(plot = unlabelled,

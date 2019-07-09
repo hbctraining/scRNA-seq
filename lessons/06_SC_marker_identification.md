@@ -17,6 +17,8 @@ Now that we have identified our desired clusters, we can move on to marker ident
 
 <img src="../img/sc_workflow.png" width="800">
 
+***
+
 _**Goals:**_ 
  
  - _To **determine the gene markers** for each of the clusters_
@@ -34,6 +36,7 @@ _**Recommendations:**_
  _Identify all markers conserved between conditions for each cluster_
  - _Identify markers that are differentially expressed between specific clusters_
 
+***
 
 Remember that we had the following questions from the clustering analysis:
 
@@ -293,8 +296,8 @@ If we wanted to remove the stressed cells, we could use the `SubsetData()` funct
 
 ```r
 # Remove the stressed or dying cells
-control_labelled <- SubsetData(seurat_control,
-                               ident.remove = "Stressed/dying cells")
+control_labelled <- subset(seurat_control,
+                               idents = "Stressed/dying cells", invert = TRUE)
 
 # Re-visualize the clusters
 DimPlot(object = control_labelled, 
