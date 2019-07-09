@@ -296,8 +296,8 @@ If we wanted to remove the stressed cells, we could use the `SubsetData()` funct
 
 ```r
 # Remove the stressed or dying cells
-control_labelled <- SubsetData(seurat_control,
-                               ident.remove = "Stressed/dying cells")
+control_labelled <- subset(seurat_control,
+                               idents = "Stressed/dying cells", invert = TRUE)
 
 # Re-visualize the clusters
 DimPlot(object = control_labelled, 
