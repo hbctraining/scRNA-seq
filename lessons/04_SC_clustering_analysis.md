@@ -613,23 +613,20 @@ Then, we can plot the cell cycle by UMAP and PCA:
 
 ```r
 # Function to plot UMAP and PCA as grids
-map(group_by, function(metric) {
-        cat("\n\n###", metric, "\n\n")
-        p <- plot_grid(
-                ggplot(class_umap_data, aes(UMAP_1, UMAP_2)) +
-                        geom_point(aes_string(color = metric), alpha = 0.7) +
-                        scale_color_brewer(palette = "Set2")  +
-                        geom_text(data=umap_label, aes(label=ident, x, y)),
-                ggplot(class_pca_data, aes(PC_1, PC_2)) +
-                        geom_point(aes_string(color = metric), alpha = 0.7) +
-                        scale_color_brewer(palette = "Set2")  +
-                        geom_text(data=pca_label, 
-                                  aes(label=ident, x, y)),
-                nrow = 1, 
-                align = "v")
-        print(p)
-}) %>%
-        invisible()
+  map(group_by, function(metric) {
+    plot_grid(
+      ggplot(class_umap_data, aes(UMAP_1, UMAP_2)) +
+        geom_point(aes_string(color = metric), alpha = 0.7) +
+        scale_color_brewer(palette = "Set2")  +
+        geom_text(data=umap_label, aes(label=ident, x, y)),
+      ggplot(class_pca_data, aes(PC_1, PC_2)) +
+        geom_point(aes_string(color = metric), alpha = 0.7) +
+        scale_color_brewer(palette = "Set2")  +
+        geom_text(data=pca_label, 
+                  aes(label=ident, x, y)),
+      nrow = 1, 
+      align = "v")
+  })
 
 ```
 
