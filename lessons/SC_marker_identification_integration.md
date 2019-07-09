@@ -155,33 +155,7 @@ We also had questions regarding the identity of cluster 20. We can look at the m
 <img src="../img/sc_integ_cluster20.png" width="800">
 </p>
 
-
-To get a better idea of cell type identity we can explore the expression of different identified markers by cluster using the `FeaturePlot()` function. For example, we can look at the cluster 7 markers:
-
-```r
-# Plot top 5 markers for cluster 7
-FeaturePlot(object = seurat_control, 
-            features = top5[top5$cluster == 7, "gene"] %>%
-                    pull(gene))
-```
-
-<p align="center">
-<img src="../img/sc_markers_cluster7.png" width="800">
-</p>
-
-We can also explore the range in expression of specific markers by using violin plots:
-
-```r
-# Vln plot - cluster 7
-VlnPlot(object = seurat_control, 
-        features = top5[top5$cluster == 7, "gene"] %>%
-                    pull(gene))
-```        
-
-<p align="center">
-<img src="../img/sc_markers_cluster7_violin.png" width="800">
-</p>
-
+The enriched genes appear to be markers of proliferation. In addition, we see expression of genes encoding T cell inhibitory receptors. However, cluster 20 had low levels of the T cell markers CD3D, CD4 and CD8. So this cluster is still a bit of a mystery.
 
 
 ## Identification of conserved markers in all conditions
