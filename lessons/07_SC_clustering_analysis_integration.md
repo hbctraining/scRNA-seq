@@ -90,6 +90,8 @@ Before comparing expression profiles of cells to determine similarity, we need t
 Then, to align similar cells across samples we need to identify the most variable genes for each of the samples. Similar to previously, the mean-variance relationship of the data is modeled and the 2,000 most variable genes are returned.
 
 ```r
+seurat_list <- SplitObject(seurat_raw, split.by = "sample")
+
 for (i in 1:length(seurat_list)) {
         seurat_list[[i]] <- NormalizeData(seurat_list[[i]], 
                                           verbose = FALSE)
