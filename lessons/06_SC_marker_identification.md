@@ -17,6 +17,8 @@ Now that we have identified our desired clusters, we can move on to marker ident
 
 <img src="../img/sc_workflow.png" width="800">
 
+***
+
 _**Goals:**_ 
  
  - _To **determine the gene markers** for each of the clusters_
@@ -34,6 +36,7 @@ _**Recommendations:**_
  _Identify all markers conserved between conditions for each cluster_
  - _Identify markers that are differentially expressed between specific clusters_
 
+***
 
 Remember that we had the following questions from the clustering analysis:
 
