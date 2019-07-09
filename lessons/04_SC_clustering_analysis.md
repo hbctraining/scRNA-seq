@@ -71,6 +71,7 @@ To perform this analysis, we will be mainly using functions available in the Seu
 # Load libraries
 library(Seurat)
 library(tidyverse)
+library(RCurl)
 ```
 
 To perform the analysis, Seurat requires the data to be present as a `seurat` object. We have created this object in the QC lesson, so we can use that and just reassign it to a new variable name:
@@ -190,9 +191,10 @@ After scoring each gene for cell cycle phase, we can perform PCA using the expre
 
 ```r
 # Download cell cycle genes for organism at https://github.com/hbc/tinyatlas/tree/master/cell_cycle. Read it in with:
-cell_cycle_genes <- read.csv(file.path(data_dir, "Homo_sapiens.csv"))
 
-View(cell_cycle_genes)
+cc_file <- getURL("https://raw.githubusercontent.com/hbc/tinyatlas/master/cell_cycle/Homo_sapiens.csv") 
+cell_cycle_genes <- read.csv(text = cc_file)
+
 ```
 
 All of the cell cycle genes are Ensembl IDs, but our gene IDs are the gene names. To score the genes in our count matrix for cell cycle, we need to obtain the gene names for the cell cycle genes. 
@@ -353,7 +355,7 @@ ElbowPlot(object = seurat_control,
 </p>
 
 
-Based on this plot, we could choose where the elbow occurs (touches the ground) to be between PC12-PC16. While this gives us a good rough idea of the number of PCs to include, a more quantitative approach may be a bit more reliable. We will identify a PC threshold by calculating where the principal components start to elbow by taking the larger value of:
+Based on this plot, we could choose where the elbow occurs (touches the ground) to be between PC12-PC16. While this gives us a good rough idea of the number of PCs to include, a **more quantitative approach** may be a bit more reliable. We will identify a PC threshold by calculating where the principal components start to elbow by **taking the larger value of**:
 
 1. The point where the principal components only contribute 5% of standard deviation and the principal components cumulatively contribute 90% of the standard deviation.
 2. The point where the percent change in variation between the consequtive PCs is less than 0.1%.
@@ -376,8 +378,8 @@ The first metric returns PC43 as the PC matching these requirements. Let's check
 
 ```r
 # Determine the difference between variation of PC and subsequent PC
-pct[2:length(pct)]) > 0.1),
-          decreasing = T)[1] + 1 
+co2 <- sort(which((pct[1:length(pct) - 1] - pct[2:length(pct)]) > 0.1), decreasing = T)[1] + 1
+
 # last point where change of % of variation is more than 0.1%.
 
 co2
@@ -392,7 +394,27 @@ pcs <- min(co1, co2)
 pcs
 ```
 
-Based on these metrics, for the clustering of cells in Seurat we will use the first **fourteen PCs** to generate the clusters.
+Based on these metrics, for the clustering of cells in Seurat we will use the first **fourteen PCs** to generate the clusters. We can plot the elbow plot again and overlay the information determined using our metrics:
+
+```r
+# Create a dataframe with values
+plot_df <- data.frame(pct = pct, 
+           cumu = cumu, 
+           rank = 1:length(pct))
+
+# Elbow plot to visualize 
+  ggplot(plot_df, aes(cumu, pct, label = rank, color = rank >= pcs)) + 
+  geom_text() + 
+  geom_vline(xintercept = 90, color = "grey") + 
+  geom_hline(yintercept = min(pct[pct > 5]), color = "grey") +
+  theme_bw()
+ 
+ ```
+ 
+ <p align="center">
+<img src="../img/SC_elbowplot_colored.png" width="500">
+</p>
+
 
 However, it's often a good idea to check the genes associated with some higher PCs to make sure that other PCs shouldn't be included due to association with some rarer cell populations.
 
