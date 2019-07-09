@@ -260,7 +260,7 @@ View(cd8_t_markers)
 ```
 
 <p align="center">
-<img src="../img/" width="800">
+<img src="../img/sc_cd8_t_markers_diff.png" width="800">
 </p>
 
 Now taking all of this information, we can surmise the cell types of the different clusters and plot the cells with cell type labels. We would have done comparisons between all of the clusters that represent the same cell type (i.e. between clusters 1, 2, and 3 for CD4+ T cells); however, for this lesson, we will merge all of the clusters of the same cell type.
