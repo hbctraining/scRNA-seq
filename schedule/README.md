@@ -1,4 +1,4 @@
-# Schedule for Session IV
+# Schedule for Single-cell RNA-seq workshop
 
 ## Day1
 
@@ -6,8 +6,7 @@
 |:-----------:|:----------:|:--------:|
 | 09:00 - 10:30 | [Single-cell RNA-seq design and methods](slides/Single_Cell_Sept_2018_final.pdf) | [Dr. Sarah Boswell](https://scholar.harvard.edu/saboswell) |
 | 10:30 - 10:45 | Coffee | |
-| 10:45 - 11:45 | [Single-cell RNA-seq analysis workflow](slides/2018-09-27-HCBC-course-Subramanian.pdf) | Dr. Ayshwarya Subramanian |
-| 11:45 - 12:15 | [Single-cell RNA-seq - From Sequence to Counts](https://hbctraining.github.io/scRNA-seq/lessons/SC_pre-QC.html) | Mary |
+| 10:45 - 11:45 | [Single-cell RNA-seq analysis workflow](https://hbctraining.github.io/scRNA-seq/lessons/SC_pre-QC.html) | Mary |
 | 12:15 - 13:15 | Lunch | |
 | 13:15 - 14:30 | [Single-cell RNA-seq - quality control](https://hbctraining.github.io/scRNA-seq/lessons/SC_quality_control_analysis.html)  | Meeta |
 | 14:30 - 15:15 | [Single-cell RNA-seq - clustering](https://hbctraining.github.io/scRNA-seq/lessons/SC_clustering_analysis.html)  | Mary |
