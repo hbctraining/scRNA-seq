@@ -678,7 +678,7 @@ columns <- c(paste0("PC_", 1:14),
             "UMAP_1", "UMAP_2")
 
 # Extracting this data from the seurat object
-pc_data <- FetchData(control, 
+pc_data <- FetchData(seurat_control, 
                      vars = columns)
 
 # Plotting a UMAP plot for each of the PCs
