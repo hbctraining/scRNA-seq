@@ -132,6 +132,8 @@ library(Matrix)
 library(AnnotationHub)
 library(ensembldb)
 library(scales)
+library(cowplot)
+library(RCurl)
 ```
 
 ## Loading single-cell RNA-seq count data 
