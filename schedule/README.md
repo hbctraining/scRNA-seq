@@ -1,4 +1,4 @@
-# Schedule for Session IV
+# Schedule for Single-cell RNA-seq workshop
 
 ## Day1
 
