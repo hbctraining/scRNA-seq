@@ -11,9 +11,6 @@ Approximate time: 90 minutes
 * Understand how to determine the most variable genes for the gene expression
 * Utilize methods for evaluating the selection of PCs to use for clustering
 * Perform clustering of cells based on significant PCs
-* Evaluate whether clustering artifacts are present 
-* Determine the quality of clustering with PCA, tSNE and UMAP plots and understand when to re-cluster
-* Assess known cell type markers to hypothesize cell type identities of clusters
 
 # Single-cell RNA-seq clustering analysis
 
