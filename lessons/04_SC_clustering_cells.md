@@ -19,6 +19,8 @@ Now that we have our high quality cells, we want to know the different cell type
 
 <img src="../img/sc_workflow.png" width="800">
 
+***
+
 _**Goals:**_ 
  
  - _To **generate cell type-specific clusters** and use known markers to determine the identities of the clusters._
@@ -38,6 +40,8 @@ _**Recommendations:**_
  - _**Regress out** number of UMIs, mitochondrial content, and cell cycle, if needed and appropriate for experiment, so not to drive clustering_
  - _Identify any junk clusters for removal. Possible junk clusters could include those with high **mitochondrial content** and low UMIs/genes_
  - _If **not detecting all cell types as separate clusters**, try changing the resolution or the number of PCs used for clustering_
+ 
+***
 
 ## Clustering workflow
 
