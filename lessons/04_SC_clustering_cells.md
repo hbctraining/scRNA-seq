@@ -477,7 +477,7 @@ DimPlot(object = seurat_control,
 <img src="../img/SC_tsne.png" width="800">
 </p>
 
-With this t-SNE plot it can be difficult to distinguish the boundaries of the clusters. We can explore the UMAP method, which should separate the clusters more based on similarity.
+**How does your tSNE plot compare to the one above?** An alternative visualization to the tSNE is the UMAP method, as it can be difficult to distinguish the boundaries of the clusters. We can explore the UMAP method, which should separate the clusters more based on similarity.
 
 ```r
 # Calculation of UMAP
@@ -497,9 +497,9 @@ DimPlot(seurat_control,
 <img src="../img/SC_umap.png" width="800">
 </p>
 
-The UMAP looks quite a bit nicer, with the clusters more clearly defined. Also, because distance between clusters is meaningful, the UMAP provides more information than t-SNE. We will continue with the UMAP method for all downstream cluster visualizations. 
+The UMAP looks quite a bit nicer, with the clusters more clearly defined. Also, because distance between clusters is meaningful, the UMAP provides more information than t-SNE. 
 
-It can be useful to explore other resolutions as well. It will give you a quick idea about how the clusters would change based on the resolution parameter.
+It can be useful to **explore other resolutions as well**. It will give you a quick idea about how the clusters would change based on the resolution parameter. For example, let's take a look at 0.4 resolution:
 
 ```r
 # Assign identity of clusters
@@ -517,7 +517,18 @@ DimPlot(seurat_control,
 <img src="../img/SC_umap0.4.png" width="800">
 </p>
 
-Based on the number of cell types we expect to be present, we'll continue with the 0.8 resolution and check the quality control metrics and known markers for anticipated cell types.
+
+**How does your UMAP plot compare to the one above?**
+
+What you may have noticed is that there is some variability in the way your plots look compared to those in the lesson. In particular you may see a difference in the labeling of clusters. This is an unfortunate consequence of slight variations in the versions you are using (of the Seurat package and/or dependency packages).
+
+In order to maintain consistency in the downstream analysis and interpretation of this dataset, we will ask you to [download a new R object](https://www.dropbox.com/s/7m71je2s21kxwcf/seurat_control.rds?dl=1). Once downloaded, you will need to **load in the object to your R session and overwrite the existing one**: 
+
+```r
+seurat_control <- readRDS("~/Downloads/seurat_control.rds")
+```
+
+Using this new R object we will continue with the UMAP method and the 0.8 resolution to check the quality control metrics and known markers for anticipated cell types. Plot the UMAP again to make sure your image now matches what you see in the lesson:
 
 ```r
 # Assign identity of clusters
