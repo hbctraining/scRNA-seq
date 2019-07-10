@@ -228,6 +228,11 @@ For integrated data, we usually use the number of PCs utilized in the integratio
 
 Let's to make sure that 30 PCs capture the most significant PCs by plotting the elbow plot.
 
+```r
+ElbowPlot(object = combined, 
+           ndims = 40)
+```
+
 <p align="center">
 <img src="../img/sc_integ_elbow_plot.png" width="600">
 </p>
