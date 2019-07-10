@@ -320,7 +320,21 @@ Again, we see that our results are not all the same, so to work with the same ob
 ```r
 # Read in clustered Seurat object
 combined <- readRDS("data/combined_for_markerID_integ.rds")
+
+# Ensure assignment of resolution 0.8
+Idents(object = combined) <- "integrated_snn_res.0.8"
+
+# Plot UMAP
+DimPlot(combined,
+        reduction = "umap",
+        label = TRUE,
+        label.size = 6,
+        plot.title = "UMAP")
 ```
+
+<p align="center">
+<img src="../img/integ_umap.png" width="800">
+</p>
 
 ***
 
