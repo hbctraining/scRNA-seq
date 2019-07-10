@@ -143,7 +143,7 @@ _**Image credit:** Stuart T and Butler A, et al. Comprehensive integration of si
 
 To perform the integration it is necessary to specify the number of dimensions or correlated components (CCs) to use. 
 
-> "The canonical correlation vectors...capture correlated gene modules that are present in both datasets, representing genes that define a shared biological state. In contrast, PCA will identify sources of variation even if they are only present in an individual experiment
+> "The canonical correlation vectors...capture correlated gene modules that are present in both datasets, representing genes that define a shared biological state. In contrast, PCA will identify sources of variation even if they are only present in an individual experiment.
 
 Generally Seurat recommends using 
 ```r
