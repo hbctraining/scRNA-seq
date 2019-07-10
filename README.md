@@ -30,7 +30,7 @@ Below are links to the lessons and suggested schedules:
 
 Download the most recent versions of R and RStudio for your laptop:
 
- - [R](http://lib.stat.cmu.edu/R/CRAN/) (version 3.5.0 or above)
+ - [R](http://lib.stat.cmu.edu/R/CRAN/) (version 3.6.0 or above)
  - [RStudio](https://www.rstudio.com/products/rstudio/download/#download)
  
 Note:  When installing the following packages, if you are asked to select (a/s/n) or (y/n), please select “a” or "y" as applicable.
