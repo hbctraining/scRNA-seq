@@ -157,25 +157,19 @@ In addition to there being interesting variation that separates the different ce
 
 ### Cell cycle scoring
 
-Let's score each gene for cell cycle phase, then perform PCA using the expression of cell cycle genes. Remember, if the cells group by cell cycle in the PCA, then we would want to regress out cell cycle variation, **unless cells are differentiating**.  
-
-<p align="center">
-<img src="../img/SC_preregressed_phase_pca.png" width="600">
-</p>
+Let's score each gene for cell cycle phase, then perform PCA using the expression of cell cycle genes. Remember, if the cells group by cell cycle in the PCA, then we would want to regress out cell cycle variation, **unless cells are differentiating**. 
 
 ```r
 combined <- ScaleData(object = combined, 
                       verbose = FALSE)
 
-cycle_genes <- read.csv("data/Homo_sapiens.txt")
+cell_cycle_genes <- inner_join(cell_cycle_genes, annotations, by = c("geneID" = "gene_id"))
 
-cycle_genes <- inner_join(cycle_genes, annotations, by = c("geneID" = "gene_id"))
-
-g2m_genes <- cycle_genes %>%
+g2m_genes <- cell_cycle_genes %>%
         dplyr::filter(phase == "G2/M") %>%
         pull(gene_name)
 
-s_genes <- cycle_genes %>%
+s_genes <- cell_cycle_genes %>%
         dplyr::filter(phase == "S") %>%
         pull(gene_name)
 
