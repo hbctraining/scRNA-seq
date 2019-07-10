@@ -35,7 +35,7 @@ Download the most recent versions of R and RStudio for your laptop:
  
 Note:  When installing the following packages, if you are asked to select (a/s/n) or (y/n), please select “a” or "y" as applicable.
 
-(1) Install the below packages on your laptop from CRAN. You DO NOT have to go to the CRAN webpage; you can use the following function to install them one by one:
+**(1)** Install the below packages on your laptop from **CRAN**. You DO NOT have to go to the CRAN webpage; you can use the following function to install them one by one:
 
 
 ```r
@@ -47,16 +47,19 @@ install.packages("insert_package_name_in_quotations")
 Note that these package names are case sensitive!
 
 ```r
-BiocManager
-devtools
+Matrix.utils
+Seurat
 tidyverse
-RColorBrewer
-pheatmap
-ggrepel
+Matrix
+RCurl
+scales
 cowplot
+devtools
+reticulate
+BiocManager
 ```
 
-(2) Install the below packages from Bioconductor. Load BiocManager, then run BiocManager's `install()` function 10 times for the 10 packages:
+**(2)** Install the below packages from **Bioconductor**. Load BiocManager, then run BiocManager's `install()` function 10 times for the 10 packages:
 
 ```r
 library(BiocManager)
@@ -68,38 +71,27 @@ install("insert_second_package_name_in_quotations")
 Note that these package names are case sensitive!
 
 ```r
-DESeq2
-clusterProfiler
-DOSE
-org.Hs.eg.db
-pathview
-DEGreport
-rhdf5
-tximport
-AnnotationDbi
-EnsDb.Hsapiens.v86
+
+SingleCellExperiment
+AnnotationHub
+ensembldb
 ```
 
-> **NOTE:** The library used for the annotations associated with genes (here we are using `org.Hs.eg.db`) will change based on organism (e.g. if studying mouse, would need to install and load `org.Mm.eg.db`). The list of different organism packages are given [here](https://github.com/hbctraining/Training-modules/raw/master/DGE-functional-analysis/img/available_annotations.png).
-
-(3) Finally, please check that all the packages were installed successfully by loading them one at a time using the `library()` function.  
+**(3)** Finally, please check that all the packages were installed successfully by loading them **one at a time** using the `library()` function.  
 
 ```r
-library(DESeq2)
+library(Matrix.utils)
+library(Seurat)
 library(tidyverse)
-library(RColorBrewer)
-library(pheatmap)
-library(ggrepel)
+library(Matrix)
+library(RCurl)
+library(scales)
 library(cowplot)
-library(clusterProfiler)
-library(DEGreport)
-library(org.Hs.eg.db)
-library(DOSE)
-library(pathview)
-library(rhdf5)
-library(tximport)
-library(AnnotationDbi)
-library(EnsDb.Hsapiens.v86)
+library(reticulate)
+library(SingleCellExperiment)
+library(AnnotationHub)
+library(ensembldb)
+
 ```
 
 (4) Once all packages have been loaded, run sessionInfo().  
