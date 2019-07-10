@@ -52,7 +52,7 @@ The first thing we do is extract each sample as an individual Seurat object.
 seurat_list <- SplitObject(seurat_raw, split.by = "sample")
 ```
 
-We should now have variables/objects in our environment called `ctrl` and `stim`.
+We should now have a list variable with two Seurat object components called `ctrl` and `stim`.
 
 ### Normalize the cell counts for library depth and identify highly variable genes
 
@@ -101,7 +101,7 @@ top20 <- head(x = VariableFeatures(object = seurat_list$stim),
               n = 20)
 
 # Variable gene plot
-unlabelled <- VariableFeaturePlot(object = stim)
+unlabelled <- VariableFeaturePlot(object = seurat_list$stim)
 
 # With labels
 LabelPoints(plot = unlabelled,
@@ -124,9 +124,11 @@ Using the shared highly variable genes from each sample, we integrate the sample
 
 Specifically, this integration method expects "correspondences" or **shared biological states** among at least a subset of single cells across the samples. The steps applied are as follows:
 
-1. CCA is performed, which uses **shared highly variable genes** to reduce the dimensionality of the data and align the cells in each sample into the maximally correlated space (based on sets of genes exhibiting robust correlation in expression). **Shared highly variable genes are most likely to represent those genes distinguishing the different cell types present.**
-2. Identify mutual nearest neighbors, or 'anchors' across datasets (sometimes incorrect anchors are identified)
-	> MNNs identify the cells that are most similar to each other across samples or conditions. "The difference in expression values between cells in an MNN pair provides an estimate of the batch effect, which is made more precise by averaging across many such pairs. A correction vector is obtained from the estimated batch effect and applied to the expression values to perform batch correction. Our approach automatically identifies overlaps in population composition between batches and uses only the overlapping subsets for correction, thus avoiding the assumption of equal composition required by other methods." 
+1. Canonical correlation analysis (CCA) is performed, which uses **shared highly variable genes** to reduce the dimensionality of the data and align the cells in each sample into the maximally correlated space (based on sets of genes exhibiting robust correlation in expression). **Shared highly variable genes are most likely to represent those genes distinguishing the different cell types present.**
+2. Identify mutual nearest neighbors (MNNs), or 'anchors' across datasets (sometimes incorrect anchors are identified)
+	
+	> MNNs identify the cells that are most similar to each other across samples or conditions. "The difference in expression values between cells in an MNN pair provides an estimate of the batch effect, which is made more precise by averaging across many such pairs. A correction vector is obtained from the estimated batch effect and applied to the expression values to perform batch correction. Our approach automatically identifies overlaps in population composition between batches and uses only the overlapping subsets for correction, thus avoiding the assumption of equal composition required by other methods." [[Stuart and Bulter et al. (2018)](https://www.biorxiv.org/content/early/2018/11/02/460147)]. 
+
 3. Assess the similarity between anchor pairs by the overlap in their local neighborhoods (incorrect anchors will have low scores)
 4. Use anchors and corresponding scores to transform cell expression values, allowing for the integration of the datasets (different samples, datasets, modalities)
 	- Transformation of each cell uses a weighted average of the two cells of each anchor across anchors of the datasets. Weights determined by cell similarity score (distance between cell and k nearest anchors) and anchor scores, so cells in the same neighborhood should have similar correction values.
@@ -137,8 +139,13 @@ If cell types are present in one dataset, but not the other, then the cells will
 <img src="../img/integration.png" width="600">
 </p>
 
-_Image credit: Stuart T and Butler A, et al. Comprehensive integration of single cell data, bioRxiv 2018 (https://doi.org/10.1101/460147)_
+_**Image credit:** Stuart T and Butler A, et al. Comprehensive integration of single cell data, bioRxiv 2018 (https://doi.org/10.1101/460147)_
 
+To perform the integration it is necessary to specify the number of dimensions or correlated components (CCs) to use. 
+
+> "The canonical correlation vectors...capture correlated gene modules that are present in both datasets, representing genes that define a shared biological state. In contrast, PCA will identify sources of variation even if they are only present in an individual experiment
+
+Generally Seurat recommends using 
 ```r
 # Identify anchors
 anchors <- FindIntegrationAnchors(object.list = seurat_list, 
