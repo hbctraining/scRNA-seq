@@ -324,7 +324,7 @@ combined <- readRDS("data/combined_for_markerID_integ.rds")
 
 ***
 
-**Exercise**
+**Exercises**
 
 1. **Exploration of quality control metrics:**
 
