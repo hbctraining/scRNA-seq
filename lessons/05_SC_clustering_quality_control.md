@@ -303,7 +303,7 @@ FeaturePlot(seurat_control,
 ```
 
 <p align="center">
-<img src="../img/markers_pDCs.png" width="800">
+<img src="../img/pDCs_loadObj.png" width="800">
 </p>
 
 Plasmacytoid dendritic cells (pDCs) correspond to clusters 5, 6, and 13. (This next part of next no longer is true) that didn't mark the conventional dendritic cells (cDCs). This indicates that we may need to increase our `resolution` clustering parameter to separate out our pDCs from our cDCs. 
