@@ -14,7 +14,7 @@
 | 14:15 - 14:45 | [Quality control]()  | Meeta |
 | 14:45 - 15:00 | Coffee | |
 | 15:00 - 15:15 | [Quality control (cont.)]()  | Meeta |
-| 15:15 - 16:00 | [Theory of normalization, tranformation, and PCA]() | Radhika |
+| 15:15 - 16:00 | [Normalization, tranformation, and PCA]() | Radhika |
 | 16:00 - 17:00 | [Clustering]()  | Mary |
 
 
