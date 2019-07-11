@@ -25,7 +25,7 @@
 | 09:00 - 9:45 | [Clustering (cont.)]()  | Mary |
 | 09:45 - 10:30 | [Cluster exploration]()  | Radhika |
 | 10:30 - 10:45 | Coffee | |
-| 10:45 - 11:15 | [Cluster exploration]()  | Radhika |
+| 10:45 - 11:15 | [Cluster exploration]()  | Mary |
 | 11:15 - 12:15 | [Marker identification]() | Meeta |
 | 12:15 - 13:15 | Lunch | |
 | 13:15 - 14:45 | [Sample integration and clustering]() | Mary |
