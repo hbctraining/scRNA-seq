@@ -57,7 +57,7 @@ reticulate
 BiocManager
 ```
 
-Please install them one-by-one:
+Please install them one-by-one -
 
 ```r
 install.packages("Matrix.utils")
@@ -75,7 +75,7 @@ AnnotationHub
 ensembldb
 ```
 
-Please install them one-by-one, as above.
+Please install them one-by-one -
 
 ```r
 BiocManager::install("SingleCellExperiment")
