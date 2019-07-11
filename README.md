@@ -65,7 +65,7 @@ install.packages("tidyverse")
 ```
 
 
-**(2)** Install the 3 packages listed below from **Bioconductor** using the the `Biocmanager::install()` function.
+**(2)** Install the 3 packages listed below from **Bioconductor** using the the `BiocManager::install()` function.
 
 1. `SingleCellExperiment`
 1. `AnnotationHub`
