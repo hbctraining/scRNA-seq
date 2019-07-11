@@ -169,7 +169,7 @@ map(metrics, function(qc){
 <img src="../img/SC_metrics_umap.png" width="800">
 </p>
 
-The metrics seem to be relatively even across the clusters, with the exception of the `nUMIs` and `nGene` exhibiting higher values in clusters 10 and 11. We will keep an eye on these clusters to see whether the cell types may explain the increase.
+The metrics seem to be relatively even across the clusters, with the exception of the `nUMIs` and `nGene` exhibiting higher values in clusters 8 and 12 (and 11 to some extent). We will keep an eye on these clusters to see whether the cell types may explain the increase.
 
 We can also explore how well our clusters separate by the different PCs; we hope that the defined PCs separate the cell types well. In the UMAP plots below, the cells are colored by their PC score for each respective principal component.
 
