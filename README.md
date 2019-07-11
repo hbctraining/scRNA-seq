@@ -36,11 +36,11 @@ Download the most recent versions of R and RStudio for your laptop:
 
 #### Packages for R
 
-**Note 1: Install the packages in the order listed below.**
-
-**Note 2:  When installing the following packages, if you are asked to select (a/s/n) or (y/n), please select “a” or "y" as applicable.**
-
-**Note 3: All the package names listed below are case sensitive!**
+> **Note 1: Install the packages in the order listed below.**
+> 
+> **Note 2:  When installing the following packages, if you are asked to select (a/s/n) or (y/n), please select “a” or "y" as applicable.**
+> 
+> **Note 3: All the package names listed below are case sensitive!**
 
 **(1)** Install the 10 packages listed below from **CRAN** by using the `install.packages()` function. 
 
