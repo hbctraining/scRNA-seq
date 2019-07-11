@@ -37,12 +37,12 @@ Download the most recent versions of R and RStudio for your laptop:
 #### Packages for R
 
 > **Note 1: Install the packages in the order listed below.**
-> 
+
 > **Note 2:  When installing the following packages, if you are asked to select (a/s/n) or (y/n), please select “a” or "y" as applicable.**
-> 
+ 
 > **Note 3: All the package names listed below are case sensitive!**
 
-**(1)** Install the 10 packages listed below from **CRAN** by using the `install.packages()` function. 
+**(1)** Install the 10 packages listed below from **CRAN** using the `install.packages()` function. 
 
 ```
 Matrix.utils
@@ -57,7 +57,7 @@ reticulate
 BiocManager
 ```
 
-Please install them one-by-one*:
+Please install them one-by-one:
 
 ```r
 install.packages("Matrix.utils")
@@ -67,7 +67,7 @@ install.packages("tidyverse")
 ```
 
 
-**(2)** Install the 3 pacakges listed below from **Bioconductor**. 
+**(2)** Install the 3 packages listed below from **Bioconductor** using the the `Biocmanager::install()` function.
 
 ```r
 SingleCellExperiment
@@ -75,7 +75,7 @@ AnnotationHub
 ensembldb
 ```
 
-To install Bioconductor packages, you will need to use the `Biocmanager::install()` function:
+Please install them one-by-one, as above.
 
 ```r
 BiocManager::install("SingleCellExperiment")
