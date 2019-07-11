@@ -61,7 +61,7 @@ View(n_cells)
 ```
 
 <p align="center">
-<img src="../img/SC_cluster_cells.png" width="800">
+<img src="../img/SC_clustercells_loadObj.png" width="800">
 </p>
 
 Tho acquire the different cluster QC metrics, we can use the `FetchData()` function from Seurat, perform some data wrangling, and plot the metrics with ggplot2. We will start by exploring the distribution of cells in each sample and in the different phases of the cell cycle to view by UMAP and PCA.
@@ -136,7 +136,7 @@ Then, we can plot the cell cycle by UMAP and PCA:
 ```
 
 <p align="center">
-<img src="../img/SC_phase_umap_pca.png" width="800">
+<img src="../img/SC_phase_umap_pca_loadObj.png" width="800">
 </p>
 
 Next we will explore additional metrics, such as the number of UMIs and genes per cell, S-phase and G2M-phase markers, and mitochondrial gene expression by UMAP. 
@@ -166,10 +166,10 @@ map(metrics, function(qc){
 ```
 
 <p align="center">
-<img src="../img/SC_metrics_umap.png" width="800">
+<img src="../img/SC_metrics_umpa_loadObj.png" width="800">
 </p>
 
-The metrics seem to be relatively even across the clusters, with the exception of the `nUMIs` and `nGene` exhibiting higher values in clusters 10 and 11. We will keep an eye on these clusters to see whether the cell types may explain the increase.
+The metrics seem to be relatively even across the clusters, with the exception of the `nUMIs` and `nGene` exhibiting higher values in clusters 8 and 12 (and 11 to some extent). We will keep an eye on these clusters to see whether the cell types may explain the increase.
 
 We can also explore how well our clusters separate by the different PCs; we hope that the defined PCs separate the cell types well. In the UMAP plots below, the cells are colored by their PC score for each respective principal component.
 
@@ -200,7 +200,7 @@ map(paste0("PC_", 1:14), function(pc){
 ```
 
 <p align="center">
-<img src="../img/SC_clusters_by_pc.png" width="800">
+<img src="../img/SC_clusters_PCs_loadObj.png" width="800">
 </p>
 
 We can see how the clusters are represented by the different PCs. For instance, the genes driving `PC_2` exhibit higher expression in clusters 4 and 13, while clusters 6,7, and 14 show lower expression. We could look back at our genes driving this PC to get an idea of what the cell types might be:
@@ -224,7 +224,7 @@ DimPlot(object = seurat_control,
 ```
 
 <p align="center">
-<img src="../img/SC_umap.png" width="800">
+<img src="../img/SC_umap_loadimg.png" width="800">
 </p>
 
 
