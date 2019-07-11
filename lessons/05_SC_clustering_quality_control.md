@@ -205,11 +205,17 @@ map(paste0("PC_", 1:14), function(pc){
 
 We can see how the clusters are represented by the different PCs. For instance, the genes driving `PC_2` exhibit higher expression in clusters 4 and 13, while clusters 6,7, and 14 show lower expression. We could look back at our genes driving this PC to get an idea of what the cell types might be:
 
+```r
+# Examine PCA results 
+print(seurat_control[["pca"]], dims = 1:5, nfeatures = 5)
+
+```
+
 <p align="center">
-<img src="../img/PC_print.png" width="400">
+<img src="../img/PC_print_loadObj.png" width="400">
 </p>
 
-With the CD79A gene and the HLA genes as positive markers of `PC_2`, I would hypothesize that clusters 4 and 13 correspond to B cells. This just hints at what the clusters identity could be, with the identities of the clusters being determined through a combination of the PCs. 
+With the CD79A gene and the HLA genes as positive markers of `PC_2`, we can hypothesize that clusters 4 and 13 correspond to B cells. This just hints at what the clusters identity could be, with the identities of the clusters being determined through a combination of the PCs. 
 
 To truly determine the identity of the clusters and whether the `resolution` is appropriate, it is helpful to explore a handful of known markers for the cell types expected. 
 
