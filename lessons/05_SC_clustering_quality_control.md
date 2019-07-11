@@ -363,7 +363,7 @@ FeaturePlot(seurat_control,
 ```
 
 <p align="center">
-<img src="../img/markers_Tcells.png" width="600">
+<img src="../img/Tcell_loadObj.png" width="600">
 </p>
 
 All T cells markers concentrate in clusters 1, 2, 3, 7, 8, 14, and 15.
@@ -377,7 +377,7 @@ FeaturePlot(seurat_control,
 ```
 
 <p align="center">
-<img src="../img/Tcell_loadObj.png" width="800">
+<img src="../img/CD4Tcell_loadObj.png" width="800">
 </p>
 
 The subset of T cells corresponding to the CD4+ T cells are clusters 1, 2, 3, 6, 9, 13, 14, and to a lesser extent 7 and 10.
