@@ -203,7 +203,7 @@ map(paste0("PC_", 1:14), function(pc){
 <img src="../img/SC_clusters_PCs_loadObj.png" width="800">
 </p>
 
-We can see how the clusters are represented by the different PCs. For instance, the genes driving `PC_2` exhibit higher expression in clusters 4 and 13, while clusters 6,7, and 14 show lower expression. We could look back at our genes driving this PC to get an idea of what the cell types might be:
+We can see how the clusters are represented by the different PCs. For instance, the genes driving `PC_2` exhibit higher expression in clusters 4 and 11. We could look back at our genes driving this PC to get an idea of what the cell types might be:
 
 ```r
 # Examine PCA results 
