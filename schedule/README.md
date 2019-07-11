@@ -4,7 +4,7 @@
 
 | Time |  Topic  | Instructor |
 |:-----------:|:----------:|:--------:|
-| 09:00 - 09:15 | [Workshop introduction]() | [Radhika]
+| 09:00 - 09:15 | [Workshop introduction]() | Radhika
 | 09:00 - 10:30 | [Single-cell RNA-seq design and methods](slides/Single_Cell_Sept_2018_final.pdf) | [Dr. Sarah Boswell](https://scholar.harvard.edu/saboswell) |
 | 10:30 - 10:45 | Coffee | |
 | 10:45 - 11:45 | [Single-cell RNA-seq analysis workflow](https://hbctraining.github.io/scRNA-seq/lessons/SC_pre-QC.html) | Mary |
