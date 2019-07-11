@@ -28,25 +28,23 @@ Below are links to the lessons and suggested schedules:
 
 ### Installation Requirements
 
+#### Applications
 Download the most recent versions of R and RStudio for your laptop:
 
- - [R](http://lib.stat.cmu.edu/R/CRAN/) (version 3.6.0 or above)
+ - [R](http://lib.stat.cmu.edu/R/CRAN/) **(version 3.6.0 or above)**
  - [RStudio](https://www.rstudio.com/products/rstudio/download/#download)
- 
-Note:  When installing the following packages, if you are asked to select (a/s/n) or (y/n), please select “a” or "y" as applicable.
 
-**(1)** Install the below packages on your laptop from **CRAN**. You DO NOT have to go to the CRAN webpage; you can use the following function to install them one by one:
+#### Packages for R
 
+**Note 1: Install the packages in the order listed below.**
 
-```r
-install.packages("insert_package_name_in_quotations")
-install.packages("insert_package_name_in_quotations")
-& so on ...
+**Note 2:  When installing the following packages, if you are asked to select (a/s/n) or (y/n), please select “a” or "y" as applicable.**
+
+**Note 3: All the package names listed below are case sensitive!**
+
+**(1)** Install the 10 packages listed below from **CRAN** by using the `install.packages()` function. 
+
 ```
-
-Note that these package names are case sensitive!
-
-```r
 Matrix.utils
 Seurat
 tidyverse
@@ -59,22 +57,30 @@ reticulate
 BiocManager
 ```
 
-**(2)** Install the below packages from **Bioconductor**. Load BiocManager, then run BiocManager's `install()` function 10 times for the 10 packages:
+Please install them one-by-one*:
 
 ```r
-library(BiocManager)
-install("insert_first_package_name_in_quotations")
-install("insert_second_package_name_in_quotations")
+install.packages("Matrix.utils")
+install.packages("Seurat")
+install.packages("tidyverse")
 & so on ...
 ```
 
-Note that these package names are case sensitive!
+
+**(2)** Install the 3 pacakges listed below from **Bioconductor**. 
 
 ```r
-
 SingleCellExperiment
 AnnotationHub
 ensembldb
+```
+
+To install Bioconductor packages, you will need to use the `Biocmanager::install()` function:
+
+```r
+BiocManager::install("SingleCellExperiment")
+BiocManager::install("AnnotationHub")
+& so on ...
 ```
 
 **(3)** Finally, please check that all the packages were installed successfully by loading them **one at a time** using the `library()` function.  
@@ -91,10 +97,9 @@ library(reticulate)
 library(SingleCellExperiment)
 library(AnnotationHub)
 library(ensembldb)
-
 ```
 
-(4) Once all packages have been loaded, run sessionInfo().  
+**(4)** Once all packages have been loaded, run sessionInfo().  
 
 ```r
 sessionInfo()
