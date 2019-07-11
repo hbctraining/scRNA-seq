@@ -44,18 +44,16 @@ Download the most recent versions of R and RStudio for your laptop:
 
 **(1)** Install the 10 packages listed below from **CRAN** using the `install.packages()` function. 
 
-```
-Matrix.utils
-Seurat
-tidyverse
-Matrix
-RCurl
-scales
-cowplot
-devtools
-reticulate
-BiocManager
-```
+1. `Matrix.utils`
+1. `Seurat`
+1. `tidyverse`
+1. `Matrix`
+1. `RCurl`
+1. `scales`
+1. `cowplot`
+1. `devtools`
+1. `reticulate`
+1. `BiocManager`
 
 Please install them one-by-one -
 
@@ -69,11 +67,10 @@ install.packages("tidyverse")
 
 **(2)** Install the 3 packages listed below from **Bioconductor** using the the `Biocmanager::install()` function.
 
-```r
-SingleCellExperiment
-AnnotationHub
-ensembldb
-```
+1. `SingleCellExperiment`
+1. `AnnotationHub`
+1. `ensembldb`
+
 
 Please install them one-by-one -
 
