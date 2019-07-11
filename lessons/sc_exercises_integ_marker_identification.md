@@ -1,3 +1,5 @@
+# Answer Key 
+
 ## Identification of all markers for each cluster
 
 This analysis compares each cluster against all others and outputs the genes that are differentially expressed/present using the `FindAllMarkers()` function. 
@@ -174,7 +176,29 @@ For clusters 17 and 20, we see many of the conserved enriched genes encode inhib
 
 ## Identifying gene markers for each cluster
 
-The last set of questions we had regarding the analysis involved whether the clusters corresponding to the same cell types have biologically meaningful differences. Sometimes the list of markers returned don't sufficiently separate some of the clusters. For instance, we had previously identified clusters 0 and 5 as CD14+ monocytes, but are there biologically relevant differences between these two clusters of cells? We can use the `FindMarkers()` function to determine the genes that are differentially expressed between these specific clusters. 
+The last set of questions we had regarding the analysis involved whether the clusters corresponding to the same cell types have biologically meaningful differences. Sometimes the list of markers returned don't sufficiently separate some of the clusters. 
+
+Again, we performed this analysis with the single samples, so we are going to perform it by completing the exercises below.
+
+***
+
+**Exercises**
+
+1. Determine differentiating markers for CD8+ T cells - clusters 6 versus 10 - using the `FindMarkers()` function.
+2. **Annotate** the markers with gene descriptions.
+3. **Reorder the columns** to be in the order shown below.
+
+	<p align="center">
+	<img src="../img/sc_cd8_t_markers_diff.png" width="800">
+	</p>
+
+4. **Arrange rows** by `avg_logFC` values
+5. **Save** our rearranged marker analysis results to a file called `cluster6vs10_markers.csv` in the `results` folder.
+6. Based on these marker results, **determine whether we need to separate** clusters 6 and 10 as their own clusters.
+7. **Extra credit:** Repeat above steps for the clusters assigned to `Naive CD4+ T cells`, in addition to repeating for `Naive B cells`.
+
+***
+
 
 ```r
 # Determine differentiating markers for CD8+ T cells - clusters 6 versus 10
@@ -182,9 +206,7 @@ cd8_t <- FindMarkers(combined,
                      ident.1 = 6,
                      ident.2 = 10)                     
 
-# KLRG1 means cluster 6 is more differentiated / effector?
-
-# Add gene descriptions to the DE table
+# Add gene descriptions
 cd8_t_markers <- cd8_t %>%
         rownames_to_column("gene") %>%
         inner_join(y = gene_descriptions,
@@ -194,8 +216,12 @@ cd8_t_markers <- cd8_t %>%
 # Reorder columns and sort by log2 fold change        
 cd8_t_markers <- cd8_t_markers[, c(1, 3:5,2,6:7)]
 
+# Arrange rows
 cd8_t_markers <- cd8_t_markers %>%
         dplyr::arrange(avg_logFC)
+
+# Save markers
+write.csv(cd8_t_markers, "results/cluster6vs10_markers.csv", quote = F, row.names= F)        
         
 # View data
 View(cd8_t_markers)
@@ -205,92 +231,106 @@ View(cd8_t_markers)
 <img src="../img/sc_cd8_t_markers_diff.png" width="800">
 </p>
 
-Now taking all of this information, we can surmise the cell types of the different clusters and plot the cells with cell type labels. We would have done comparisons between all of the clusters that represent the same cell type (i.e. between clusters 1, 2, and 3 for CD4+ T cells); however, for this lesson, we will merge all of the clusters of the same cell type.
 
+Now taking in all of this information, we can surmise the cell types of the different clusters and plot the cells with cell type labels. 
 
-| Cluster ID	| Cell Type |
-|:-----:|:-----:|
-|0	| CD14+ Monocytes|
-|1	| CD4+ T cells |
-|2	| CD4+ T cells|
-|3	| CD4+ T cells|
-|4	| B cells |
-|5	| CD14+ Monocytes|
-|6	| NK cells |
-|7	| CD8+ T cells (activated)|
-|8	| CD8+ T cells |
-|9	| Stressed / dying cells |
-|10	| Dendritic cells |
-|11	| FCGR3A+ Monocytes |
-|12	| Megakaryocytes |
-|13	| B cells |
-|14	| CD4+ T cells |
-|15| CD4+ T cells |
+| Cell Type | Clusters |
+|:---:|:---:|
+| CD14+ Monocytes | 0 | 
+| FCGR3A+ Monocytes | 7 |
+| Conventional dendritic cells | 13 |
+| Plasmacytoid dendritic cells | 18 |
+| Naive B cells | 4, 15 |
+| Activated B cells | 14 |
+| Naive CD4+ T cells | 1, 2, 9, 16 |
+| Activated CD4+ T cells | 3 |
+| Naive CD8+ T cells| 11 |
+| Activated (cytotoxic) CD8+ T cells| 6, 10 |
+| NK cells | 5 |
+| Megakaryocytes | 12 |
+| Erythrocytes | 19 |
+| Stressed/dying cells | 8 |
+| Exhausted T cells | 17
+| Proliferating unknown | 20 |
 
 We can then reassign the identity of the clusters to these cell types:
 
 ```r
-seurat_control <- RenameIdents(object = seurat_control, 
-                                "0" = "CD14+ monocytes",
-                                "1" = "CD4+ T cells",
-                                "2" = "CD4+ T cells",
-                                "3" = "CD4+ T cells",
-                                "4" = "B cells",
-                                "5" = "CD14+ monocytes",
-                                "6" = "NK cells",
-                                "7" = "CD8+ T cells",
-                                "8" = "CD8+ T cells",
-                                "9" = "Stressed/dying cells",
-                                "10" = "Dendritic cells",
-                                "11" = "FCGR3A+ monocytes",
-                                "12" = "Megakaryocytes",
-                                "13" = "B cells",
-                                "14" = "CD4+ T cells",
-                                "15" = "CD4+ T cells")
+combined_labelled <- RenameIdents(object = combined,
+                         "0" = "CD14+ monocytes",
+                         "1" = "Naive CD4+ T cells",
+                         "2" = "Naive CD4+ T cells",
+                         "3" = "Activated CD4+ T cells",
+                         "4" = "Naive B cells",
+                         "5" = "NK cells",
+                         "6" = "Activated (cytotoxic) CD8+ T cells",
+                         "7" = "FCGR3A+ Monocytes",
+                         "8" = "Stressed/dying cells",
+                         "9" = "Naive CD4+ T cells",
+                         "10" = "Activated (cytotoxic) CD8+ T cells",
+                         "11" = "Naive CD8+ T cells",
+                         "12" = "Megakaryocytes",
+                         "13" = "Conventional dendritic cells",
+                         "14" = "Activated B cells",
+                         "15" = "Naive B cells",
+                         "16" = "Naive CD4+ T cells",
+                         "17" = "Exhausted T cells",
+                         "18" = "Plasmacytoid dendritic cells",
+                         "19" = "Erythrocytes",
+                         "20" = "Proliferating unknown")
 
-DimPlot(object = seurat_control, 
+DimPlot(object = combined_labelled, 
         reduction = "umap", 
         label = TRUE,
+        pt.size = 0.5,
+        repel = T,
         label.size = 6)
 ```
 
 <p align="center">
-<img src="../img/sc_umap_labelled.png" width="800">
+<img src="../img/sc_integ_umap_labelled.png" width="800">
 </p>
 
-If we wanted to remove the stressed cells, we could use the `SubsetData()` function:
+***
+
+**Exercises**
+
+1. Remove the stressed cells using the `subset()` function.
+2. Visualize the clusters using `DimPlot()`.
+3. Use the `write_rds()` function to save the final labelled `combined` object to the `results` folder, called `combined_labelled_res0.8.rds`.
+
+***
+
+If we wanted to remove the stressed cells, we could use the `subset()` function:
 
 ```r
 # Remove the stressed or dying cells
-control_labelled <- SubsetData(seurat_control,
-                               ident.remove = "Stressed/dying cells")
+combined_labelled <- subset()
 
 # Re-visualize the clusters
-DimPlot(object = control_labelled, 
+DimPlot(object = combined_labelled, 
         reduction = "umap", 
         label = TRUE,
         label.size = 6)
 ```
 
-<p align="center">
-<img src="../img/sc_umap_control_labelled_subset.png" width="800">
-</p>
-
-Now we would want to save our final labelled Seurat object:
+To save our final labelled Seurat object:
 
 ```r        
 # Save final R object
-write_rds(control_labelled,
-          path = "results/seurat_control_labelled.rds")       
+write_rds(combined_labelled,
+          path = "results/combined_labelled_res0.8.rds")       
 ```
 
-We have completed the first round of the analysis for the `control` sample. Based on our results, we may need to proceed back to prior steps to optimize our parameters:
+Now that we have our clusters defined and the markers for each of our clusters, we have a few different options:
 
-- Clusters were not separated well enough (i.e. CD4+ and CD8+ T cells were in same cluster):  adjust the clustering resolution or number of PCs used.
-- Too many low quality cells observed: go back and perform more stringent QC by filtering out the low quality cells. 
-
-If we validated the stressed/dying cells were indeed low quality, we may want to remove those cells in the QC and re-cluster. However, we are going to just leave those cells removed and move on to include the `stimulated` sample.
-
+- Experimentally validate intriguing markers for our identified cell types.
+- Perform differential expression analysis between conditions `ctrl` and `stim`
+	- Biological replicates are **necessary** to proceed with this analysis.
+- Trajectory analysis, or lineage tracing, could be performed if trying to determine the progression between cell types or cell states. For example, we could explore any of the following using this type of analysis:
+	- Differentiation processes
+	- Expression changes over time
+	- Cell state changes in expression
 ***
 
 

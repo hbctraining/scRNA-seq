@@ -209,7 +209,7 @@ Again, we performed this analysis with the single samples, so we are going to pe
 
 4. **Arrange rows** by `avg_logFC` values
 5. **Save** our rearranged marker analysis results to a file called `cluster6vs10_markers.csv` in the `results` folder.
-6. Based on these marker results, **determine whether we need to separate the markers** for clusters 6 and 10.
+6. Based on these marker results, **determine whether we need to separate** clusters 6 and 10 as their own clusters.
 7. **Extra credit:** Repeat above steps for the clusters assigned to `Naive CD4+ T cells`, in addition to repeating for `Naive B cells`.
 
 ***
@@ -239,32 +239,34 @@ Now taking in all of this information, we can surmise the cell types of the diff
 We can then reassign the identity of the clusters to these cell types:
 
 ```r
-seurat_control <- RenameIdents(object = combined, 
-                                "0" = "CD14+ monocytes",
-                                "1" = "Naive CD4+ T cells",
-                                "2" = "Naive CD4+ T cells",
-                                "3" = "Activated CD4+ T cells",
-                                "4" = "Naive B cells",
-                                "5" = "NK cells",
-                                "6" = "Activated (cytotoxic) CD8+ T cells",
-                                "7" = "FCGR3A+ Monocytes",
-                                "8" = "Stressed/dying cells",
-                                "9" = "Naive CD4+ T cells",
-                                "10" = "Activated (cytotoxic) CD8+ T cells",
-                                "11" = "Naive CD8+ T cells",
-                                "12" = "Megakaryocytes",
-                                "13" = "Conventional dendritic cells",
-                                "14" = "Activated B cells",
-                                "15" = "Naive B cells",
-                                "16" = "Naive CD4+ T cells",
-                                "17" = "Exhausted T cells",
-                                "18" = "Plasmacytoid dendritic cells",
-                                "19" = "Erythrocytes",
-                                "20" = "Proliferating unknown")
+combined <- RenameIdents(object = combined,
+                         "0" = "CD14+ monocytes",
+                         "1" = "Naive CD4+ T cells",
+                         "2" = "Naive CD4+ T cells",
+                         "3" = "Activated CD4+ T cells",
+                         "4" = "Naive B cells",
+                         "5" = "NK cells",
+                         "6" = "Activated (cytotoxic) CD8+ T cells",
+                         "7" = "FCGR3A+ Monocytes",
+                         "8" = "Stressed/dying cells",
+                         "9" = "Naive CD4+ T cells",
+                         "10" = "Activated (cytotoxic) CD8+ T cells",
+                         "11" = "Naive CD8+ T cells",
+                         "12" = "Megakaryocytes",
+                         "13" = "Conventional dendritic cells",
+                         "14" = "Activated B cells",
+                         "15" = "Naive B cells",
+                         "16" = "Naive CD4+ T cells",
+                         "17" = "Exhausted T cells",
+                         "18" = "Plasmacytoid dendritic cells",
+                         "19" = "Erythrocytes",
+                         "20" = "Proliferating unknown")
 
 DimPlot(object = combined, 
         reduction = "umap", 
         label = TRUE,
+        pt.size = 0.5,
+        repel = T,
         label.size = 6)
 ```
 
@@ -272,34 +274,31 @@ DimPlot(object = combined,
 <img src="../img/sc_integ_umap_labelled.png" width="800">
 </p>
 
-If we wanted to remove the stressed cells, we could use the `SubsetData()` function:
+***
 
-```r
-# Remove the stressed or dying cells
-combined_labelled <- SubsetData(combined,
-                               ident.remove = "Stressed/dying cells")
+**Exercises**
 
-# Re-visualize the clusters
-DimPlot(object = combined, 
-        reduction = "umap", 
-        label = TRUE,
-        label.size = 6)
-```
-
-<p align="center">
-<img src="../img/sc_umap_combined_labelled_subset.png" width="800">
-</p>
-
-Now we would want to save our final labelled Seurat object:
-
-```r        
-# Save final R object
-write_rds(combined,
-          path = "results/combined_labelled.rds")       
-```
+1. Remove the stressed cells using the `subset()` function.
+2. Visualize the clusters using `DimPlot()`.
+3. Use the `write_rds()` function to save the final labelled `combined` object to the `results` folder, called `combined_labelled_res0.8.rds`.
 
 ***
 
+Now that we have our clusters defined and the markers for each of our clusters, we have a few different options:
+
+- Experimentally validate intriguing markers for our identified cell types.
+- Perform differential expression analysis between conditions `ctrl` and `stim`
+	- Biological replicates are **necessary** to proceed with this analysis.
+- Trajectory analysis, or lineage tracing, could be performed if trying to determine the progression between cell types or cell states. For example, we could explore any of the following using this type of analysis:
+	- Differentiation processes
+	- Expression changes over time
+	- Cell state changes in expression
+
+***
+
+[Explore the answer key for the exercises in this lesson]()
+
+***
 
 *This lesson has been developed by members of the teaching team at the [Harvard Chan Bioinformatics Core (HBC)](http://bioinformatics.sph.harvard.edu/). These are open access materials distributed under the terms of the [Creative Commons Attribution license](https://creativecommons.org/licenses/by/4.0/) (CC BY 4.0), which permits unrestricted use, distribution, and reproduction in any medium, provided the original author and source are credited.*
 
