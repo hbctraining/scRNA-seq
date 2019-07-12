@@ -429,7 +429,7 @@ plot_df <- data.frame(pct = pct,
            rank = 1:length(pct))
 
 # Elbow plot to visualize 
-  ggplot(plot_df, aes(cumu, pct, label = rank, color = rank >= pcs)) + 
+  ggplot(plot_df, aes(cumu, pct, label = rank, color = rank > pcs)) + 
   geom_text() + 
   geom_vline(xintercept = 90, color = "grey") + 
   geom_hline(yintercept = min(pct[pct > 5]), color = "grey") +
