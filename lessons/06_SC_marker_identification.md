@@ -255,7 +255,7 @@ Now taking all of this information, we can surmise the cell types of the differe
 |6	| CD8+ T cells |
 |7	| Stressed / dying cells |
 |8	| FCGR3A+ monocytes |
-|9	| CD14+ Monocytes |
+|9	| CD4+ T cells |
 |10	| Megakaryocytes |
 |11	| B cells |
 |12	| Dendritic cells |
