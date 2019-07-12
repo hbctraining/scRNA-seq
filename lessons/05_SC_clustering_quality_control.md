@@ -250,7 +250,9 @@ The `FeaturePlot()` function from seurat makes it easy to visualize a handful of
 | Megakaryocytes | PPBP |
 | Erythrocytes | HBB, HBA2 |
 
-Seurat's `FeaturePlot()` function let's us easily explore the known markers on top of our t-SNE or UMAP visualizations. Let's go through and determine the identities of the clusters.
+Seurat's `FeaturePlot()` function let's us easily explore the known markers on top of our t-SNE or UMAP visualizations. Let's go through and determine the identities of the clusters. 
+
+We are looking for consistency of expression of the markers across the clusters. For example, if there are two markers for a cell type and only one of them is expressed in a cluster - then we cannot reliably assign that cluster to the celltype.
 
 **CD14+ monocyte markers**
 
@@ -264,7 +266,7 @@ FeaturePlot(seurat_control,
 <img src="../img/CD14_monocytes_loadObj.png" width="800">
 </p>
 
-CD14+ monocytes appear to correspond to clusters 0 and 15, 8, and to a lesser extent, cluster 12.
+CD14+ monocytes appear to correspond to clusters 0 and 15, and 8
 
 **FCGR3A+ monocyte markers**
 
@@ -292,7 +294,7 @@ FeaturePlot(seurat_control,
 <img src="../img/DCs_loadObj.png" width="800">
 </p>
 
-The markers corresponding to conventional dendritic cells identify most of clusters 0, 8, 12 and 15 (only CST3).
+The markers corresponding to conventional dendritic cells identify cluster 12 (both markers consistently show expression).
 
 **Plasmacytoid dendritic cell markers**
 
@@ -306,9 +308,9 @@ FeaturePlot(seurat_control,
 <img src="../img/pDCs_loadObj.png" width="800">
 </p>
 
-Plasmacytoid dendritic cells (pDCs) correspond to clusters 5, 6, and 13. (This next part of next no longer is true) that didn't mark the conventional dendritic cells (cDCs). This indicates that we may need to increase our `resolution` clustering parameter to separate out our pDCs from our cDCs. 
+Plasmacytoid dendritic cells (pDCs) also correspond to cluster 12 which also identifies with the conventional dendritic cells (cDCs). This indicates that we may need to increase our `resolution` clustering parameter to separate out our pDCs from our cDCs. 
 
-**Do we need to do this?** We could test out different resolutions by running the following code:
+We could test out different resolutions by running the following code:
 
 ```r
 # Assign identity of clusters
@@ -363,10 +365,10 @@ FeaturePlot(seurat_control,
 ```
 
 <p align="center">
-<img src="../img/markers_Tcells.png" width="600">
+<img src="../img/Tcell_loadObj.png" width="600">
 </p>
 
-All T cells markers concentrate in clusters 1, 2, 3, 7, 8, 14, and 15.
+All T cells markers concentrate in clusters 1, 2, 3, 6, 9, 10, 13, and 14.
 
 **CD4+ T cell markers**
 
@@ -377,10 +379,10 @@ FeaturePlot(seurat_control,
 ```
 
 <p align="center">
-<img src="../img/Tcell_loadObj.png" width="800">
+<img src="../img/CD4Tcells_loadObj.png" width="800">
 </p>
 
-The subset of T cells corresponding to the CD4+ T cells are clusters 1, 2, 3, 6, 9, 13, 14, and to a lesser extent 7 and 10.
+The subset of T cells corresponding to the CD4+ T cells are clusters 1, 2, 3, 10, 13, 14, and possibly cluster 9.
 
 **CD8+ T cell markers**
 
@@ -394,7 +396,7 @@ FeaturePlot(seurat_control,
 <img src="../img/CD8Tcells_loadObj.png" width="800">
 </p>
 
-For CD3D the same clusters identified with the CD4+ T cell markers are highlighted. However, with CD8A we see only a subset of those clusters (6 and 13).
+For CD8+ T cells the only consistent expression for both markers is observed for cluster 6.
 
 **NK cell markers**
 
@@ -443,25 +445,25 @@ Based on these results, we can associate clusters with the cell types. However, 
 
 | Cell Type | Clusters |
 |:---:|:---:|
-| CD14+ monocytes | 0, 5 | 
-| FCGR3A+ monocytes | 11 |
-| Conventional dendritic cells | 10 |
-| Plasmacytoid dendritic cells | 10 |
-| B cells | 4, 13 |
-| T cells | 1, 2, 3, 7, 8, 14, 15 |
-| CD4+ T cells | 1, 2, 3, 14, 15 |
-| CD8+ T cells| 7, 8 |
-| NK cells | 6, 7 |
-| Megakaryocytes | 12 |
+| CD14+ monocytes | 0, 15, 8 | 
+| FCGR3A+ monocytes | 8 |
+| Conventional dendritic cells | 12 |
+| Plasmacytoid dendritic cells | 12 |
+| B cells | 4, 11 |
+| T cells | 1, 2, 3, 6, 9, 10, 13, 14 |
+| CD4+ T cells | 1, 2, 3, 10, 13, 14 |
+| CD8+ T cells| 6 |
+| NK cells | 5,6, 13 |
+| Megakaryocytes | 10 |
 | Erythrocytes | - |
-| Unknown | 9 |
+| Unknown | 7 |
 
 > **NOTE:** With the pDCs, in addition to any other cluster that appears to contain two separate cell types, it's helpful to increase our clustering resolution to properly subset the clusters, as discussed above. Alternatively, if we still can't separate out the clusters using increased resolution, then it's possible that we had used too few principal components such that we are just not separating out these cell types of interest. To inform our choice of PCs, we could look at our PC gene expression overlapping the UMAP plots and determine whether our cell populations are separating by the PCs included.
 
 Now we have a decent idea as to the cell types corresponding to the majority of the clusters, but some questions remain:
 
-1. *What is the cell type identity of cluster 9?*
-2. *Is cluster 7 a CD8+ T cell or an NK cell?*
+1. *What is the cell type identity of cluster 7?*
+2. *Is cluster 6 a CD8+ T cell or an NK cell?* *Is cluster 13 a T cell or an NK cell?*
 3. *Do the clusters corresponding to the same cell types have biologically meaningful differences? Are there subpopulations of these cell types?*
 4. *Can we acquire higher confidence in these cell type identities by identifying other marker genes for these clusters?*
 

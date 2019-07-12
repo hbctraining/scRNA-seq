@@ -322,117 +322,22 @@ clean_seurat <- CreateSeuratObject(filtered_counts, meta.data = filtered_seurat@
 
 ## Re-assess QC metrics
 
-After performing the filtering, it's recommended to look back over the metrics to make sure that your data matches your expectations and is good for downstream analysis. We can extract the new metadata from the filtered Seurat object and go through the same plots.
+After performing the filtering, it's recommended to look back over the metrics to make sure that your data matches your expectations and is good for downstream analysis. 
 
-```r
+***
 
-# Save filtered subset to new metadata
-metadata_clean <- clean_seurat@meta.data
- 
- ```
+**[Exercises]()**
 
-### Cell counts
+1. Extract the new metadata from the filtered Seurat object to go through the same plots as with the unfiltered data
 
-After filtering, we should not have more cells than we sequenced. Generally we aim to have about the number we sequenced or a bit less. With 2,700 cells sequenced, we would expect to return around this number of cells. We have about 2,480 returned after filtering, which is pretty good. 
+	```r
+	# Save filtered subset to new metadata
+	metadata_clean <- clean_seurat@meta.data
+	```
 
-```r
-## Cell counts
-metadata_clean %>% 
-  	ggplot(aes(x=sample, fill=sample)) + 
-  	geom_bar() +
-  	theme_classic() +
-  	theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)) +
-  	theme(plot.title = element_text(hjust=0.5, face="bold")) +
-  	ggtitle("NCells")
-```
+2. Perform all of the same plots as with the unfiltered data and determine whether the thresholds used were appropriate.
 
-<p align="center">
-<img src="../img/cell_counts_filtered.png" width="600">
-</p>
-
-
-### UMI counts
-
-The filtering using a threshold of 500 has removed the cells with low numbers of UMIs from the analysis.
-
-```r
-# UMI counts
-metadata_clean %>% 
-  	ggplot(aes(color=sample, x=nUMI, fill= sample)) + 
-  	geom_density(alpha = 0.2) + 
-  	scale_x_log10() + 
-  	theme_classic() +
-  	ylab("log10 cell density") +
-  	geom_vline(xintercept = 500)
-```
-
-<p align="center">
-<img src="../img/nUMIs_filtered.png" width="600">
-</p>
-
-
-### Genes detected
-
-```r
-# Genes detected
-metadata_clean %>% 
-  	ggplot(aes(color=sample, x=nGene, fill= sample)) + 
-  	geom_density(alpha = 0.2) + 
-  	theme_classic() +
-  	scale_x_log10() + 
-  	geom_vline(xintercept = 250)
-```
-
-<p align="center">
-<img src="../img/genes_detected_filtered.png" width="600">
-</p>
-
-### UMIs vs genes
-```r
-# UMIs vs genes
-metadata_clean %>% 
-  	ggplot(aes(x=nUMI, y=nGene, color=mitoRatio)) + 
-  	geom_point() + 
-  	stat_smooth(method=lm) +
-  	scale_x_log10() + 
-  	scale_y_log10() + 
-  	theme_classic() +
-  	geom_vline(xintercept = 500) +
-  	facet_wrap(~sample)
-```
-
-<p align="center">
-<img src="../img/UMIs_vs_genes_filtered.png" width="600">
-</p>
-
-### Mitochondrial counts ratio
-```r
-# Mitochondrial counts ratio
-metadata_clean %>% 
-  	ggplot(aes(color=sample, x=mitoRatio, fill=sample)) + 
-  	geom_density(alpha = 0.2) + 
-  	scale_x_log10() + 
-  	theme_classic() +
-  	geom_vline(xintercept = 0.2)
-```
-
-<p align="center">
-<img src="../img/mitoRatio_filtered.png" width="600">
-</p>
-
-### Novelty
-```r
-# Novelty
-metadata_clean %>%
-  	ggplot(aes(x=log10GenesPerUMI, color = sample, fill=sample)) +
-  	geom_density(alpha = 0.2) +
-  	theme_classic() +
-  	geom_vline(xintercept = 0.8)
-```
-
-<p align="center">
-<img src="../img/novelty_filtered.png" width="600">
-</p>
+***
 
 ## Saving filtered cells
 
