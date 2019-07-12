@@ -125,8 +125,6 @@ Now, we can load the necessary libraries:
 library(Matrix.utils)
 library(SingleCellExperiment)
 library(Seurat)
-library(knitr)
-library(rmarkdown)
 library(tidyverse)
 library(Matrix)
 library(AnnotationHub)
