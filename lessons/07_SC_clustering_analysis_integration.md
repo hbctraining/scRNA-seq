@@ -195,7 +195,6 @@ combined <- CellCycleScoring(
 
 # Perform PCA and color by cell cycle phase
 combined <- RunPCA(combined,
-                   features = c(s_genes, g2m_genes),
                    verbose = FALSE)
 
 DimPlot(object = combined, 
