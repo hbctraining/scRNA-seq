@@ -4,31 +4,31 @@
 
 | Time |  Topic  | Instructor |
 |:-----------:|:----------:|:--------:|
-| 09:00 - 09:15 | [Workshop introduction]() | Radhika
-| 09:00 - 10:30 | [Single-cell RNA-seq design and methods](slides/Single_Cell_Sept_2018_final.pdf) | [Dr. Sarah Boswell](https://scholar.harvard.edu/saboswell) |
-| 10:30 - 10:45 | Coffee | |
-| 10:45 - 11:45 | [Single-cell RNA-seq analysis workflow](https://hbctraining.github.io/scRNA-seq/lessons/SC_pre-QC.html) | Mary |
-| 11:45 - 12:30 | R review | Meeta |
-| 12:30 - 13:30 | Lunch | |
-| 13:30 - 14:15 | [Set-up]()  | Radhika |
-| 14:15 - 14:45 | [Quality control]()  | Meeta |
-| 14:45 - 15:00 | Coffee | |
-| 15:00 - 15:15 | [Quality control (cont.)]()  | Meeta |
-| 15:15 - 16:00 | [Normalization, tranformation, and PCA]() | Radhika |
-| 16:00 - 17:00 | [Clustering]()  | Mary |
+| 09:00 - 09:20 | [Workshop introduction]() | Radhika
+| 09:20 - 10:50 | [Single-cell RNA-seq design and methods](slides/Single_Cell_Sept_2018_final.pdf) | [Dr. Sarah Boswell](https://scholar.harvard.edu/saboswell) |
+| 10:50 - 11:05 | Break | |
+| 11:05 - 12:05 | [Single-cell RNA-seq analysis workflow](https://hbctraining.github.io/scRNA-seq/lessons/SC_pre-QC.html) | Mary |
+| 12:05 - 13:05 | Lunch | |
+| 13:05 - 13:50 | R review | Meeta |
+| 13:50 - 14:35 | [Set-up]()  | Radhika |
+| 14:35 - 15:00 | [Quality control]()  | Meeta |
+| 15:00 - 15:10 | Coffee | |
+| 15:10 - 15:30 | [Quality control (cont.)]()  | Meeta |
+| 15:30 - 16:15 | [Normalization, tranformation, and PCA]() | Radhika |
+| 16:15 - 17:00 | [Clustering]()  | Mary |
 
 
 ## Day2
 
 | Time |  Topic  | Instructor |
 |:-----------:|:----------:|:--------:|
-| 09:00 - 9:45 | [Clustering (cont.)]()  | Mary |
-| 09:45 - 10:30 | [Cluster exploration]()  | Radhika |
-| 10:30 - 10:45 | Coffee | |
-| 10:45 - 11:15 | [Cluster exploration]()  | Mary |
-| 11:15 - 12:15 | [Marker identification]() | Meeta |
-| 12:15 - 13:15 | Lunch | |
-| 13:15 - 14:45 | [Sample integration and clustering]() | Mary |
-| 14:45 - 15:00 | Coffee | |
-| 15:00 - 16:30 | [Marker identification of integrated data]() | Meeta |
+| 09:00 - 10:00 | [Clustering (cont.)]()  | Mary |
+| 10:00 - 10:45 | [Cluster exploration]()  | Radhika |
+| 10:45 - 10:55 | Coffee | |
+| 10:55 - 11:25 | [Cluster exploration]()  | Mary |
+| 11:25 - 12:25 | [Marker identification]() | Meeta |
+| 12:25 - 13:25 | Lunch | |
+| 13:25 - 14:55 | [Sample integration and clustering]() | Mary |
+| 14:55 - 15:05 | Coffee | |
+| 15:05 - 16:30 | [Marker identification of integrated data]() | Meeta |
 | 16:30 - 17:00 | [Wrap-up]() | Radhika |
