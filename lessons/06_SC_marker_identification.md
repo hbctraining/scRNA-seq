@@ -147,7 +147,7 @@ Based on these marker results, we can determine whether the markers make sense f
 
 | Cell Type | Clusters |
 |:---:|:---:|
-| CD14+ monocytes | 0, 15, 8 | 
+| CD14+ monocytes | 0, 15 | 
 | FCGR3A+ monocytes | 8 |
 | Conventional dendritic cells | 12 |
 | Plasmacytoid dendritic cells | 12 |
@@ -181,7 +181,7 @@ There are definitely T cell receptors that are enriched among cluster 6. Since N
 To get a better idea of cell type identity we can explore the expression of different identified markers by cluster using the `FeaturePlot()` function. For example, we can look at the cluster 6 markers:
 
 ```r
-# Plot top 5 markers for cluster 7
+# Plot top 5 markers for cluster 6
 FeaturePlot(object = seurat_control, 
             features = top5[top5$cluster == 6, "gene"] %>%
                     pull(gene))
@@ -194,7 +194,7 @@ FeaturePlot(object = seurat_control,
 We can also explore the range in expression of specific markers by using violin plots:
 
 ```r
-# Vln plot - cluster 7
+# Vln plot - cluster 6
 VlnPlot(object = seurat_control, 
         features = top5[top5$cluster == 6, "gene"] %>%
                     pull(gene))
@@ -208,13 +208,13 @@ These results and plots can help us determine the identity of these clusters or 
 
 ## Identifying gene markers for each cluster
 
-The last set of questions we had regarding the analysis involved whether the clusters corresponding to the same cell types have biologically meaningful differences. Sometimes the list of markers returned don't sufficiently separate some of the clusters. For instance, we had previously identified clusters 0 and 5 as CD14+ monocytes, but are there biologically relevant differences between these two clusters of cells? We can use the `FindMarkers()` function to determine the genes that are differentially expressed between these specific clusters. 
+The last set of questions we had regarding the analysis involved whether the clusters corresponding to the same cell types have biologically meaningful differences. Sometimes the list of markers returned don't sufficiently separate some of the clusters. For instance, we had previously identified clusters 0, and 15 as CD14+ monocytes, but are there biologically relevant differences between these clusters of cells? We can use the `FindMarkers()` function to determine the genes that are differentially expressed between two specific clusters. 
 
 ```r
-# Determine differentiating markers for CD14+ monocytes - clusters 0 versus 5
+# Determine differentiating markers for CD14+ monocytes - clusters 0 versus 15
 cd14_monos <- FindMarkers(seurat_control,
                           ident.1 = 0,
-                          ident.2 = 5)                     
+                          ident.2 = 15)                     
 
 # Add gene symbols to the DE table
 cd14_monos_markers <- cd14_monos %>%
@@ -234,7 +234,7 @@ View(cd14_monos_markers)
 ```
 
 <p align="center">
-<img src="../img/sc_mono14_de_genes.png" width="800">
+<img src="../img/mono14_de_loadObj.png" width="800">
 </p>
 
 When looking through the results, there appear to be many `CCL` genes that are differentially expressed between the clusters. If this were biologically meaningful we would keep the two distinct clusters, but if not, we would merge them.
@@ -251,17 +251,18 @@ Now taking all of this information, we can surmise the cell types of the differe
 |2	| CD4+ T cells|
 |3	| CD4+ T cells|
 |4	| B cells |
-|5	| CD14+ Monocytes|
-|6	| NK cells |
-|7	| CD8+ T cells (activated)|
-|8	| CD8+ T cells |
-|9	| Stressed / dying cells |
-|10	| Dendritic cells |
-|11	| FCGR3A+ Monocytes |
-|12	| Megakaryocytes |
-|13	| B cells |
+|5	| NK cells |
+|6	| CD8+ T cells |
+|7	| Stressed / dying cells |
+|8	| FCGR3A+ monocytes |
+|9	| CD14+ Monocytes |
+|10	| Megakaryocytes |
+|11	| B cells |
+|12	| Dendritic cells |
+|13	| NK cells |
 |14	| CD4+ T cells |
-|15| CD4+ T cells |
+|15| CD14+ monocytes |
+
 
 We can then reassign the identity of the clusters to these cell types:
 
