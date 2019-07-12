@@ -445,7 +445,7 @@ Based on these results, we can associate clusters with the cell types. However, 
 
 | Cell Type | Clusters |
 |:---:|:---:|
-| CD14+ monocytes | 0, 15, 8 | 
+| CD14+ monocytes | 0, 15 | 
 | FCGR3A+ monocytes | 8 |
 | Conventional dendritic cells | 12 |
 | Plasmacytoid dendritic cells | 12 |

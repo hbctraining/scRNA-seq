@@ -40,8 +40,8 @@ _**Recommendations:**_
 
 Remember that we had the following questions from the clustering analysis:
 
-1. *What is the cell type identity of cluster 9?*
-2. *Is cluster 7 a CD8+ T cell or an NK cell? Perhaps an NK T cell?*
+1. *What is the cell type identity of cluster 7?*
+2. *Is cluster 6 a CD8+ T cell or an NK cell?* *Is cluster 13 a T cell or an NK cell?*
 3. *Do the clusters corresponding to the same cell types have biologically meaningful differences? Are there subpopulations of these cell types?*
 4. *Can we acquire higher confidence in these cell type identities by identifying other marker genes for these clusters?*
 
@@ -99,7 +99,7 @@ View(ann_markers)
 ```
 
 <p align="center">
-<img src="../img/all_markers.png" width="800">
+<img src="../img/marker_table_loadObj.png" width="800">
 </p>
 
 **Usually the top markers are relatively trustworthy, but because of inflated p-values, many of the less significant genes are not so trustworthy as markers.**
@@ -140,79 +140,81 @@ View(top5)
 ```
 
 <p align="center">
-<img src="../img/sc_top5_markers.png" width="800">
+<img src="../img/top5_markers_loadObj.png" width="800">
 </p>
 
 Based on these marker results, we can determine whether the markers make sense for our hypothesized identities for each cluster:
 
 | Cell Type | Clusters |
 |:---:|:---:|
-| CD14+ Monocytes | 0, 5 | 
-| FCGR3A+ Monocytes | 11 |
-| Dendritic Cells | 10 |
-| B cells | 4, 13 |
-| T cells | 1, 2, 3, 7, 8, 14, 15 |
-| CD4+ T cells | 1, 2, 3, 14, 15 |
-| CD8+ T cells| 7, 8 |
-| NK cells | 6, 7 |
-| Megakaryocytes | 12 |
-| Unknown | 9 |
+| CD14+ monocytes | 0, 15 | 
+| FCGR3A+ monocytes | 8 |
+| Conventional dendritic cells | 12 |
+| Plasmacytoid dendritic cells | 12 |
+| B cells | 4, 11 |
+| T cells | 1, 2, 3, 6, 9, 10, 13, 14 |
+| CD4+ T cells | 1, 2, 3, 10, 13, 14 |
+| CD8+ T cells| 6 |
+| NK cells | 5,6, 13 |
+| Megakaryocytes | 10 |
+| Erythrocytes | - |
+| Unknown | 7 |
 
-If there were any questions about the identity of any clusters, exploring the cluster's markers would be the first step. Let's look at the `ann_markers`, filtering for cluster 9.
+If there were any questions about the identity of any clusters, exploring the cluster's markers would be the first step. Let's look at the `ann_markers`, filtering for cluster 7.
 
 <p align="center">
-<img src="../img/sc_cluster9_markers.png" width="800">
+<img src="../img/cluster7_markers_loadObj.png" width="800">
 </p>
 
 We see a lot of heat shock and DNA damage genes appear. Based on these markers, it is likely that these are stressed or dying cells. We could explore the quality metrics for these cells in more detail before removing just to support that argument. 
 
-We also had questions regarding the identity of cluster 7. Is cluster 7 a CD8+ T cell, an NK cell, or an NK T cell?
+We also had questions regarding the identity of cluster 6. Is cluster 6 a CD8+ T cell, an NK cell, or an NK T cell?
 
-We can look at the markers of cluster 7 to try to resolve the identity:
+We can look at the markers of cluster 6 to try to resolve the identity:
 
 <p align="center">
-<img src="../img/sc_cluster7_markers.png" width="800">
+<img src="../img/cluster6_markers_loadObj.png" width="800">
 </p>
 
-There are definitely T cell receptors that are enriched among cluster 7; therefore, it cannot be an NK cell. Likely it represents activated CD8+ T cells (cytotoxic T cells).
+There are definitely T cell receptors that are enriched among cluster 6. Since NK cells cannot have expression of the T cell receptor genes we can therefore conclude that these cannot be NK cells. On the other hand CD8+ T cells can have expression of killer cell receptors. So, could these be NK T cells? Probably not, since NK Tcells are usually a rare population and in our case we have many cells here. Thus, we hypothesize that cluster 6 represents activated CD8+ T cells (cytotoxic T cells).
 
-To get a better idea of cell type identity we can explore the expression of different identified markers by cluster using the `FeaturePlot()` function. For example, we can look at the cluster 7 markers:
+To get a better idea of cell type identity we can explore the expression of different identified markers by cluster using the `FeaturePlot()` function. For example, we can look at the cluster 6 markers:
 
 ```r
-# Plot top 5 markers for cluster 7
+# Plot top 5 markers for cluster 6
 FeaturePlot(object = seurat_control, 
-            features = top5[top5$cluster == 7, "gene"] %>%
+            features = top5[top5$cluster == 6, "gene"] %>%
                     pull(gene))
 ```
 
 <p align="center">
-<img src="../img/sc_markers_cluster7.png" width="800">
+<img src="../img/fig_cluster6_loadObj.png" width="800">
 </p>
 
 We can also explore the range in expression of specific markers by using violin plots:
 
 ```r
-# Vln plot - cluster 7
+# Vln plot - cluster 6
 VlnPlot(object = seurat_control, 
-        features = top5[top5$cluster == 7, "gene"] %>%
+        features = top5[top5$cluster == 6, "gene"] %>%
                     pull(gene))
 ```        
 
 <p align="center">
-<img src="../img/sc_markers_cluster7_violin.png" width="800">
+<img src="../img/fig_cluster6_loadObj_violin.png" width="800">
 </p>
 
 These results and plots can help us determine the identity of these clusters or verify what we hypothesize the identity to be after exploring the canonical markers of expected cell types previously.
 
 ## Identifying gene markers for each cluster
 
-The last set of questions we had regarding the analysis involved whether the clusters corresponding to the same cell types have biologically meaningful differences. Sometimes the list of markers returned don't sufficiently separate some of the clusters. For instance, we had previously identified clusters 0 and 5 as CD14+ monocytes, but are there biologically relevant differences between these two clusters of cells? We can use the `FindMarkers()` function to determine the genes that are differentially expressed between these specific clusters. 
+The last set of questions we had regarding the analysis involved whether the clusters corresponding to the same cell types have biologically meaningful differences. Sometimes the list of markers returned don't sufficiently separate some of the clusters. For instance, we had previously identified clusters 0, and 15 as CD14+ monocytes, but are there biologically relevant differences between these clusters of cells? We can use the `FindMarkers()` function to determine the genes that are differentially expressed between two specific clusters. 
 
 ```r
-# Determine differentiating markers for CD14+ monocytes - clusters 0 versus 5
+# Determine differentiating markers for CD14+ monocytes - clusters 0 versus 15
 cd14_monos <- FindMarkers(seurat_control,
                           ident.1 = 0,
-                          ident.2 = 5)                     
+                          ident.2 = 15)                     
 
 # Add gene symbols to the DE table
 cd14_monos_markers <- cd14_monos %>%
@@ -232,7 +234,7 @@ View(cd14_monos_markers)
 ```
 
 <p align="center">
-<img src="../img/sc_mono14_de_genes.png" width="800">
+<img src="../img/mono14_de_loadObj.png" width="800">
 </p>
 
 When looking through the results, there appear to be many `CCL` genes that are differentially expressed between the clusters. If this were biologically meaningful we would keep the two distinct clusters, but if not, we would merge them.
@@ -249,38 +251,41 @@ Now taking all of this information, we can surmise the cell types of the differe
 |2	| CD4+ T cells|
 |3	| CD4+ T cells|
 |4	| B cells |
-|5	| CD14+ Monocytes|
-|6	| NK cells |
-|7	| CD8+ T cells (activated)|
-|8	| CD8+ T cells |
-|9	| Stressed / dying cells |
-|10	| Dendritic cells |
-|11	| FCGR3A+ Monocytes |
-|12	| Megakaryocytes |
-|13	| B cells |
+|5	| NK cells |
+|6	| CD8+ T cells |
+|7	| Stressed / dying cells |
+|8	| FCGR3A+ monocytes |
+|9	| CD14+ Monocytes |
+|10	| Megakaryocytes |
+|11	| B cells |
+|12	| Dendritic cells |
+|13	| NK cells |
 |14	| CD4+ T cells |
-|15| CD4+ T cells |
+|15| CD14+ monocytes |
+
 
 We can then reassign the identity of the clusters to these cell types:
 
 ```r
 seurat_control <- RenameIdents(object = seurat_control, 
-                                "0" = "CD14+ monocytes",
-                                "1" = "CD4+ T cells",
-                                "2" = "CD4+ T cells",
-                                "3" = "CD4+ T cells",
-                                "4" = "B cells",
-                                "5" = "CD14+ monocytes",
-                                "6" = "NK cells",
-                                "7" = "CD8+ T cells",
-                                "8" = "CD8+ T cells",
-                                "9" = "Stressed/dying cells",
-                                "10" = "Dendritic cells",
-                                "11" = "FCGR3A+ monocytes",
-                                "12" = "Megakaryocytes",
-                                "13" = "B cells",
-                                "14" = "CD4+ T cells",
-                                "15" = "CD4+ T cells")
+                               "0" = "CD14+ monocytes",
+                               "1" = "CD4+ T cells",
+                               "2" = "CD4+ T cells",
+                               "3" = "CD4+ T cells",
+                               "4" = "B cells",
+                               "5" = "NK cells",
+                               "6" = "CD8+ T cells",
+                               "7" = "Stressed / dying cells",
+                               "8" = "FCGR3A+ monocytes",
+                               "9" = "CD14+ Monocytes",
+                               "10" = "Megakaryocytes",
+                               "11" = "B cells",
+                               "12" = "Dendritic cells",
+                               "13" = "NK cells",
+                               "14" = "CD4+ T cells",
+                               "15" = "CD14+ monocytes")
+
+
 
 DimPlot(object = seurat_control, 
         reduction = "umap", 
@@ -289,7 +294,7 @@ DimPlot(object = seurat_control,
 ```
 
 <p align="center">
-<img src="../img/sc_umap_labelled.png" width="800">
+<img src="../img/umap_labelled_subset_loadObj.png" width="800">
 </p>
 
 If we wanted to remove the stressed cells, we could use the `SubsetData()` function:
@@ -297,7 +302,7 @@ If we wanted to remove the stressed cells, we could use the `SubsetData()` funct
 ```r
 # Remove the stressed or dying cells
 control_labelled <- subset(seurat_control,
-                               idents = "Stressed/dying cells", invert = TRUE)
+                               idents = "Stressed / dying cells", invert = TRUE)
 
 # Re-visualize the clusters
 DimPlot(object = control_labelled, 
@@ -307,7 +312,7 @@ DimPlot(object = control_labelled,
 ```
 
 <p align="center">
-<img src="../img/sc_umap_control_labelled_subset.png" width="800">
+<img src="../img/umap_control_labelled_subset_loadObj.png" width="800">
 </p>
 
 Now we would want to save our final labelled Seurat object:

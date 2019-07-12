@@ -1,7 +1,7 @@
 ---
 title: "Single-cell RNA-seq: Clustering Analysis"
 author: "Mary Piper, Lorena Pantano, Meeta Mistry, Radhika Khetani"
-date: Thursday, June 6, 2019
+date: Friday, July 12, 2019
 ---
 
 Approximate time: 90 minutes
@@ -64,7 +64,7 @@ To identify clusters, the following steps will be performed:
 
 ## Set-up
 
-To perform this analysis, we will be mainly using functions available in the Seurat package. Therefore, we need to load the Seurat library in addition to the tidyverse library. Create the script `clustering_analysis.R` and load the libraries:
+To perform this analysis, we will be mainly using functions available in the Seurat package. Therefore, we need to load the Seurat library in addition to the tidyverse library, if not already loaded. Create the script `clustering_analysis.R` and load the libraries:
 
 ```r
 # Single-cell RNA-seq analysis - clustering analysis
@@ -165,6 +165,20 @@ seurat_control <- ScaleData(object = seurat_control,
                             features = all_genes)
 ```
 
+***
+
+**Exercises**
+
+1. From the `seurat_raw` object, use the `subset()` function to subset out the cells corresponding to the stimulated condition (`seurat_stim`). 
+
+2. Normalize the `seurat_stim` data for read depth and identify the 2000 most variable genes.
+
+3. Plot the `seurat_stim` variable genes with labels.
+
+4. Scale the `seurat_stim` data.
+
+***
+
 ### Cell cycle scoring
 
 Cell cycle variation is a common source of uninteresting variation in single-cell RNA-seq data. To examine cell cycle variation in our data, we assign each cell a score, based on its expression of G2/M and S phase markers. 
@@ -256,8 +270,7 @@ seurat_control <- CellCycleScoring(seurat_control,
                                    s.features = s_genes)
 
 # Perform PCA and color by cell cycle phase
-seurat_control <- RunPCA(seurat_control,
-                         features = c(s_genes, g2m_genes))
+seurat_control <- RunPCA(seurat_control)
 
 # Visualize the PCA, grouping by cell cycle phase
 DimPlot(seurat_control,
@@ -269,7 +282,7 @@ DimPlot(seurat_control,
 <img src="../img/PCA_CC_genes_preregress.png" width="800">
 </p>
 
-We do see differences between G2M and S phase, with S phase tending to be higher on PC2 and G2M a bit lower on PC2. G1 cells are appear to the right of the other cells on PC1. Based on this plot, we would regress out the variation due to cell cycle. 
+We do see differences on PC1, with the G1 cells to the left of the other cells on PC1. Based on this plot, we would regress out the variation due to cell cycle. 
 
 > **NOTE:** Alternatively, we could wait and perform the clustering without regression and see if we have clusters separated by cell cycle phase. If we do, then we could come back and perform the regression.
 
@@ -306,6 +319,18 @@ DimPlot(object = seurat_control,
 </p>
 
 Regressing out cell cycle has resulted in more overlap of cells in the different phases of the cell cycle.
+
+***
+
+**Exercises**
+
+1. Perform cell cycle scoring for the `seurat_stim` sample, then, run and visualize PCA, coloring by cell cycle phase.
+
+2. Regress out the uninteresting sources of variation in the data for the `seurat_stim` sample.
+
+3. Re-run and visualize the PCA, colored by cell cycle phase.
+
+***
 
 ## Clustering cells based on top PCs (metagenes)
 
@@ -404,7 +429,7 @@ plot_df <- data.frame(pct = pct,
            rank = 1:length(pct))
 
 # Elbow plot to visualize 
-  ggplot(plot_df, aes(cumu, pct, label = rank, color = rank >= pcs)) + 
+  ggplot(plot_df, aes(cumu, pct, label = rank, color = rank > pcs)) + 
   geom_text() + 
   geom_vline(xintercept = 90, color = "grey") + 
   geom_hline(yintercept = min(pct[pct > 5]), color = "grey") +
@@ -526,10 +551,10 @@ DimPlot(seurat_control,
 
 What you may have noticed is that there is some variability in the way your plots look compared to those in the lesson. In particular you may see a difference in the labeling of clusters. This is an unfortunate consequence of slight variations in the versions you are using (of the Seurat package and/or dependency packages).
 
-In order to maintain consistency in the downstream analysis and interpretation of this dataset, we will ask you to [download a new R object](https://www.dropbox.com/s/7m71je2s21kxwcf/seurat_control.rds?dl=1). Once downloaded, you will need to **load in the object to your R session and overwrite the existing one**: 
+In order to maintain consistency in the downstream analysis and interpretation of this dataset, we will ask you to [download a new R object](https://www.dropbox.com/s/7m71je2s21kxwcf/seurat_control.rds?dl=1) to the `data` folder. Once downloaded, you will need to **load in the object to your R session and overwrite the existing one**: 
 
 ```r
-seurat_control <- readRDS("~/Downloads/seurat_control.rds")
+seurat_control <- readRDS("data/seurat_control.rds")
 ```
 
 Using this new R object we will continue with the UMAP method and the 0.8 resolution to check the quality control metrics and known markers for anticipated cell types. Plot the UMAP again to make sure your image now matches what you see in the lesson:
@@ -550,6 +575,16 @@ DimPlot(seurat_control,
 <img src="../img/SC_umap_loadimg.png" width="800">
 </p>
 
+***
+
+**Exercises**
+
+1. Identify significant PCs for the `seurat_stim` object.
+2. Perform clustering for `seurat_stim` using the resolutions: 0.4, 0.6, 0.8, 1.0, 1.2, 1.8.
+3. Assign resolution of the `seurat_stim` clusters to `RNA_snn_res.0.8`.
+4. Plot the UMAP for `seurat_stim`.
+
+***
 
 [Click here for next lesson]()
 
