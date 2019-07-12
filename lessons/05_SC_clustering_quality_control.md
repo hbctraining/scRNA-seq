@@ -1,7 +1,7 @@
 ---
 title: "Single-cell RNA-seq: Clustering Analysis"
 author: "Mary Piper, Lorena Pantano, Meeta Mistry, Radhika Khetani"
-date: Thursday, June 6, 2019
+date: Friday, July 12th, 2019
 ---
 
 Approximate time: 90 minutes
