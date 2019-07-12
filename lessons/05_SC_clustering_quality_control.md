@@ -266,7 +266,7 @@ FeaturePlot(seurat_control,
 <img src="../img/CD14_monocytes_loadObj.png" width="800">
 </p>
 
-CD14+ monocytes appear to correspond to clusters 0 and 15, and 8
+CD14+ monocytes appear to correspond to clusters 0, 8, and 15.
 
 **FCGR3A+ monocyte markers**
 
@@ -280,7 +280,21 @@ FeaturePlot(seurat_control,
 <img src="../img/FCGR3A_monocyte_loadObj.png" width="800">
 </p>
 
-FCGR3A+ monocytes markers distinctly highlight cluster 8.
+FCGR3A+ monocytes markers distinctly highlight cluster 8. 
+
+**Macrophages**
+
+```r
+FeaturePlot(seurat_control, 
+            reduction = "umap", 
+            features = c("MARCO", "ITGAM", "ADGRE1"))
+```
+
+<p align="center">
+<img src="../img/sc_marcro_markers.png" width="800">
+</p>
+
+No clusters appear to correspond to macrophages; perhaps cell culture conditions negatively selected for macrophages (more highly adherent).
 
 **Conventional dendritic cell markers**
 
@@ -453,7 +467,7 @@ Based on these results, we can associate clusters with the cell types. However, 
 | T cells | 1, 2, 3, 6, 9, 10, 13, 14 |
 | CD4+ T cells | 1, 2, 3, 10, 13, 14 |
 | CD8+ T cells| 6 |
-| NK cells | 5,6, 13 |
+| NK cells | 5, 6, 13 |
 | Megakaryocytes | 10 |
 | Erythrocytes | - |
 | Unknown | 7 |
