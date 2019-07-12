@@ -1,7 +1,7 @@
 ---
 title: "Single-cell RNA-seq: Clustering Analysis"
 author: "Mary Piper, Lorena Pantano, Meeta Mistry, Radhika Khetani"
-date: Thursday, June 6, 2019
+date: Friday, July 12, 2019
 ---
 
 Approximate time: 90 minutes
@@ -167,7 +167,7 @@ seurat_control <- ScaleData(object = seurat_control,
 
 ***
 
-**Exercise**
+**Exercises**
 
 1. From the `seurat_raw` object, use the `subset()` function to subset out the cells corresponding to the stimulated condition (`seurat_stim`). 
 
@@ -319,6 +319,18 @@ DimPlot(object = seurat_control,
 </p>
 
 Regressing out cell cycle has resulted in more overlap of cells in the different phases of the cell cycle.
+
+***
+
+**Exercises**
+
+1. Perform cell cycle scoring for the `seurat_stim` sample, then, run and visualize PCA, coloring by cell cycle phase.
+
+2. Regress out the uninteresting sources of variation in the data for the `seurat_stim` sample.
+
+3. Re-run and visualize the PCA, colored by cell cycle phase.
+
+***
 
 ## Clustering cells based on top PCs (metagenes)
 
