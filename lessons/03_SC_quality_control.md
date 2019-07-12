@@ -330,10 +330,10 @@ After performing the filtering, it's recommended to look back over the metrics t
 
 1. Extract the new metadata from the filtered Seurat object to go through the same plots as with the unfiltered data
 
-```r
-# Save filtered subset to new metadata
-metadata_clean <- clean_seurat@meta.data
-```
+	```r
+	# Save filtered subset to new metadata
+	metadata_clean <- clean_seurat@meta.data
+	```
 
 2. Perform all of the same plots as with the unfiltered data and determine whether the thresholds used were appropriate.
 
