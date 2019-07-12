@@ -270,8 +270,7 @@ seurat_control <- CellCycleScoring(seurat_control,
                                    s.features = s_genes)
 
 # Perform PCA and color by cell cycle phase
-seurat_control <- RunPCA(seurat_control,
-                         features = c(s_genes, g2m_genes))
+seurat_control <- RunPCA(seurat_control)
 
 # Visualize the PCA, grouping by cell cycle phase
 DimPlot(seurat_control,
@@ -283,7 +282,7 @@ DimPlot(seurat_control,
 <img src="../img/PCA_CC_genes_preregress.png" width="800">
 </p>
 
-We do see differences between G2M and S phase, with S phase tending to be higher on PC2 and G2M a bit lower on PC2. G1 cells are appear to the right of the other cells on PC1. Based on this plot, we would regress out the variation due to cell cycle. 
+We do see differences on PC1, with the G1 cells to the left of the other cells on PC1. Based on this plot, we would regress out the variation due to cell cycle. 
 
 > **NOTE:** Alternatively, we could wait and perform the clustering without regression and see if we have clusters separated by cell cycle phase. If we do, then we could come back and perform the regression.
 
