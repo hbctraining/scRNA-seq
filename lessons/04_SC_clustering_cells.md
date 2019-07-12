@@ -165,6 +165,20 @@ seurat_control <- ScaleData(object = seurat_control,
                             features = all_genes)
 ```
 
+***
+
+**Exercise**
+
+1. From the `seurat_raw` object, use the `subset()` function to subset out the cells corresponding to the stimulated condition (`seurat_stim`). 
+
+2. Normalize the `seurat_stim` data for read depth and identify the 2000 most variable genes.
+
+3. Plot the `seurat_stim` variable genes with labels.
+
+4. Scale the `seurat_stim` data.
+
+***
+
 ### Cell cycle scoring
 
 Cell cycle variation is a common source of uninteresting variation in single-cell RNA-seq data. To examine cell cycle variation in our data, we assign each cell a score, based on its expression of G2/M and S phase markers. 
