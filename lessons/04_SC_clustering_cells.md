@@ -575,6 +575,16 @@ DimPlot(seurat_control,
 <img src="../img/SC_umap_loadimg.png" width="800">
 </p>
 
+***
+
+**Exercises**
+
+1. Identify significant PCs for the `seurat_stim` object.
+2. Perform clustering for `seurat_stim` using the resolutions: 0.4, 0.6, 0.8, 1.0, 1.2, 1.8.
+3. Assign resolution of the `seurat_stim` clusters to `RNA_snn_res.0.8`.
+4. Plot the UMAP for `seurat_stim`.
+
+***
 
 [Click here for next lesson]()
 
