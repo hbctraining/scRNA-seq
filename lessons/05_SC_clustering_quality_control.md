@@ -465,7 +465,7 @@ Based on these results, we can associate clusters with the cell types. However, 
 | Plasmacytoid dendritic cells | 12 |
 | B cells | 4, 11 |
 | T cells | 1, 2, 3, 6, 9, 10, 13, 14 |
-| CD4+ T cells | 1, 2, 3, 10, 13, 14 |
+| CD4+ T cells | 1, 2, 3, 9, 10, 13, 14 |
 | CD8+ T cells| 6 |
 | NK cells | 5, 6, 13 |
 | Megakaryocytes | 10 |
