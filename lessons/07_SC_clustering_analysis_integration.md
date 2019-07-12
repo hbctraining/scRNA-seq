@@ -20,6 +20,8 @@ Therefore, we are going to integrate the cells from our control and stimulated s
 
 <img src="../img/sc_workflow_integration.png" width="800">
 
+*** 
+
 _**Goals:**_ 
  
 - _To **align the cells** corresponding to the same cell types across conditions, batches or technologies_
@@ -34,6 +36,7 @@ _**Recommendations:**_
  - _For multi-sample experiments, err on the side of **aligment of cells** rather than not aligning. Generally, alignment shouldn't negatively affect the analysis, although less processing is always preferred_
  - _Following integration, err on the side of using **more PCs for clustering** than fewer PCs. Usually use at least 20 - 30 PCs for clustering; additional PCs do not affect the clustering very much after ~30 PCs depending on the size of the dataset and the variability present._
 
+***
  
 ## Integration
 
@@ -49,6 +52,7 @@ To integrate multiple samples together, we need to perform the following steps:
 The first thing we do is extract each sample as an individual Seurat object.
 
 ```r
+# Extract each sample into a separate Seurat object (stored in a list)
 seurat_list <- SplitObject(seurat_raw, split.by = "sample")
 ```
 
@@ -61,6 +65,8 @@ Before comparing expression profiles of cells to determine similarity, we need t
 Then, to align similar cells across samples we need to identify the most variable genes for each of the samples. Similar to previously, the mean-variance relationship of the data is modeled and the 2,000 most variable genes are returned.
 
 ```r
+
+# Normalize and find variable features
 for (i in 1:length(seurat_list)) {
         seurat_list[[i]] <- NormalizeData(seurat_list[[i]], 
                                           verbose = FALSE)
