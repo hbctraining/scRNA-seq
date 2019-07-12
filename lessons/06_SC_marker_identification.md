@@ -268,22 +268,24 @@ We can then reassign the identity of the clusters to these cell types:
 
 ```r
 seurat_control <- RenameIdents(object = seurat_control, 
-                                "0" = "CD14+ monocytes",
-                                "1" = "CD4+ T cells",
-                                "2" = "CD4+ T cells",
-                                "3" = "CD4+ T cells",
-                                "4" = "B cells",
-                                "5" = "CD14+ monocytes",
-                                "6" = "NK cells",
-                                "7" = "CD8+ T cells",
-                                "8" = "CD8+ T cells",
-                                "9" = "Stressed/dying cells",
-                                "10" = "Dendritic cells",
-                                "11" = "FCGR3A+ monocytes",
-                                "12" = "Megakaryocytes",
-                                "13" = "B cells",
-                                "14" = "CD4+ T cells",
-                                "15" = "CD4+ T cells")
+                               "0" = "CD14+ monocytes",
+                               "1" = "CD4+ T cells",
+                               "2" = "CD4+ T cells",
+                               "3" = "CD4+ T cells",
+                               "4" = "B cells",
+                               "5" = "NK cells",
+                               "6" = "CD8+ T cells",
+                               "7" = "Stressed / dying cells",
+                               "8" = "FCGR3A+ monocytes",
+                               "9" = "CD14+ Monocytes",
+                               "10" = "Megakaryocytes",
+                               "11" = "B cells",
+                               "12" = "Dendritic cells",
+                               "13" = "NK cells",
+                               "14" = "CD4+ T cells",
+                               "15" = "CD14+ monocytes")
+
+
 
 DimPlot(object = seurat_control, 
         reduction = "umap", 
@@ -292,7 +294,7 @@ DimPlot(object = seurat_control,
 ```
 
 <p align="center">
-<img src="../img/sc_umap_labelled.png" width="800">
+<img src="../img/umap_labelled_subset_loadObj.png" width="800">
 </p>
 
 If we wanted to remove the stressed cells, we could use the `SubsetData()` function:
@@ -300,7 +302,7 @@ If we wanted to remove the stressed cells, we could use the `SubsetData()` funct
 ```r
 # Remove the stressed or dying cells
 control_labelled <- subset(seurat_control,
-                               idents = "Stressed/dying cells", invert = TRUE)
+                               idents = "Stressed / dying cells", invert = TRUE)
 
 # Re-visualize the clusters
 DimPlot(object = control_labelled, 
@@ -310,7 +312,7 @@ DimPlot(object = control_labelled,
 ```
 
 <p align="center">
-<img src="../img/sc_umap_control_labelled_subset.png" width="800">
+<img src="../img/umap_control_labelled_subset_loadObj.png" width="800">
 </p>
 
 Now we would want to save our final labelled Seurat object:
