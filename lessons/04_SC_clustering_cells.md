@@ -167,7 +167,7 @@ seurat_control <- ScaleData(object = seurat_control,
 
 ***
 
-**Exercises**
+**[Exercises]()**
 
 1. From the `seurat_raw` object, use the `subset()` function to subset out the cells corresponding to the stimulated condition (`seurat_stim`). 
 
@@ -322,7 +322,7 @@ Regressing out cell cycle has resulted in more overlap of cells in the different
 
 ***
 
-**Exercises**
+**[Exercises]()**
 
 1. Perform cell cycle scoring for the `seurat_stim` sample, then, run and visualize PCA, coloring by cell cycle phase.
 
@@ -577,7 +577,7 @@ DimPlot(seurat_control,
 
 ***
 
-**Exercises**
+**[Exercises]()**
 
 1. Identify significant PCs for the `seurat_stim` object.
 2. Perform clustering for `seurat_stim` using the resolutions: 0.4, 0.6, 0.8, 1.0, 1.2, 1.8.
