@@ -249,31 +249,7 @@ ElbowPlot(object = combined,
 <img src="../img/sc_integ_elbow_plot.png" width="600">
 </p>
 
-Based on this elbow plot, it appears that 30 PCs capture the majority of the variation. We could quantify just to make sure:
-
-```r
-# Determine percent of variation associated with each PC
-pct <- combined[["pca"]]@stdev / sum(combined[["pca"]]@stdev) * 100
-
-# Calculate cumulative percents for each PC
-cumu <- cumsum(pct)
-
-# Determine which PC exhibits cumulative percent greater than 90% and % variation associated with the PC as less than 5
-co1 <- which(cumu > 90 & pct < 5)[1]
-
-co1
-
-# Determine the difference between variation of PC and subsequent PC
-co2 <- sort(which((pct[1:length(pct)-1] - pct[2:length(pct)]) > 0.1),
-            decreasing = T)[1] + 1 
-# last point where change of % of variation is more than 0.1%.
-co2
-
-# Minimum of the two calculations
-min(co1, co2)
-```
-
-Quantification indicates that 30 PCs more than captures the majority of the variation based on the difference in variation between subsequent PCs. We will continue to use the 30 PCs that we had initially used for the integration.
+Based on this elbow plot, it appears that 30 PCs capture the majority of the variation. We will continue to use the 30 PCs that we had initially used for the integration.
 
 ## Cluster the cells
 
