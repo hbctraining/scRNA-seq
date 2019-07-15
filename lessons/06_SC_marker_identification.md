@@ -159,7 +159,7 @@ Based on these marker results, we can determine whether the markers make sense f
 | Plasmacytoid dendritic cells | 12 |
 | B cells | 4, 11 |
 | T cells | 1, 2, 3, 6, 9, 10, 13, 14 |
-| CD4+ T cells | 1, 2, 3, 10, 13, 14 |
+| CD4+ T cells | 1, 2, 3, 9, 10, 13, 14 |
 | CD8+ T cells| 6 |
 | NK cells | 5,6, 13 |
 | Megakaryocytes | 10 |
@@ -172,7 +172,7 @@ If there were any questions about the identity of any clusters, exploring the cl
 <img src="../img/cluster7_markers_loadObj.png" width="800">
 </p>
 
-We see a lot of heat shock and DNA damage genes appear. Based on these markers, it is likely that these are stressed or dying cells. We could explore the quality metrics for these cells in more detail before removing just to support that argument. 
+We see a lot of heat shock and DNA damage genes appear. Based on these markers, it is likely that these are stressed or dying cells. However, we also see T cell-associated genes and markers of activation. It is possible that these could be activated (cytotoxic) T cells. We could explore the quality metrics for these cells in more detail before removing just to support that argument.
 
 We also had questions regarding the identity of cluster 6. Is cluster 6 a CD8+ T cell, an NK cell, or an NK T cell?
 
@@ -182,7 +182,7 @@ We can look at the markers of cluster 6 to try to resolve the identity:
 <img src="../img/cluster6_markers_loadObj.png" width="800">
 </p>
 
-There are definitely T cell receptors that are enriched among cluster 6. Since NK cells cannot have expression of the T cell receptor genes we can therefore conclude that these cannot be NK cells. On the other hand CD8+ T cells can have expression of killer cell receptors. So, could these be NK T cells? Probably not, since NK Tcells are usually a rare population and in our case we have many cells here. Thus, we hypothesize that cluster 6 represents activated CD8+ T cells (cytotoxic T cells).
+There are definitely T cell receptors that are enriched among cluster 6. Since NK cells cannot have expression of the T cell receptor genes we can therefore conclude that these cannot be NK cells. On the other hand CD8+ T cells can have expression of killer cell receptors. So, could these be NK T cells? Probably not, since NK T cells are usually a rare population and in our case we have many cells here. Thus, we hypothesize that cluster 6 represents activated CD8+ T cells (cytotoxic T cells).
 
 To get a better idea of cell type identity we can explore the expression of different identified markers by cluster using the `FeaturePlot()` function. For example, we can look at the cluster 6 markers:
 
@@ -254,70 +254,123 @@ View(cd14_monos_markers)
 ```
 
 <p align="center">
-<img src="../img/mono14_de_loadObj.png" width="800">
+<img src="../img/sc_mono14_markers.png" width="800">
 </p>
 
-When looking through the results, there appear to be many `CCL` genes that are differentially expressed between the clusters. If this were biologically meaningful we would keep the two distinct clusters, but if not, we would merge them.
+When looking through the results, we see quite a few T cell-specific markers, such as the T cell marker, CD3D, and T cell receptor genes. We also see lower expression of the CD14 and LYZ monocyte cell markers. It's possible that this cluster could represent doublets of CD14+ monocytes and T cells. 
 
-While we are not going to explore these genes in more depth, you would probably want to explore the expression of these genes in more depth visually using feature plots and violin plots.
+We are not going to explore these genes in more depth, although, you would probably want to explore the expression of these genes in more depth visually using feature plots and violin plots before deciding on a label.
 
-Now taking all of this information, we can surmise the cell types of the different clusters and plot the cells with cell type labels. We would have done comparisons between all of the clusters that represent the same cell type (i.e. between clusters 1, 2, and 3 for CD4+ T cells); however, for this lesson, we will merge all of the clusters of the same cell type.
+We would also like to determine how the CD4+ T cell clusters are different from each other. We could again explore these differences:
+
+```r
+# Determine differentiating markers for CD4+ T cell
+cd4_tcells <- FindMarkers(seurat_control,
+                          ident.1 = 1,
+                          ident.2 = c(2, 3, 9, 10, 13, 14),
+                          only.pos = TRUE)                     
+
+# Add gene symbols to the DE table
+cd4_tcells <- cd4_tcells %>%
+        rownames_to_column("gene") %>%
+        inner_join(y = annotations[, c("gene_name", "description")],
+                   by = c("gene" = "gene_name")) %>%
+        unique()
+
+# Reorder columns and sort by log2 fold change        
+cd4_tcells <- cd4_tcells[, c(1, 3:5,2,6:7)]
+
+cd4_tcells <- cd4_tcells %>%
+        dplyr::arrange(dplyr::desc(abs(avg_logFC))) 
+
+# View data
+View(cd4_tcells)
+
+```
+
+<p align="center">
+<img src="../img/sc_cd4t_markers.png" width="800">
+</p>
+
+Of these top genes the **CREM gene** stands out as a marker of activation. We know that another marker of activation is CD69, and markers of naive or memory cells include the SELL and CCR7 genes. Let's explore activation status a bit visually using these new cell state markers:
+
+| Cell State | Marker |
+|:---:|:---:|
+| Naive T cells | CCR7, SELL | 
+| Activated T cells | CREM, CD69 |
+
+```r
+# Plot gene markers of activated and naive/memory T cells
+FeaturePlot(seurat_control, 
+            reduction = "umap", 
+            features = c("CREM", "CD69", "CCR7", "SELL"))
+```
+
+<p align="center">
+<img src="../img/sc_cd4t_act-mem_markers.png" width="800">
+</p>
+
+The activated CD4+ T cells correspond to clusters 1 and 9, while the naive or memory CD4+ T cells represent clusters 2, 3, and 14.
+
+Now taking all of this information, we can surmise the cell types of the different clusters and plot the cells with cell type labels.
 
 
 | Cluster ID	| Cell Type |
 |:-----:|:-----:|
 |0	| CD14+ Monocytes|
-|1	| CD4+ T cells |
-|2	| CD4+ T cells|
-|3	| CD4+ T cells|
+|1	| Activated CD4+ T cells |
+|2	| Naive or memory CD4+ T cells|
+|3	| Naive or memory CD4+ T cells|
 |4	| B cells |
 |5	| NK cells |
 |6	| CD8+ T cells |
 |7	| Stressed / dying cells |
 |8	| FCGR3A+ monocytes |
-|9	| CD4+ T cells |
+|9	| Activated CD4+ T cells |
 |10	| Megakaryocytes |
 |11	| B cells |
 |12	| Dendritic cells |
 |13	| NK cells |
-|14	| CD4+ T cells |
-|15| CD14+ monocytes |
+|14	| Naive or memory CD4+ T cells |
+|15| CD14+ monocytes / T cell doublets |
 
 
 We can then reassign the identity of the clusters to these cell types:
 
 ```r
+# Rename all identities
 seurat_control <- RenameIdents(object = seurat_control, 
                                "0" = "CD14+ monocytes",
-                               "1" = "CD4+ T cells",
-                               "2" = "CD4+ T cells",
-                               "3" = "CD4+ T cells",
+                               "1" = "Activated CD4+ T cells",
+                               "2" = "Naive or memory CD4+ T cells",
+                               "3" = "Naive or memory CD4+ T cells",
                                "4" = "B cells",
                                "5" = "NK cells",
                                "6" = "CD8+ T cells",
                                "7" = "Stressed / dying cells",
                                "8" = "FCGR3A+ monocytes",
-                               "9" = "CD4+ T cells",
+                               "9" = "Activated CD4+ T cells",
                                "10" = "Megakaryocytes",
                                "11" = "B cells",
                                "12" = "Dendritic cells",
                                "13" = "NK cells",
-                               "14" = "CD4+ T cells",
-                               "15" = "CD14+ monocytes")
+                               "14" = "Naive or memory CD4+ T cells",
+                               "15" = "CD14+ monocytes / T cell doublets")
 
 
-
+# Plot the UMAP
 DimPlot(object = seurat_control, 
         reduction = "umap", 
         label = TRUE,
-        label.size = 6)
+        label.size = 6,
+        repel = TRUE)
 ```
 
 <p align="center">
 <img src="../img/umap_labelled_subset_loadObj.png" width="800">
 </p>
 
-If we wanted to remove the stressed cells, we could use the `SubsetData()` function:
+If we wanted to remove the stressed cells, we could use the `subset()` function:
 
 ```r
 # Remove the stressed or dying cells
