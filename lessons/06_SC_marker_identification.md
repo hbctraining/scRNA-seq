@@ -1,7 +1,7 @@
 ---
 title: "Single-cell RNA-seq: Marker identification"
 author: "Mary Piper, Lorena Pantano, Meeta Mistry, Radhika Khetani"
-date: Thursday, June 6,2019
+date: Monday, July 15, 2019
 ---
 
 Approximate time: 45 minutes
@@ -37,6 +37,12 @@ _**Recommendations:**_
  - _Identify markers that are differentially expressed between specific clusters_
 
 ***
+
+Our clustering analysis resulted in the following clusters:
+
+<p align="center">
+<img src="../img/SC_umap_loadimg.png" width="800">
+</p>
 
 Remember that we had the following questions from the clustering analysis:
 
@@ -205,6 +211,20 @@ VlnPlot(object = seurat_control,
 </p>
 
 These results and plots can help us determine the identity of these clusters or verify what we hypothesize the identity to be after exploring the canonical markers of expected cell types previously.
+
+***
+
+**Exercises**
+
+1. **Find all markers** for the `seurat_stim` data using the `FindAllMarkers()` function with arguments to return only the positive markers and those markers with log2 fold-change greater than 0.25.
+2. **Annotate** the markers with gene descriptions.
+3. **Reorder the columns** to be in the order shown below
+4. **Arrange rows** by cluster, then by p-adjusted values
+5. **Save** our rearranged marker analysis results to a file called `stim_all_markers.csv` in the `results` folder.
+6. **Extract** the top 5 markers by log2 fold change for each cluster.
+7. **Visualize** top 5 markers for cluster 0 using the `FeaturePlot()` and `VlnPlot()` functions.
+
+***
 
 ## Identifying gene markers for each cluster
 
