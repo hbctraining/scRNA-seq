@@ -261,7 +261,7 @@ g2m_genes <- cell_cycle_markers %>%
         pull("gene_name")
 ```
 
-Taking the gene names for the cell cycle genes we can score each cell based which stage of the cell cycle it is most likely to be in.
+Taking the gene names for the cell cycle genes we can score each cell based which stage of the cell cycle it is most likely to be in. By default, the PCA is run only using the most variable features identified previously. The output of the PCA returns the correlated gene sets associated with the different principal components (PCs).
 
 ```r        
 # Perform cell cycle scoring
