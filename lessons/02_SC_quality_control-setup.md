@@ -190,7 +190,7 @@ Different methods for reading in data include:
 
 ### Reading in a single sample (`read10X()`)
 
-When working with 10X data and it's proprietary software Cell Ranger, you will always have an `outs` directory. Within this directory you will find a number of different files including:
+When working with 10X data and its proprietary software Cell Ranger, you will always have an `outs` directory. Within this directory you will find a number of different files including:
 
 - **`web_summary.html`:** report that explores different QC metrics, including the mapping metrics, filtering thresholds, estimated number of cells after filtering, and information on the number of reads and genes per cell after filtering.
 - **BAM alignment files:** files used for visualization of the mapped reads and for re-creation of FASTQ files, if needed
@@ -199,10 +199,9 @@ When working with 10X data and it's proprietary software Cell Ranger, you will a
 
 We are mainly interested in the `raw_feature_bc_matrix` as we wish to perform our own QC and filtering while accounting about the biology of our experiment.
 
-If we had a single sample, we could generate the count matrix and then subsequently create a Seurat object:
+If we had a single sample, we could generate the count matrix and then subsequently create [a Seurat object](https://github.com/satijalab/seurat/wiki/Seurat):
 
 ```r
-
 # How to read in 10X data for a single sample
 ctrl_counts <- Read10X(data.dir = "data/ctrl_raw_feature_bc_matrix")
 
@@ -214,24 +213,25 @@ ctrl <- CreateSeuratObject(counts = ctrl_counts,
 > **NOTE**: The `min.features` argument specifies the minimum number of genes that need to be detected per cell. This argument will filter out poor quality cells that likely just have random barcodes encapsulated without any cell present. We would not be interested in analyzing any cells with less than 100 genes detected.
 
 
-Notice that **Seurat automatically creates some metadata** for each of the cells:
+**Seurat automatically creates some metadata** for each of the cells when you use the `Read10X()` function to read in data. This information is stored in the `meta.data` slot within the Seurat object. You can find more information about the slots in the Seurat object [on their Wiki page](https://github.com/satijalab/seurat/wiki/Seurat)
 
 ```r
 # Explore the metadata
 head(ctrl@meta.data)
 ```
 
-The added columns include:
+What do the columns of metadata mean?
 
 - `orig.ident`: this often contains the sample identity if known, but will default to "SeuratProject"
 - `nCount_RNA`: number of UMIs per cell
 - `nFeature_RNA`: number of genes detected per cell
 
 
-
 ### Reading in multiple samples with a `for loop`
 
-A `for loop` interates over a series of commands for each of the inputs given. In R, it has the structure:
+In practice, you likely have many samples that you want to read the data in for using the `Read10X()` or the `readMM()` functions. So, to make the data import into R more efficient we can use a `for` loop. 
+
+A `for` loop interates over a series of commands for each of the inputs given. In R, it has the following structure/syntax:
 
 ```r
 for (variable in input){
@@ -241,7 +241,7 @@ for (variable in input){
 }
 ```
 
-The `for loop` we plan to use will iterate over our two samples (`input`) and execute two commands for each sample (read in the count data and create a Seurat objects):
+Our `for` loop will iterate over the two samples (`input`) and execute two commands for each sample - (1) read in the count data and (2) create the Seurat objects:
 
 ```r
 # Create each individual Seurat object for every sample
@@ -264,7 +264,7 @@ For our experiment, we have two samples that we would like to read into R using 
 - `ctrl_raw_feature_bc_matrix` 
 - `stim_raw_feature_bc_matrix`
 
-We can specify these samples in the *input* part for our `for loop`. The *variable* we can call anything we would like, just try to make it intuitive. In this example, we called the *variable* `file`:
+We can specify these samples in the *input* part for our `for loop` as elements of a vector using `c()`. We are assigning these to a *variable* and we can call that variable anything we would like (try to give it a name that makes sense). In this example, we called the *variable* `file`:
 
 ```r
 # Create each individual Seurat object
@@ -297,7 +297,7 @@ for (file in c("ctrl_raw_feature_bc_matrix", "stim_raw_feature_bc_matrix")){
 
 #### Step 4: Assign Seurat object to a new variable based on sample
 
-The last command assigns the Seurat object created (`seurat_obj`) to a new variable. In this way, when we iterate and move on to the next sample in our `input` we will not overwrite the Seurat object. To assign it to a variable we first need to create a variable called `sample` which is just the file that we are working on (current `input`):
+The last command `assign`s the Seurat object created (`seurat_obj`) to a new variable. In this way, when we iterate and move on to the next sample in our `input` we will not overwrite the Seurat object created in the previous iteration:
 
 ```r
 for (file in c("ctrl_raw_feature_bc_matrix", "stim_raw_feature_bc_matrix")){
@@ -305,9 +305,16 @@ for (file in c("ctrl_raw_feature_bc_matrix", "stim_raw_feature_bc_matrix")){
         seurat_obj <- CreateSeuratObject(counts = seurat_data, 
                                          min.features = 100, 
                                          project = file)        
-        sample <- file
         assign(sample, seurat_obj)
 }
+```
+
+Now that we have created both of these objects, let's take a quick look at the metadata to see how it looks:
+
+```r
+# Check the metadata in the new Seurat objects
+head(ctrl_raw_feature_bc_matrix@meta.data)
+head(stim_raw_feature_bc_matrix@meta.data)
 ```
 
 Now that we have our Seurat objects for each sample, we need to merge them together into a single Seurat object. This will make it easier to run QC on the entire dataset rather than one sample at a time. We can use the `merge()` function to do this:
@@ -319,8 +326,13 @@ merged_seurat <- merge(x = ctrl_raw_feature_bc_matrix,
                        add.cell.id = c("ctrl", "stim"))
 ```
 
-Because the same cell IDs can be used for different samples, we add a sample-specific prefix to each of our cell IDs using the `add.cell.id` argument. 
+Because the same cell IDs can be used for different samples, we add a sample-specific prefix to each of our cell IDs using the `add.cell.id` argument. If we look at the metadata of the merged object we should be able to see the prefixes in the rownames:
 
+```r
+# Check that the merged object has the appropriate sample-specific prefixes
+head(merged_seurat@meta.data)
+tail(merged_seurat@meta.data)
+```
 
 [Click here for next lesson](03_SC_quality_control.md)
 
