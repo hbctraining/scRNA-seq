@@ -68,7 +68,7 @@ Tho acquire the different cluster QC metrics, we can use the `FetchData()` funct
 
 First we will acquire the cell cycle and UMAP coordinate information to view by UMAP:
 
-```{r plot_feature_tsne, fig.width=10, fig.height=5}
+```r
 # Establishing groups to color plots by
 group_by <- c("Phase")
 
