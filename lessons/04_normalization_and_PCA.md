@@ -67,33 +67,35 @@ We could also rotate the entire plot and view the lines representing the variati
 
 If we had three samples/cells, then we would have an extra direction in which we could have variation (3D). Therefore, if we have *N* samples/cells we would have *N*-directions of variation or principal components (PC)! Once these PCs have been calculated, the PC that can explain the largest variation in the dataset is PC1, and the next one is PC2 and so on. 
 
-Once the PCs have been determined for an dataset, we have to figure out how each sample/cell fits back into that context to enable us to visualize the similarities/dissimilaties in an intuitive manner. 
+Once the PCs have been determined for an dataset, we have to figure out how each sample/cell fits back into that context to enable us to visualize the similarities/dissimilaties in an intuitive manner. The question here is "what is sample_X's score for a given PC based on the gene expression in sample_X?". Scores are calculate for all sample-PC pairs as described in the steps below: 
 
-(1) This is performed by first giving each gene an influence score based on how much it influenced each PC.  Genes that did not have any influence get scores near zero, while genes with more influence receive larger scores. Genes on opposite ends of the lines have a large influence, so they would receive large scores but with opposite signs.
+(1) First, each gene is assigned an "influence" score based on how much it influenced each PC. Genes that did not have any influence on a given PC get scores near zero, while genes with more influence receive larger scores. Genes on the ends of a PC line will have a larger influence, so they would receive larger scores but with opposite signs.
 
 <img src="../img/PCA_2sample_influence.png" width="600">
 
-(2) Once the influence has been determined, each sample gets a score. To generate a score per sample the following equation is used:
+(2) Once the influence has been determined, the score for each sample is calculated using the following equation:
 	
 	Sample1 PC1 score = (read count * influence) + ... for all genes
 	
-Let's calculate these scores for our 2-sample example here, i.e. for PC1 and PC2: 
+For our 2-sample example, the following is how the scores would be calculated: 
 
-	Sample1 PC1 score = (4 * -2) + (1 * -10) + (8 * 8) + (5 * 1) = 51
-	Sample1 PC2 score = (4 * 0.5) + (1 * 1) + (8 * -5) + (5 * 6) = -7
+	## Sample1
+	PC1 score = (4 * -2) + (1 * -10) + (8 * 8) + (5 * 1) = 51
+	PC2 score = (4 * 0.5) + (1 * 1) + (8 * -5) + (5 * 6) = -7
 	
-	Sample2 PC1 score = (5 * -2) + (4 * -10) + (8 * 8) + (7 * 1) = 21
-	Sample2 PC2 score = (5 * 0.5) + (4 * 1) + (8 * -5) + (7 * 6) = 8.5
+	## Sample2
+	PC1 score = (5 * -2) + (4 * -10) + (8 * 8) + (7 * 1) = 21
+	PC2 score = (5 * 0.5) + (4 * 1) + (8 * -5) + (7 * 6) = 8.5
 	
-(3) Now we are ready to come back and plot these samples, based on their PC1 and PC2 scores!
+(3) Once these scores are calculated for all the PCs they can be plotted on a simple scatter plot. Below is the plot for the example here:
 
 <img src="../img/PCA_samples.png" width="600">
 
-#### PCA - final thoughts
-
-In a more realistic example with multiple samples or multiple cells, a PCA plot would enable you to determine which samples are most similar to each other, i.e. have similar PC scores. See example below:
+For datasets with a larger number of samples or cells, PC1 and PC2 scores for each sample/cell are plotted usually. Since these PCs explain the most variation in the dataset, and the expectation is samples/cells that are more similar to each other will cluster together with PC1 and PC2. See example below:
 
 <img src="../img/example_PCA_treatmentPC3.png" width="500">
+
+> Sometimes higher PCs are also used for this visualization, expecially if the variation explained by PC1 and PC2 is not very high and the dataset has several factors contirbuting to variations among the dataset.
 
 ***
 
