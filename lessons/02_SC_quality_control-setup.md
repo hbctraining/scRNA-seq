@@ -108,9 +108,16 @@ single_cell_rnaseq/
 - [Control sample](https://www.dropbox.com/sh/73drh0ipmzfcrb3/AADMlKXCr5QGoaQN13-GbeKSa?dl=1)
 - [Stimulated sample](https://www.dropbox.com/sh/cii4j356moc08w5/AAC2c3jfvh2hHWPmEaVsZKRva?dl=1) 
 
-Finally, create an Rscript and type the following note:
+Now, let's unzip the two "zipped" folders that we just downloaded, so we can see their contents from within RStudio.**
+
+### Download data
+
+Next, open a new Rscript file, and start with some comments to indicate what this file is going to contain:
 
 ```r
+# July 17th, 2019
+# HBC single-cell RNA-seq workshop
+
 # Single-cell RNA-seq analysis - QC
 ```
 
