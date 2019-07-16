@@ -85,7 +85,7 @@ Now we are ready to come back and plot these samples, based on their PC1 and PC2
 
 <img src="../img/PCA_samples.png" width="600">
 
-In a more realistic example with multiple samples or multiple cells, a PCA plot would enable you to determine which samples are most similar to each other, i.e. have similar PC scores. See example below (adapted from :
+In a more realistic example with multiple samples or multiple cells, a PCA plot would enable you to determine which samples are most similar to each other, i.e. have similar PC scores. See example below:
 
 <img src="../img/PCA_example_iris.png" width="500">
 adapted from: https://github.com/AshwiniRS/Medium_Notebooks/blob/master/PCA/PCA_Iris_DataSet.ipynb
