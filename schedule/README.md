@@ -22,13 +22,13 @@
 
 | Time |  Topic  | Instructor |
 |:-----------:|:----------:|:--------:|
-| 09:00 - 10:00 | [Clustering (cont.)](lessons/05_SC_clustering_cells.md)  | Mary |
-| 10:00 - 10:45 | [Cluster exploration](lessons/06_SC_clustering_quality_control.md)  | Radhika |
+| 09:00 - 10:00 | [Clustering (cont.)](../lessons/05_SC_clustering_cells.md)  | Mary |
+| 10:00 - 10:45 | [Cluster exploration](../lessons/06_SC_clustering_quality_control.md)  | Radhika |
 | 10:45 - 10:55 | Coffee | |
-| 10:55 - 11:25 | [Cluster exploration](lessons/06_SC_clustering_quality_control.md#exploring-known-cell-type-markers)  | Mary |
-| 11:25 - 12:25 | [Marker identification](lessons/07_SC_marker_identification.md) | Meeta |
+| 10:55 - 11:25 | [Cluster exploration](../lessons/06_SC_clustering_quality_control.md#exploring-known-cell-type-markers)  | Mary |
+| 11:25 - 12:25 | [Marker identification](../lessons/07_SC_marker_identification.md) | Meeta |
 | 12:25 - 13:25 | Lunch | |
-| 13:25 - 14:55 | [Sample integration and clustering](lessons/08_SC_clustering_analysis_integration.md) | Mary |
+| 13:25 - 14:55 | [Sample integration and clustering](../lessons/08_SC_clustering_analysis_integration.md) | Mary |
 | 14:55 - 15:05 | Coffee | |
-| 15:05 - 16:30 | [Marker identification of integrated data](lessons/09_SC_marker_identification_integration.md) | Meeta |
+| 15:05 - 16:30 | [Marker identification of integrated data](../lessons/09_SC_marker_identification_integration.md) | Meeta |
 | 16:30 - 17:00 | [Wrap-up]() | Radhika |
