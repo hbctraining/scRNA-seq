@@ -11,6 +11,8 @@ Approximate time: 90 minutes
 * Normalizing counts for accurate comparison between cells
 * Evaluating similarity in cellular gene expression using Principal Components Analysis
 
+## Count Normalization and Principal Component Analysis
+
 After attaining our high quality single cells, the next step in the single-cell RNA-seq (scRNA-seq) analysis workflow is to perform clustering. The goal of clustering is to separate different cell types into unique clusters of cells. To perform clustering, we determine the genes that are most different in their expression between cells. Then, we use these genes to determine which correlated genes sets are responsible for the largest differences in expression between cells.
 
 <p align="center">
