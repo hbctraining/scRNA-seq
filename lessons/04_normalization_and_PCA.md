@@ -98,7 +98,7 @@ For datasets with a larger number of samples or cells, PC1 and PC2 scores for ea
 *image adapted from [https://github.com/AshwiniRS/Medium_Notebooks/blob/master/PCA/PCA_Iris_DataSet.ipynb](https://github.com/AshwiniRS/Medium_Notebooks/blob/master/PCA/PCA_Iris_DataSet.ipynb)*
 
 
-> Sometimes higher PCs are also used for this visualization, expecially if the variation explained by PC1 and PC2 is not very high and the dataset has several factors contirbuting to variations among the dataset.
+> Sometimes higher PCs are also used for this visualization, expecially if the variation explained by PC1 and PC2 is not very high and the dataset has several factors contirbuting to variation among the samples.
 
 ***
 
