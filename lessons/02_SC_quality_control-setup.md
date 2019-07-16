@@ -47,7 +47,7 @@ The data used to test their algorithm is comprised of pooled Peripheral Blood Mo
 
 
 <p align="center">
-<img src="../img/kangetal_image.png" width="500">
+<img src="../img/kangetal_image.png" width="700">
 </p>
 
 *Image obtained from [Kang et al, 2017](https://www.nature.com/articles/nbt.4042)*
