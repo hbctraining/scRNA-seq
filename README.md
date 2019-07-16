@@ -23,7 +23,7 @@ This repository has teaching materials for a **2-day**, hands-on **Introduction 
 
 Below are links to the lessons and suggested schedules:
 
-* [Click here for schedule](https://hbctraining.github.io/scRNA-seq/schedule)
+* [Click here for schedule](schedule)
 
 
 ### Installation Requirements
