@@ -9,13 +9,13 @@
 | 10:50 - 11:05 | Break | |
 | 11:05 - 12:05 | [Single-cell RNA-seq analysis workflow](https://hbctraining.github.io/scRNA-seq/lessons/01_SC_pre-QC.html) | Mary |
 | 12:05 - 13:05 | Lunch | |
-| 13:05 - 13:50 | R review | Meeta |
-| 13:50 - 14:35 | [Set-up](https://hbctraining.github.io/scRNA-seq/lessons/02_SC_quality_control-setup.html)  | Radhika |
-| 14:35 - 15:00 | [Quality control](https://hbctraining.github.io/scRNA-seq/lessons/03_SC_quality_control.html)  | Meeta |
+| 13:05 - 13:50 | [R Refresher](https://hbctraining.github.io/DGE_workshop_salmon/lessons/R_refresher) | Meeta |
+| 13:50 - 14:35 | [Project oraganization and setting up for analysis ](https://hbctraining.github.io/scRNA-seq/lessons/02_SC_quality_control-setup.html)  | Radhika |
+| 14:35 - 15:00 | [Quality control of raw count data](https://hbctraining.github.io/scRNA-seq/lessons/03_SC_quality_control.html)  | Meeta |
 | 15:00 - 15:10 | Coffee | |
-| 15:10 - 15:30 | [Quality control (cont.)](https://hbctraining.github.io/scRNA-seq/lessons/03_SC_quality_control.html)  | Meeta |
+| 15:10 - 15:30 | [Quality control of raw count data (cont.)](https://hbctraining.github.io/scRNA-seq/lessons/03_SC_quality_control.html)  | Meeta |
 | 15:30 - 16:15 | [Normalization, tranformation, and PCA]() | Radhika |
-| 16:15 - 17:00 | [Clustering]()  | Mary |
+| 16:15 - 17:00 | [Clustering](https://hbctraining.github.io/scRNA-seq/lessons/05_SC_clustering_cells.html)  | Mary |
 
 
 ## Day2
