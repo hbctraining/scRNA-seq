@@ -401,7 +401,7 @@ We have completed the first round of the analysis for the `control` sample. Base
 - Clusters were not separated well enough (i.e. CD4+ and CD8+ T cells were in same cluster):  adjust the clustering resolution or number of PCs used.
 - Too many low quality cells observed: go back and perform more stringent QC by filtering out the low quality cells. 
 
-If we validated the stressed/dying cells were indeed low quality, we may want to remove those cells in the QC and re-cluster. However, we are going to just leave those cells removed and move on to include the `stimulated` sample.
+If we validated the stressed/dying cells were indeed low quality, we may want to remove those cells in the QC and re-cluster. However, we are going to just leave those cells in and move on to include the `stimulated` sample.
 
 ***
 
