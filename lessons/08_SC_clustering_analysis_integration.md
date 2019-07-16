@@ -176,16 +176,6 @@ Let's score each gene for cell cycle phase, then perform PCA using the expressio
 combined <- ScaleData(object = combined, 
                       verbose = FALSE)
 
-cell_cycle_genes <- inner_join(cell_cycle_genes, annotations, by = c("geneID" = "gene_id"))
-
-g2m_genes <- cell_cycle_genes %>%
-        dplyr::filter(phase == "G2/M") %>%
-        pull(gene_name)
-
-s_genes <- cell_cycle_genes %>%
-        dplyr::filter(phase == "S") %>%
-        pull(gene_name)
-
 
 # Perform cell cycle scoring
 combined <- CellCycleScoring(
