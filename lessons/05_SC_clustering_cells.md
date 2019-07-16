@@ -73,6 +73,8 @@ To perform this analysis, we will be mainly using functions available in the Seu
 library(Seurat)
 library(tidyverse)
 library(RCurl)
+library(AnnotationHub)
+library(ensembldb)
 ```
 
 To perform the analysis, Seurat requires the data to be present as a `seurat` object. We have created this object in the QC lesson, so we can use that and just reassign it to a new variable name:
