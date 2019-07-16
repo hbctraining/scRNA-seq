@@ -117,6 +117,9 @@ pca_label <- FetchData(seurat_control,
 Then, we can plot the cell cycle by UMAP and PCA:
 
 ```r
+# load cowplot library to enable visualizing 2 plots side-by-side
+library(cowplot)
+
 # Function to plot UMAP and PCA as grids
   map(group_by, function(metric) {
     plot_grid(
