@@ -49,7 +49,7 @@ To determine whether our clusters might be due to artifacts such as cell cycle p
 
 We can start by exploring the distribution of cells per cluster:
 
-```{r cell_counts}
+```r
 # Extract identity and sample information from seurat object to determine the number of cells per cluster per sample
 n_cells <- FetchData(seurat_control, 
                      vars = c("ident")) %>% 
@@ -144,7 +144,7 @@ library(cowplot)
 
 Next we will explore additional metrics, such as the number of UMIs and genes per cell, S-phase and G2M-phase markers, and mitochondrial gene expression by UMAP. 
 
-```{r dim_features, fig.width=10, fig.height=5}
+```r
 # Determine metrics to plot present in seurat_control@meta.data
 metrics <-  c("nUMI", "nGene", "S.Score", "G2M.Score", "mitoRatio")
 
@@ -176,7 +176,7 @@ The metrics seem to be relatively even across the clusters, with the exception o
 
 We can also explore how well our clusters separate by the different PCs; we hope that the defined PCs separate the cell types well. In the UMAP plots below, the cells are colored by their PC score for each respective principal component.
 
-```{r feature_pcs, fig.width=10, fig.height=10}
+```r
 # Defining the information in the seurat object of interest
 columns <- c(paste0("PC_", 1:14),
             "ident",
@@ -226,7 +226,7 @@ To truly determine the identity of the clusters and whether the `resolution` is 
 
 With the cells clustered, we can explore the cell type identities by looking for known markers. The UMAP plot with clusters marked is shown, followed by the different cell types expected.
 
-```{r UMAP_ref}
+```r
 DimPlot(object = seurat_control, 
         reduction = "umap", 
         label = TRUE)
