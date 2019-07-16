@@ -94,7 +94,7 @@ For our 2-sample example, the following is how the scores would be calculated:
 For datasets with a larger number of samples or cells, PC1 and PC2 scores for each sample/cell are plotted usually. Since these PCs explain the most variation in the dataset, and the expectation is samples/cells that are more similar to each other will cluster together with PC1 and PC2. See example below:
 
 <img src="../img/PCA_example_iris.png" width="500">
-*image adapted from [https://github.com/AshwiniRS/Medium_Notebooks/blob/master/PCA/PCA_Iris_DataSet.ipynb](https://github.com/AshwiniRS/Medium_Notebooks/blob/master/PCA/PCA_Iris_DataSet.ipynb)
+*image adapted from [https://github.com/AshwiniRS/Medium_Notebooks/blob/master/PCA/PCA_Iris_DataSet.ipynb](https://github.com/AshwiniRS/Medium_Notebooks/blob/master/PCA/PCA_Iris_DataSet.ipynb)*
 
 > Sometimes higher PCs are also used for this visualization, expecially if the variation explained by PC1 and PC2 is not very high and the dataset has several factors contirbuting to variations among the dataset.
 
