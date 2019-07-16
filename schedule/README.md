@@ -14,7 +14,7 @@
 | 14:35 - 15:00 | [Quality control of raw count data](https://hbctraining.github.io/scRNA-seq/lessons/03_SC_quality_control.html)  | Meeta |
 | 15:00 - 15:10 | Coffee | |
 | 15:10 - 15:30 | [Quality control of raw count data (cont.)](https://hbctraining.github.io/scRNA-seq/lessons/03_SC_quality_control.html#assessing-the-quality-metrics)  | Meeta |
-| 15:30 - 16:15 | [Normalization and PCA](04_normalization_and_PCA.md) | Radhika |
+| 15:30 - 16:15 | [Normalization and PCA](../lessons/04_normalization_and_PCA.md) | Radhika |
 | 16:15 - 17:00 | [Clustering](https://hbctraining.github.io/scRNA-seq/lessons/05_SC_clustering_cells.html)  | Mary |
 
 
