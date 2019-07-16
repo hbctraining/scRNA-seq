@@ -326,7 +326,7 @@ After performing the filtering, it's recommended to look back over the metrics t
 
 ***
 
-**[Exercises]()**
+**[Exercises](https://hbctraining.github.io/scRNA-seq/lessons/sc_exercises_qc_analysis.html)**
 
 1. Extract the new metadata from the filtered Seurat object to go through the same plots as with the unfiltered data
 
