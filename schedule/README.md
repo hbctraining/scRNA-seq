@@ -10,7 +10,7 @@
 | 11:05 - 12:05 | [Single-cell RNA-seq analysis workflow](https://hbctraining.github.io/scRNA-seq/lessons/01_SC_pre-QC.html) | Mary |
 | 12:05 - 13:05 | Lunch | |
 | 13:05 - 13:50 | [R Refresher](https://hbctraining.github.io/DGE_workshop_salmon/lessons/R_refresher) | Meeta |
-| 13:50 - 14:35 | [Project oraganization and setting up for analysis ](https://hbctraining.github.io/scRNA-seq/lessons/02_SC_quality_control-setup.html)  | Radhika |
+| 13:50 - 14:35 | [Project organization and setting up for analysis ](https://hbctraining.github.io/scRNA-seq/lessons/02_SC_quality_control-setup.html)  | Radhika |
 | 14:35 - 15:00 | [Quality control of raw count data](https://hbctraining.github.io/scRNA-seq/lessons/03_SC_quality_control.html)  | Meeta |
 | 15:00 - 15:10 | Coffee | |
 | 15:10 - 15:30 | [Quality control of raw count data (cont.)](https://hbctraining.github.io/scRNA-seq/lessons/03_SC_quality_control.html)  | Meeta |
