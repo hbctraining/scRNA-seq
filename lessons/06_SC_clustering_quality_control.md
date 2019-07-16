@@ -484,7 +484,9 @@ Now we have a decent idea as to the cell types corresponding to the majority of 
 3. *Do the clusters corresponding to the same cell types have biologically meaningful differences? Are there subpopulations of these cell types?*
 4. *Can we acquire higher confidence in these cell type identities by identifying other marker genes for these clusters?*
 
-Marker identification analysis can help us address all of these questions. The next step will be to perform marker identification analysis, which will output the genes that significantly differ in expression between clusters. Using these genes we can determine or improve confidence in the identities of the clusters/subclusters.
+Marker identification analysis can help us address all of these questions!! 
+
+The next step will be to perform marker identification analysis, which will output the genes that significantly differ in expression between clusters. Using these genes we can determine or improve confidence in the identities of the clusters/subclusters.
 
 [Click here for next lesson]()
 
