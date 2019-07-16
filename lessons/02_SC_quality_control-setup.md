@@ -250,8 +250,7 @@ for (file in c("ctrl_raw_feature_bc_matrix", "stim_raw_feature_bc_matrix")){
         seurat_obj <- CreateSeuratObject(counts = seurat_data, 
                                          min.features = 100, 
                                          project = file)
-        sample <- file
-        assign(sample, seurat_obj)
+        assign(file, seurat_obj)
 }
 ```
 
@@ -305,7 +304,7 @@ for (file in c("ctrl_raw_feature_bc_matrix", "stim_raw_feature_bc_matrix")){
         seurat_obj <- CreateSeuratObject(counts = seurat_data, 
                                          min.features = 100, 
                                          project = file)        
-        assign(sample, seurat_obj)
+        assign(file, seurat_obj)
 }
 ```
 
