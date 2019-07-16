@@ -65,15 +65,17 @@ We could also rotate the entire plot and view the lines representing the variati
 
 If we had three samples/cells, then we would have an extra direction in which we could have variation (3D). Therefore, if we have *N* samples/cells we would have *N*-directions of variation or principal components (PC)! Once these PCs have been calculated, the PC that can explain the largest variation in the dataset is PC1, and the next one is PC2 and so on. 
 
-Once the PCs have been determined for an dataset, we have to figure out how each sample/cell fits back into that context to plot them in an intuitive manner. This is performed by first giving each gene an influence score based on how much it influenced each PC.  Genes that did not have any influence get scores near zero, while genes with more influence receive larger scores. Genes on opposite ends of the lines have a large influence, so they would receive large scores but with opposite signs.
+Once the PCs have been determined for an dataset, we have to figure out how each sample/cell fits back into that context to enable us to visualize the similarities/dissimilaties in an intuitive manner. 
+
+(1) This is performed by first giving each gene an influence score based on how much it influenced each PC.  Genes that did not have any influence get scores near zero, while genes with more influence receive larger scores. Genes on opposite ends of the lines have a large influence, so they would receive large scores but with opposite signs.
 
 <img src="../img/PCA_2sample_influence.png" width="600">
 
-Once the influence has been determined, each sample gets a score. To generate a score per sample the following equation is used:
+(2) Once the influence has been determined, each sample gets a score. To generate a score per sample the following equation is used:
 	
 	Sample1 PC1 score = (read count * influence) + ... for all genes
 	
-Let's calculate these scores for the 2-sample example here, i.e. for PC1 and PC2: 
+Let's calculate these scores for our 2-sample example here, i.e. for PC1 and PC2: 
 
 	Sample1 PC1 score = (4 * -2) + (1 * -10) + (8 * 8) + (5 * 1) = 51
 	Sample1 PC2 score = (4 * 0.5) + (1 * 1) + (8 * -5) + (5 * 6) = -7
@@ -81,16 +83,16 @@ Let's calculate these scores for the 2-sample example here, i.e. for PC1 and PC2
 	Sample2 PC1 score = (5 * -2) + (4 * -10) + (8 * 8) + (7 * 1) = 21
 	Sample2 PC2 score = (5 * 0.5) + (4 * 1) + (8 * -5) + (7 * 6) = 8.5
 	
-Now we are ready to come back and plot these samples, based on their PC1 and PC2 scores!
+(3) Now we are ready to come back and plot these samples, based on their PC1 and PC2 scores!
 
 <img src="../img/PCA_samples.png" width="600">
 
-In a more realistic example with multiple samples or multiple cells, a PCA plot would enable you to determine which samples are most similar to each other, i.e. have similar PC scores. See example below:
-
-<img src="../img/PCA_example_iris.png" width="500">
-adapted from: https://github.com/AshwiniRS/Medium_Notebooks/blob/master/PCA/PCA_Iris_DataSet.ipynb
-
 #### PCA - final thoughts
 
-Since genes with the greatest variation between samples will have the greatest influence on the principal components, we hope our condition of interest explains this variation (e.g. high counts in one condition and low counts in the other). With PC1 representing the most variation in the data and PC2 representing the second most variation in the data, we can visualize how similar the variation of genes is between samples.
+In a more realistic example with multiple samples or multiple cells, a PCA plot would enable you to determine which samples are most similar to each other, i.e. have similar PC scores. See example below:
 
+<img src="../img/example_PCA_treatmentPC3.png" width="500">
+
+***
+
+*This lesson has been developed by members of the teaching team at the [Harvard Chan Bioinformatics Core (HBC)](http://bioinformatics.sph.harvard.edu/). These are open access materials distributed under the terms of the [Creative Commons Attribution license](https://creativecommons.org/licenses/by/4.0/) (CC BY 4.0), which permits unrestricted use, distribution, and reproduction in any medium, provided the original author and source are credited.*
