@@ -13,7 +13,7 @@
 | 13:50 - 14:35 | [Project organization and setting up for analysis ](https://hbctraining.github.io/scRNA-seq/lessons/02_SC_quality_control-setup.html)  | Radhika |
 | 14:35 - 15:00 | [Quality control of raw count data](https://hbctraining.github.io/scRNA-seq/lessons/03_SC_quality_control.html)  | Meeta |
 | 15:00 - 15:10 | Coffee | |
-| 15:10 - 15:30 | [Quality control of raw count data (cont.)](https://hbctraining.github.io/scRNA-seq/lessons/03_SC_quality_control.html)  | Meeta |
+| 15:10 - 15:30 | [Quality control of raw count data (cont.)](https://hbctraining.github.io/scRNA-seq/lessons/03_SC_quality_control.html#assessing-the-quality-metrics)  | Meeta |
 | 15:30 - 16:15 | [Normalization, tranformation, and PCA]() | Radhika |
 | 16:15 - 17:00 | [Clustering](https://hbctraining.github.io/scRNA-seq/lessons/05_SC_clustering_cells.html)  | Mary |
 
