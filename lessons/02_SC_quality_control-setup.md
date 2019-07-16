@@ -180,7 +180,7 @@ This is a text file which contains a matrix of count values. The rows are associ
   </p>
 
 
-Loading this data into R requires us to **use functions that allow us to efficiently combine these three files into a single count matrix.** However, instead of creating a standard count matrix, we will create a **sparse matrix** to improve the amount of space, memory and CPU required to work with our huge count matrix. 
+Loading this data into R requires us to **use functions that allow us to efficiently combine these three files into a single count matrix.** However, instead of creating a regular matrix data structure, we will create a **sparse matrix** to improve the amount of space, memory and CPU required to work with our huge count matrix. 
 
 Different methods for reading in data include:
 
