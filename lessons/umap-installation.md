@@ -21,7 +21,7 @@ You should see a path output that identifies where the executable for Python is 
 
 ```
 
-**If you see this please continue to #4.
+> **If you see this path please continue to #4.**
 
 
 3. If you **don't see miniconda in that path**, you will want to set the path to use your recent installation of Python.
