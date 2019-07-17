@@ -403,6 +403,8 @@ We have completed the first round of the analysis for the `control` sample. Base
 
 If we validated the stressed/dying cells were indeed low quality, we may want to remove those cells in the QC and re-cluster. However, we are going to just leave those cells in and move on to include the `stimulated` sample.
 
+[Click here for next lesson](08_SC_clustering_analysis_integration.md)
+
 ***
 
 
