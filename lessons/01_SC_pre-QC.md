@@ -49,7 +49,7 @@ While bulk RNA-seq can explore differences in gene expression between conditions
 <img src="../img/sc_vs_bulk_cells.png" width="500">
 </p>
 
-_**Image credit:** Trapnell, C. Defining cell types and states with single-cell genomics, Genome Research, 2015 (doi:
+_**Image credit:** Trapnell, C. Defining cell types and states with single-cell genomics, Genome Research 2015 (doi:
 https://dx.doi.org/10.1101/gr.190595.115)_
 
 Despite scRNA-seq being able to capture expression at the cellular level, sample generation and library preparation is more expensive and the analysis is much **more complicated and more difficult to interpret**. The complexity of analysis of scRNA-seq data involves:
@@ -211,7 +211,7 @@ The scRNA-seq method will determine how to parse the barcodes and UMIs from the 
 
 <img src="../img/scRNA-seq_steps_image.jpg" width="800">
 
-_**Image credit:** Luecken, MD and Theis, FJ. Current best practices in single‐cell RNA‐seq analysis: a tutorial, Mol Syst Biol, 2019 (doi: https://doi.org/10.15252/msb.20188746)_
+_**Image credit:** Luecken, MD and Theis, FJ. Current best practices in single‐cell RNA‐seq analysis: a tutorial, Mol Syst Biol 2019 (doi: https://doi.org/10.15252/msb.20188746)_
 
 The steps of the workflow are:
 
