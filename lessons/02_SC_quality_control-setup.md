@@ -176,7 +176,7 @@ When working with 10X data and its proprietary software Cell Ranger, you will al
 - **`filtered_feature_bc_matrix`:** folder containing all files needed to construct the count matrix using data filtered by Cell Ranger
 - **`raw_feature_bc_matrix`:** folder containing all files needed to construct the count matrix using the raw unfiltered data
 
-We are mainly interested in the `raw_feature_bc_matrix` as we wish to perform our own QC and filtering while accounting about the biology of our experiment.
+We are mainly interested in the `raw_feature_bc_matrix` as we wish to perform our own QC and filtering while accounting for the biology of our experiment/biological system.
 
 If we had a single sample, we could generate the count matrix and then subsequently create [a Seurat object](https://github.com/satijalab/seurat/wiki/Seurat):
 
