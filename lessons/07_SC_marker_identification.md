@@ -199,6 +199,8 @@ FeaturePlot(object = seurat_control,
 
 We can also explore the range in expression of specific markers by using violin plots:
 
+> **Violin plots** are similar to box plots, except that they also show the probability density of the data at different values, usually smoothed by a kernel density estimator. A violin plot is more informative than a plain box plot. While a box plot only shows summary statistics such as mean/median and interquartile ranges, the violin plot shows the full distribution of the data. The difference is particularly useful when the data distribution is multimodal (more than one peak). In this case a violin plot shows the presence of different peaks, their position and relative amplitude.
+
 ```r
 # Vln plot - cluster 6
 VlnPlot(object = seurat_control, 
