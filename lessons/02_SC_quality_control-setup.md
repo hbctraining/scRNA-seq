@@ -60,8 +60,10 @@ Some relevant metadata for our dataset is provided below:
   * monocytes
   * macrophages
   * possibly megakaryocytes
+  
+> It is recommended that you have some expectation regarding the cell types you expect to see in a dataset prior to performing the QC. This will inform you if you have any cell types with low complexity (lots of transcripts from a few genes) or cells with higher levels of mitochondrial expression. This will enable us to account for these biological factors when assessing the data quality.
 
-None of these cell types are low complexity or anticipated to have high mitochondrial content.
+None of the above cell types are expected to be low complexity or anticipated to have high mitochondrial content.
 
 
 ## Setting up the R environment
