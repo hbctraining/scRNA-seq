@@ -1,7 +1,7 @@
 ---
 title: "Introduction to single-cell RNA-seq"
 author: "Mary Piper, Lorena Pantano, Meeta Mistry, Radhika Khetani, Rory Kirchner"
-date: Thursday, May 30, 2019
+date: Wednesday, July 17th, 2019
 ---
 
 Approximate time: 45 minutes
@@ -79,6 +79,8 @@ Uninteresting sources of biological variation can result in gene expression betw
 <p align="center">
 <img src="../img/sc_biol_variability.png" width="500">
 </p>
+
+_**Image credit:** Nat Biotechnol. 2016 Nov 8; 34(11): 1145–1160. doi:https://dx.doi.org/10.1038%2Fnbt.3711_
 
 ### Technical variability across cells/samples
 
