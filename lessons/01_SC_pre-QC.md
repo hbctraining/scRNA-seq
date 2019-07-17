@@ -39,7 +39,7 @@ Popular methods to address some of the more common investigations include:
 
 ## Challenges of scRNA-seq analysis
 
-Bulk RNA-seq is a straight-forward method for comparing the averages of cellular expression. This can be the best choice of method if looking for disease biomarkers and not expecting or not concerned with a lot of cellular heterogeneity in the sample.
+Prior to scRNA-seq, transcriptome analysis was performed using bulk RNA-seq, which is straight-forward method for comparing the **averages of cellular expression**. This can be the best choice of method if looking for disease biomarkers and not expecting or not concerned with a lot of cellular heterogeneity in the sample.
 
 While bulk RNA-seq can explore differences in gene expression between conditions (e.g. treatment or disease), the differences at the cellular level are not adequately captured. For instance, in the images below, if analyzed in bulk (left) we would not detect the correct association between the expression of gene A and gene B. However, if we properly group the cells by cell type or cell state, we can see the correct correlation between the genes.
 
@@ -49,24 +49,12 @@ While bulk RNA-seq can explore differences in gene expression between conditions
 
 _**Image credit:** 2015 Trapnell; Published by Cold Spring Harbor Laboratory Press_
 
-Despite scRNA-seq being able to capture expression at the cellular level, analysis is much **more complicated, more expensive, and more difficult to interpret**. The complexity of scRNA-seq data involves having:
+Despite scRNA-seq being able to capture expression at the cellular level, sample generation and library preparation is more expensive and the analysis is much **more complicated and more difficult to interpret**. The complexity of analysis of scRNA-seq data involves:
 
-- Large volume of data:
+- Large volume of data
 - Low depth of sequencing per cell
 - Technical variability across cells/samples
-	- Batch effect
-	- Library quality
-	- Cell-specific capture efficiency
-	- Amplification bias
 - Biological variability across cells/samples
-	- Transcriptional bursting
-		- Initiation
-		- Duration
-	- Varying rates of RNA processing
-	- Continuous or discrete cell identities (e.g. the pro-inflammatory potential of each individual T cell)
-	- Environmental stimuli
-	- Temporal changes (e.g. cell cycle)
-- Batch effects and confounding
 
 ### Large volume of data
 
@@ -76,15 +64,74 @@ Expression data from scRNA-seq experiments represent ten or hundreds of thousand
 
 For the droplet-based methods of scRNA-seq, the depth of sequencing is shallow, often detecting only 10-50% of the transcriptome per cell. This results in cells showing zero counts for many of the genes, or **zero inflation**. However, in a particular cell, a zero count for a gene could either mean that the gene was **not being expressed** or the transcripts were just **not detected**. Across cells, genes with higher levels of expression tend to have fewer zeros. Due to this feature, many genes will not be detected in any cell and gene expression will be highly variable between cells.
 
+### Biological variability across cells/samples
+
+Uninteresting sources of biological variation can result in gene expression between cells being more similar/different than the actual biological cell types/states, which can obscure the cell type identities. Uninteresting sources of biological variation (unless part of the experiment's study) include:
+
+- **Transcriptional bursting:** Gene transcription is not turned on all of the time for all genes. Time of harvest will determine whether gene is on or off in each cell.
+- **Varying rates of RNA processing:** Different RNAs are processed at different rates.
+- **Continuous or discrete cell identities (e.g. the pro-inflammatory potential of each individual T cell):** Continuous phenotypes are by definitition variable in gene expression, and separating the continuous from the discrete can sometimes be difficult.
+- **Environmental stimuli:** The local environment of the cell can influence the gene expression depending on spatial position, signaling molecules, etc.
+- **Temporal changes:** Fundamental fluxuating cellular processes, such as cell cycle, can affect the gene expression profiles of individual cells.
+
+<p align="center">
+<img src="../img/sc_biol_variability.png" width="500">
+</p>
+
 ### Technical variability across cells/samples
 
-Technical sources of variation can result in gene expression between cells being more similar based on technical sources instead of cell types/states, which can obscure the cell type identities. Technical sources of variation include:
+Technical sources of variation can result in gene expression between cells being more similar/different based on technical sources instead of biological cell types/states, which can obscure the cell type identities. Technical sources of variation include:
 
+- **Cell-specific capture efficiency:** Different cells will have differing numbers of transcripts captured resulting in differences in sequencing depth (e.g. 10-50% of transcriptome).
+- **Library quality:** Degraded RNA, low viability/dying cells, lots of free floating RNA, poorly dissociated cells, and inaccurate quantitation of cells can result in low quality metrics
+- **Amplification bias:** During the amplification step of library preparation, not all transcripts are amplified to the same level.
+- **Batch effects:** Batch effects are a significant issue for scRNA-Seq analyses, since you can see significant differences in expression due solely to the batch effect. 
+
+	<img src="../img/batch_effect_pca.png" width="600">
+	
+	*Image credit: [Hicks SC, et al., bioRxiv (2015)](https://www.biorxiv.org/content/early/2015/08/25/025528)*
+
+	To explore the issues generated by poor batch study design, they are highlighted nicely in [this paper](https://f1000research.com/articles/4-121/v1).
+	
+	**How to know whether you have batches?**
+	
+	- Were all RNA isolations performed on the same day?
+	
+	- Were all library preparations performed on the same day?
+	
+	- Did the same person perform the RNA isolation/library preparation for all samples?
+	
+	- Did you use the same reagents for all samples?
+	
+	- Did you perform the RNA isolation/library preparation in the same location?
+	
+	If *any* of the answers is **‘No’**, then you have batches.
+	
+	**Best practices regarding batches:**
+	
+	- Design the experiment in a way to **avoid batches**, if possible.
+	
+	- If unable to avoid batches:
+	
+	  - **Do NOT confound** your experiment by batch:
+	
+	   	 <img src="../img/confounded_batch.png" width="300">
+	    
+	    	*Image credit: [Hicks SC, et al., bioRxiv (2015)](https://www.biorxiv.org/content/early/2015/08/25/025528)*
+	  
+	  - **DO** split replicates of the different sample groups across batches. The more replicates the better (definitely more than 2).
+	  
+	    	<img src="../img/batch_effect.png" width="300">
+	
+	    	*Image credit: [Hicks SC, et al., bioRxiv (2015)](https://www.biorxiv.org/content/early/2015/08/25/025528)*
+	    
+	  - **DO** include batch information in your **experimental metadata**. During the analysis, we can regress out the variation due to batch so it doesn’t affect our results if we have that information.
+	    
 
 
 These characteristics make the **analysis of the data more difficult** than bulk RNA-seq. In addition, the analyses can vary depending whether the goal is marker identification, lineage tracing, or some other custom analysis. Therefore, tools specific for scRNA-seq and the different methods of library preparation are needed. 
 
-## Single-cell RNA-seq data
+## Single-cell RNA-seq data - raw counts to count matrix
 
 Depending on the library preparation method used, the RNA sequences (also referred to as reads or tags), will be derived either from the 3' ends (or 5' ends) of the transcripts (10X Genomics, CEL-seq2, Drop-seq, inDrops) or from full-length transcripts (Smart-seq). 
 
@@ -168,6 +215,7 @@ The steps of the workflow are:
 - **Marker identification:** identifying gene markers for each cluster
 - **Optional downstream steps**
 
+Regardless of the analysis being done, conclusions about a population based on a single sample per condition are not trustworthy. **BIOLOGICAL REPLICATES ARE STILL NEEDED!** That is, if you want to make conclusions that correspond to the population and not just the single sample. 
 
 ## Generation of count matrix
 
