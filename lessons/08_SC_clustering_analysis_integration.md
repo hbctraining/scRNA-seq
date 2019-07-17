@@ -309,7 +309,7 @@ DimPlot(combined,
 
 ***
 
-**Exercises**
+**[Exercises](https://hbctraining.github.io/scRNA-seq/lessons/sc_exercises_integ_clustering_analysis.html)**
 
 1. **Exploration of quality control metrics:**
 
