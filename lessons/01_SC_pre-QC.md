@@ -227,14 +227,12 @@ To determine which gene the read originated from, the reads are aligned using tr
 The duplicate UMIs are collapsed, and only the unique UMIs are quantified using a tool like Kallisto or featureCounts. The resulting output is a cell by gene matrix of counts:
 
 <p align="center">
-<img src="../img/count_matrix.png" width="250">
+<img src="../img/count_matrix2.png" width="300">
 </p>
 
 *Image credit: extracted from Lafzi et al. Tutorial: guidelines for the experimental design of single-cell RNA sequencing studies, Nature Protocols 2018 (https://doi.org/10.1038/s41596-018-0073-y)*
 
 Each value in the matrix represents the number of reads in a cell originating from the corresponding gene. Using the count matrix, we can explore and filter our data, keeping only the higher quality cells.
-
-[Click here for next lesson]()
 
 ***
 
