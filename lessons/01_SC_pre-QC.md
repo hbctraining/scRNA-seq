@@ -1,5 +1,5 @@
 ---
-title: "Single-cell RNA-seq: Generation of count matrix"
+title: "Introduction to single-cell RNA-seq"
 author: "Mary Piper, Lorena Pantano, Meeta Mistry, Radhika Khetani, Rory Kirchner"
 date: Thursday, May 30, 2019
 ---
@@ -10,18 +10,79 @@ Approximate time: 45 minutes
 
 * Understand the general steps leading to generation of the count matrix
 
-# Single-cell RNA-seq: raw sequencing data to counts
+# Single-cell RNA-seq
 
-Single-cell RNA-seq (scRNA-seq) is an exciting and cutting-edge method for analyzing differences in cellular gene expression, particularly for tissue heterogeneity analyses, lineage tracing, and cell population dynamics. 
+## Why single-cell RNA-seq
 
-<img src="../img/sc_analyses.png" width="900">
+Across human tissues there is an incredible diversity of cell types, states, and interactions. To better understand these tissues and the cell types present, single-cell RNA-seq (scRNA-seq) offers a glimpse into what genes are being expressed at the level of individual cells. 
 
-The complexity of scRNA-seq data involves having:
+<p align="center">
+<img src="../img/scRNA-seq_cell_diversity.png" width=600">
+</p>
 
-- a **large volume of data:** expression data from thousands of cells
-- a **low depth of sequencing per cell:** results in a large number of genes without any corresponding reads (zero inflation)
+_**Image credit:** courtesy of Dr. Ayshwarya Subramanian_
 
-These characteristics make the **analysis of the data more involved** than bulk RNA-seq. In addition, the analyses can vary depending whether the goal is marker identification, lineage tracing, or some other custom analysis. Therefore, tools specific for scRNA-seq and the different methods of library preparation are needed. 
+
+This exciting and cutting-edge method can be used to:
+
+- explore which cell types are present in a tissue
+- identify unknown/rare cell types or states
+- elucidate the changes in gene expression during differentiation processes or across time or states
+- identify genes that are differentially expressed in particular cell types between conditions (e.g. treatment or disease)
+- explore changes in expression among a cell type while incorporating spatial, regulatory, and/or protein information
+
+Popular methods to address some of the more common investigations include:
+
+<p align="center">
+<img src="../img/sc_analyses.png" width="600">
+</p>
+
+## Challenges of scRNA-seq analysis
+
+Bulk RNA-seq is a straight-forward method for comparing the averages of cellular expression. This can be the best choice of method if looking for disease biomarkers and not expecting or not concerned with a lot of cellular heterogeneity in the sample.
+
+While bulk RNA-seq can explore differences in gene expression between conditions (e.g. treatment or disease), the differences at the cellular level are not adequately captured. For instance, in the images below, if analyzed in bulk (left) we would not detect the correct association between the expression of gene A and gene B. However, if we properly group the cells by cell type or cell state, we can see the correct correlation between the genes.
+
+<p align="center">
+<img src="../img/sc_vs_bulk_cells.png" width="500">
+</p>
+
+_**Image credit:** 2015 Trapnell; Published by Cold Spring Harbor Laboratory Press_
+
+Despite scRNA-seq being able to capture expression at the cellular level, analysis is much **more complicated, more expensive, and more difficult to interpret**. The complexity of scRNA-seq data involves having:
+
+- Large volume of data:
+- Low depth of sequencing per cell
+- Technical variability across cells/samples
+	- Batch effect
+	- Library quality
+	- Cell-specific capture efficiency
+	- Amplification bias
+- Biological variability across cells/samples
+	- Transcriptional bursting
+		- Initiation
+		- Duration
+	- Varying rates of RNA processing
+	- Continuous or discrete cell identities (e.g. the pro-inflammatory potential of each individual T cell)
+	- Environmental stimuli
+	- Temporal changes (e.g. cell cycle)
+- Batch effects and confounding
+
+### Large volume of data
+
+Expression data from scRNA-seq experiments represent ten or hundreds of thousands of reads for thousands of cells. The data output is much larger, requiring higher amounts of memory to analyze, larger storage requirements, and more time to run the analyses.
+
+### Low depth of sequencing per cell
+
+For the droplet-based methods of scRNA-seq, the depth of sequencing is shallow, often detecting only 10-50% of the transcriptome per cell. This results in cells showing zero counts for many of the genes, or **zero inflation**. However, in a particular cell, a zero count for a gene could either mean that the gene was **not being expressed** or the transcripts were just **not detected**. Across cells, genes with higher levels of expression tend to have fewer zeros. Due to this feature, many genes will not be detected in any cell and gene expression will be highly variable between cells.
+
+### Technical variability across cells/samples
+
+Technical sources of variation can result in gene expression between cells being more similar based on technical sources instead of cell types/states, which can obscure the cell type identities. Technical sources of variation include:
+
+
+
+These characteristics make the **analysis of the data more difficult** than bulk RNA-seq. In addition, the analyses can vary depending whether the goal is marker identification, lineage tracing, or some other custom analysis. Therefore, tools specific for scRNA-seq and the different methods of library preparation are needed. 
 
 ## Single-cell RNA-seq data
 
@@ -96,7 +157,8 @@ The analysis workflow for scRNA-seq is similar for the different droplet-based s
 
 The scRNA-seq method will determine how to parse the barcodes and UMIs from the sequencing reads. So, although a few of the specific steps will slightly differ, the overall workflow will generally follow the same steps regardless of method. The general workflow is shown below:
 
-<img src="../img/sc_workflow.png" width="800">
+<img src="../img/scRNA-seq_steps_image.jpg" width="800">
+
 
 The steps of the workflow are:
 
