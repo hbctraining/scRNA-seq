@@ -155,7 +155,7 @@ This is a text file which contains the identifiers of the quantified genes. The 
 This is a text file which contains a matrix of count values. The rows are associated with the gene IDs above and columns correspond to the cellular barcodes. Note that there are **many zero values** in this matrix.
 
 <p align="center">
-<img src="../img/sparse_matrix.png", width="600">
+<img src="../img/sparse_matrix.png" width="600">
 </p>
 
 
