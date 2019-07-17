@@ -180,7 +180,7 @@ metadata %>%
   	geom_density(alpha = 0.2) + 
   	scale_x_log10() + 
   	theme_classic() +
-  	ylab("log10 cell density") +
+  	ylab("Cell density") +
   	geom_vline(xintercept = 500)
 ```
 
