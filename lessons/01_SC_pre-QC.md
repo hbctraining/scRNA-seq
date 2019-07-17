@@ -17,7 +17,7 @@ Approximate time: 45 minutes
 Across human tissues there is an incredible diversity of cell types, states, and interactions. To better understand these tissues and the cell types present, single-cell RNA-seq (scRNA-seq) offers a glimpse into what genes are being expressed at the level of individual cells. 
 
 <p align="center">
-<img src="../img/scRNA-seq_cell_diversity.png" width=600">
+<img src="../img/scRNA-seq_cell_diversity.png" width="600">
 </p>
 
 _**Image credit:** courtesy of Dr. Ayshwarya Subramanian_
