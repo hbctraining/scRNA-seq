@@ -129,8 +129,8 @@ library(RCurl)
 
 Regardless of the technology or pipeline used to process your single-cell RNA-seq sequence data, the output will generally be the same. That is, for each individual sample you will have the following **three files**:
 
-1. a file with the **gene IDs**, representing all genes quantified
-2. a file with the **cell IDs**, representing all cells quantified
+1. a file with the **cell IDs**, representing all cells quantified
+2. a file with the **gene IDs**, representing all genes quantified
 3. a **matrix of counts** per gene for every cell
 
 We can explore these files in our own dataset by clicking on the `data/ctrl_raw_feature_bc_matrix` folder:
