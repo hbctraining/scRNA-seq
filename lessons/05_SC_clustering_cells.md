@@ -45,7 +45,9 @@ _**Recommendations:**_
 
 ## Clustering workflow
 
-To determine the cell types present, we are going to perform a clustering analysis. Since we have two conditions, `Control` and `Stimulated`, we will work through the workflow for the `Control` sample to determine the cell types present, then integrate with the `Stimulated` to identify the cell types present in both of the samples. 
+For something to be informative, it needs to exhibit variation, but not everything that exhibits variation is informative. The goal of our clustering analysis is to keep the major sources of variation in our dataset that should define our cell types (in addition to batches, cell cycle, etc.), while restricting the variation due to minor sources of variation (noise).
+
+Therefore, to determine the cell types present, we are going to perform a clustering analysis using the most variable genes to define the major sources of variation in the dataset. Since we have two conditions, `Control` and `Stimulated`, we will work through the workflow for the `Control` sample to determine the cell types present, then integrate with the `Stimulated` to identify the cell types present in both of the samples. 
 
 The workflow for this analysis is adapted from the following sources:
 
@@ -80,6 +82,7 @@ library(ensembldb)
 To perform the analysis, Seurat requires the data to be present as a `seurat` object. We have created this object in the QC lesson, so we can use that and just reassign it to a new variable name:
 
 ```r
+# Create new object - we don't want to accidentally delete 
 seurat_raw <- clean_seurat
 ```
 
