@@ -299,7 +299,7 @@ filtered_seurat <- subset(x = merged_seurat,
 			                          
 ```
 
-We will do some additional filtering to **keep only genes which are expressed in 10 or more cells.**
+Within our data we will have many genes with zero counts. These genes can dramatically reduce the average expression for a cell and so we will remove them from our data. First we will **remove genes that have zero expression in all cells.** Additionally, we will perform some filtering by prevalence. If a gene is only expressed in a handful of cells, it is not particularly meaningful as it still brings down the averages for all other cells it is not expressed in. For our data we choose to **keep only genes which are expressed in 10 or more cells.**
 
 ```r
 
