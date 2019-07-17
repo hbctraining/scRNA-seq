@@ -50,7 +50,7 @@ While bulk RNA-seq can explore differences in gene expression between conditions
 </p>
 
 _**Image credit:** Trapnell, C. Defining cell types and states with single-cell genomics, Genome Research, 2015 (doi:
-10.1101/gr.190595.115)_
+https://dx.doi.org/10.1101/gr.190595.115)_
 
 Despite scRNA-seq being able to capture expression at the cellular level, sample generation and library preparation is more expensive and the analysis is much **more complicated and more difficult to interpret**. The complexity of analysis of scRNA-seq data involves:
 
