@@ -9,33 +9,14 @@ Approximate time: 90 minutes
 ## Learning Objectives:
 
 * Understand how to bring in data from single-cell RNA-seq experiments
-* Construct QC metrics and associated plots to visually explore the quality of the data
-* Evaluate the QC metrics and set filters to remove low quality cells
 
 # Single-cell RNA-seq: Quality control
-
 
 <p align="center">
 <img src="../img/sc_workflow.png" width="800">
 </p>
 
-***
-
-Each step of this workflow has its own goals and challenges. For QC of our raw count data, they include:
-
-_**Goals:**_ 
- 
- - _To **filter the data to only include true cells that are of high quality**, so that when we cluster our cells it is easier to identify distinct cell type populations_
- - _To **identify any failed samples** and either try to salvage the data or remove from analysis, in addition to, trying to understand why the sample failed_
-
-_**Challenges:**_
- 
- - _Delineating cells that are **poor quality from less complex cells**_
- - _Choosing appropriate thresholds for filtering, so as to **keep high quality cells without removing biologically relevant cell types**_
-
-_**Recommendations:**_
- 
- - _Have a good idea of your expectations for the **cell types to be present** prior to performing the QC. For instance, do you expect to have low complexity cells or cells with higher levels of mitochondrial expression in your sample? If so, then we need to account for this biology when assessing the quality of our data._
+After quantifying gene expression we need to bring this data into R to generate metrics for performing QC. In this lesson we will talk about the format(s) count data can be expected in, and how to read it into R so we can move on to the QC step in the workflow. We will also discuss the dataset we will be using and the associated metadata.
 
 ***
 
@@ -50,9 +31,7 @@ The data used to test their algorithm is comprised of pooled Peripheral Blood Mo
 <img src="../img/kangetal_image.png" width="700">
 </p>
 
-*Image obtained from [Kang et al, 2017](https://www.nature.com/articles/nbt.4042)*
-
-
+*Image credit: [Kang et al, 2017](https://www.nature.com/articles/nbt.4042)*
 
 ### Raw data
 
@@ -81,8 +60,10 @@ Some relevant metadata for our dataset is provided below:
   * monocytes
   * macrophages
   * possibly megakaryocytes
+  
+> It is recommended that you have some expectation regarding the cell types you expect to see in a dataset prior to performing the QC. This will inform you if you have any cell types with low complexity (lots of transcripts from a few genes) or cells with higher levels of mitochondrial expression. This will enable us to account for these biological factors when assessing the data quality.
 
-None of these cell types are low complexity or anticipated to have high mitochondrial content.
+None of the above cell types are expected to be low complexity or anticipated to have high mitochondrial content.
 
 
 ## Setting up the R environment

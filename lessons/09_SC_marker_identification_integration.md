@@ -68,7 +68,7 @@ We have already accomplished this with the `ctrl` and `stim` samples separately.
 
 ***
 
-**Exercises**
+**[Exercises](https://hbctraining.github.io/scRNA-seq/lessons/sc_exercises_integ_marker_identification.html)**
 
 1. **Find all markers** for the `combined` data using the `FindAllMarkers()` function with arguments to return only the positive markers and those markers with log2 fold-change greater than 0.25.
 2. **Annotate** the markers with gene descriptions.

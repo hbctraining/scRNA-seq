@@ -23,7 +23,7 @@ _**Goals:**_
  
  - _To **determine the gene markers** for each of the clusters_
  - _To **identify cell types** of each cluster using markers_
- - _To determine whether need to **re-cluster based on cell type markers**, perhaps clusters need to be merged or split_
+ - _To determine whether there's a need to **re-cluster based on cell type markers**, perhaps clusters need to be merged or split_
 
 _**Challenges:**_
  
@@ -198,6 +198,8 @@ FeaturePlot(object = seurat_control,
 </p>
 
 We can also explore the range in expression of specific markers by using violin plots:
+
+> **Violin plots** are similar to box plots, except that they also show the probability density of the data at different values, usually smoothed by a kernel density estimator. A violin plot is more informative than a plain box plot. While a box plot only shows summary statistics such as mean/median and interquartile ranges, the violin plot shows the full distribution of the data. The difference is particularly useful when the data distribution is multimodal (more than one peak). In this case a violin plot shows the presence of different peaks, their position and relative amplitude.
 
 ```r
 # Vln plot - cluster 6
@@ -402,6 +404,8 @@ We have completed the first round of the analysis for the `control` sample. Base
 - Too many low quality cells observed: go back and perform more stringent QC by filtering out the low quality cells. 
 
 If we validated the stressed/dying cells were indeed low quality, we may want to remove those cells in the QC and re-cluster. However, we are going to just leave those cells in and move on to include the `stimulated` sample.
+
+[Click here for next lesson](08_SC_clustering_analysis_integration.md)
 
 ***
 

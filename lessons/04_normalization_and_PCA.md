@@ -8,8 +8,8 @@ Approximate time: 90 minutes
 
 ## Learning Objectives 
 
-* Normalizing counts for accurate comparison between cells
-* Evaluating similarity in cellular gene expression using Principal Components Analysis
+* Understand normalizing counts is necessary for accurate comparison between cells
+* Understand how similarity in cellular gene expression between cells can be evaluated by Principal Components Analysis (PCA)
 
 ## Count Normalization and Principal Component Analysis
 
@@ -115,7 +115,7 @@ For datasets with a larger number of samples or cells, PC1 and PC2 scores for ea
 <img src="../img/PCA_example_iris.png" width="500">
 </p>
 
-*image adapted from [https://github.com/AshwiniRS/Medium_Notebooks/blob/master/PCA/PCA_Iris_DataSet.ipynb](https://github.com/AshwiniRS/Medium_Notebooks/blob/master/PCA/PCA_Iris_DataSet.ipynb)*
+*Image credit: [https://github.com/AshwiniRS/Medium_Notebooks/blob/master/PCA/PCA_Iris_DataSet.ipynb](https://github.com/AshwiniRS/Medium_Notebooks/blob/master/PCA/PCA_Iris_DataSet.ipynb)*
 
 Sometimes higher PCs are also used for this visualization, expecially if the variation explained by PC1 and PC2 is not very high and the dataset has several factors contributing to variation among the samples.
 
