@@ -211,6 +211,7 @@ The scRNA-seq method will determine how to parse the barcodes and UMIs from the 
 
 <img src="../img/scRNA-seq_steps_image.jpg" width="800">
 
+_**Image credit:** Luecken, MD and Theis, FJ. Current best practices in single‐cell RNA‐seq analysis: a tutorial, Mol Syst Biol, 2019 (doi: https://doi.org/10.15252/msb.20188746)
 
 The steps of the workflow are:
 
