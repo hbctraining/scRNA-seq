@@ -98,7 +98,6 @@ single_cell_rnaseq/
 ├── data
 ├── results
 └── figures
-
 ```
 
 ### Download data
