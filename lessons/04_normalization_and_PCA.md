@@ -28,15 +28,19 @@ First one is count normalization, which is essential to make accurate comparison
 The main factors often considered during normalization are:
  
  - **Sequencing depth:** Accounting for sequencing depth is necessary for comparison of gene expression between cells. In the example below, each gene appears to have doubled in expression in cell 2, however this is a consequence of cell 2 having twice the sequencing depth.
- 
-    <img src="../img/sequencing_depth.png" width="400">
-    
+
+<p align="center">
+<img src="../img/sequencing_depth.png" width="400">
+</p>
+
 Each cell in scRNA-seq will have a differing number of reads associated with it. So to accurately compare expression between cells, it is necessary to normalize for sequencing depth.
  
  - **Gene length:** Accounting for gene length is necessary for comparing expression between different genes within the same cell. The number of reads mapped to a longer gene can appear to have equal count/expression as a shorter gene that is more highly expressed. 
  
-    <img src="../img/length_of_gene.png" width="400">
- 
+<p align="center"> 
+<img src="../img/length_of_gene.png" width="400">
+</p>
+
 In scRNA-seq analysis, we will be comparing the expression of different genes within the cells to cluster the cells. *If using a 3' or 5' droplet-based method, the length of the gene will not affect the analysis because only the 5' or 3' end of the transcript is sequenced.* However, if using full-length sequencing, the transcript length should be accounted for.
 
 ### Principal Component Analysis (PCA)
@@ -45,25 +49,35 @@ Principal Component Analysis (PCA) is a technique used to emphasize variation as
 
 If you had quantified the expression of four genes in two samples (or cells), you could plot the expression values of those genes with one sample represented on the x-axis and the other sample on the y-axis as shown below:
 
+<p align="center">
 <img src="../img/PCA_2sample_genes.png" width="600">
+</p>
 
 You could draw a line through the data in the direction representing the most variation, which is on the diagonal in this example. The maximum variation in the dataset is between the genes that make up the two endpoints of this line.  
 
 We also see the genes vary somewhat above and below the line. We could draw another line through the data representing the second most amount of variation in the data, since this plot is in 2D (2 axes).
 
+<p align="center">
 <img src="../img/PCA_2sample_variation1.png" width="600">
+</p>
 
 The genes near the ends of each line would be those with the highest variation between the two samples (high expression in one sample and low expression in the other). These genes have the greatest influence on the direction of the line, mathematically. 
 
+<p align="center">
 <img src="../img/PCA_2sample_variation2.png" width="600">
+</p>
 
 For example, a small change in the value of *Gene C* would greatly change the direction of the longer line, whereas a small change in *Gene A* or *Gene D* would have little affect on it.
 
+<p align="center">
 <img src="../img/PCA_2sample_variation3.png" width="900">
+</p>
 
 We could also rotate the entire plot and view the lines representing the variation as left-to-right and up-and-down. We see most of the variation in the data is left-to-right (longer line) and the second most variation in the data is up-and-down (shorter line). You can now think of these lines as the axes that represent the variation. These axes are essentially the "Principal Components", with PC1 representing the most variation in the data and PC2 representing the second most variation in the data. 
 
+<p align="center">
 <img src="../img/PCA_2sample_rotate.png" width="300">
+</p>
 
 If we had three samples/cells, then we would have an extra direction in which we could have variation (3D). Therefore, if we have *N* samples/cells we would have *N*-directions of variation or principal components (PC)! Once these PCs have been calculated, the PC that can explain the largest variation in the dataset is PC1, and the next one is PC2 and so on. 
 
@@ -71,7 +85,9 @@ Once the PCs have been determined for an dataset, we have to figure out how each
 
 (1) First, each gene is assigned an "influence" score based on how much it influenced each PC. Genes that did not have any influence on a given PC get scores near zero, while genes with more influence receive larger scores. Genes on the ends of a PC line will have a larger influence, so they would receive larger scores but with opposite signs.
 
+<p align="center">
 <img src="../img/PCA_2sample_influence.png" width="600">
+</p>
 
 (2) Once the influence has been determined, the score for each sample is calculated using the following equation:
 	
@@ -89,11 +105,15 @@ For our 2-sample example, the following is how the scores would be calculated:
 	
 (3) Once these scores are calculated for all the PCs they can be plotted on a simple scatter plot. Below is the plot for the example here:
 
+<p align="center">
 <img src="../img/PCA_samples.png" width="600">
+</p>
 
 For datasets with a larger number of samples or cells, PC1 and PC2 scores for each sample/cell are plotted usually. Since these PCs explain the most variation in the dataset, and the expectation is samples/cells that are more similar to each other will cluster together with PC1 and PC2. See example below:
 
+<p align="center">
 <img src="../img/PCA_example_iris.png" width="500">
+</p>
 
 *image adapted from [https://github.com/AshwiniRS/Medium_Notebooks/blob/master/PCA/PCA_Iris_DataSet.ipynb](https://github.com/AshwiniRS/Medium_Notebooks/blob/master/PCA/PCA_Iris_DataSet.ipynb)*
 
