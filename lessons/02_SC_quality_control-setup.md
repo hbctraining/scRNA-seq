@@ -154,9 +154,9 @@ This is a text file which contains the identifiers of the quantified genes. The 
 ### 3. `matrix.mtx`
 This is a text file which contains a matrix of count values. The rows are associated with the gene IDs above and columns correspond to the cellular barcodes. Note that there are **many zero values** in this matrix.
 
-  <p align="center">
-  <img src="../img/sparse_matrix.png", width="600">
-  </p>
+<p align="center">
+<img src="../img/sparse_matrix.png", width="600">
+</p>
 
 
 Loading this data into R requires us to **use functions that allow us to efficiently combine these three files into a single count matrix.** However, instead of creating a regular matrix data structure, we will create a **sparse matrix** to improve the amount of space, memory and CPU required to work with our huge count matrix. 
