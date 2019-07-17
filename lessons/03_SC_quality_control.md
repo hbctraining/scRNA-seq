@@ -64,7 +64,7 @@ We need to calculate some additional metrics for plotting:
 The number of genes per UMI for each cell is quite easy to calculate, and we will log10 transform the result for better comparison between samples.
 
 ```r
-# Add number of UMIs per gene for each cell to metadata
+# Add number of genes per UMI for each cell to metadata
 merged_seurat$log10GenesPerUMI <- log10(merged_seurat$nFeature_RNA) / log10(merged_seurat$nCount_RNA)
 ```
 
