@@ -297,7 +297,7 @@ filtered_seurat <- subset(x = merged_seurat,
                          subset= (nUMI >= 500) & 
                            (nGene >= 250) & 
                            (log10GenesPerUMI > 0.80) & 
-                           (mitoRatio < 0.25))
+                           (mitoRatio < 0.20))
 			                          
 ```
 
