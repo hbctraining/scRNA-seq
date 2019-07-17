@@ -384,7 +384,7 @@ DimPlot(combined,
 	
 	While we have a good idea of the cell types for the different clusters, it's always a good idea to perform marker identification to ensure the hypothesized cell identities make sense with the enriched genes. Also, we can explore identities for the unknown clusters.
 	
-	[Click here for next lesson]()
+[Click here for next lesson](09_SC_marker_identification_integration.md)
 	
 ***
 
