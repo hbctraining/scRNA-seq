@@ -57,7 +57,7 @@ There are a few different types of marker identification that we can explore usi
 	- *Useful for identifying unkown clusters and improving confidence in hypothesized cell types.*
 
 2. **Identification of conserved markers for each cluster regardless of condition:** This analysis looks for those genes that are conserved in the cluster across all conditions. This analysis will output genes that are consistently differentially expressed/present for all of the sample groups. These genes can help to figure out the identity for the cluster. Often, this analysis is performed only for those clusters whose identity is uncertain or novel.
-	- *Useful when more than one condition to identify cell type markers that are conserved across conditions.*  	
+	- *Useful with more than one condition to identify cell type markers that are conserved across conditions.*  	
 3. **Marker identification between specific clusters:** this analysis explores differentially expressed genes between specific clusters. 
 	- *Useful for determining differences in gene expression between clusters with markers that are similar in the above analyses.*
 
@@ -401,7 +401,7 @@ We have completed the first round of the analysis for the `control` sample. Base
 - Clusters were not separated well enough (i.e. CD4+ and CD8+ T cells were in same cluster):  adjust the clustering resolution or number of PCs used.
 - Too many low quality cells observed: go back and perform more stringent QC by filtering out the low quality cells. 
 
-If we validated the stressed/dying cells were indeed low quality, we may want to remove those cells in the QC and re-cluster. However, we are going to just leave those cells removed and move on to include the `stimulated` sample.
+If we validated the stressed/dying cells were indeed low quality, we may want to remove those cells in the QC and re-cluster. However, we are going to just leave those cells in and move on to include the `stimulated` sample.
 
 ***
 
