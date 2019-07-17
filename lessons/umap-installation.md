@@ -8,7 +8,7 @@ In the Seurat package there is a function to use the UMAP visualization (`RunUMA
 1. Since this is a Python package, you will first need Python installed on your laptop (and the correct version). **Download and install Miniconda** using the [link provided](https://docs.conda.io/en/latest/miniconda.html). Be sure to choose the installer for Python 3.7 and the appropriate OS you have on your laptop.
 
 
-2. **In the R console**, type in the following:
+2. Go back to your R session and restart R. **In the R console**, type in the following:
 
 ```r
 system("which python")
@@ -21,7 +21,7 @@ You should see a path output that identifies where the executable for Python is 
 
 ```
 
-> **If you see this path please continue to #4.**
+> **If you see a path that contains miniconda please continue to #4.**
 
 
 3. If you **don't see miniconda in that path**, you will want to set the path to use your recent installation of Python.
@@ -43,7 +43,7 @@ use_python(python = "/Users/hbctraining/miniconda3/bin/python", required = T)
 
 ```
 
-4. Now you can install the `umap-learn` package using teh `py_install()` function, also from your `reticulate` library:
+4. Now you can install the `umap-learn` package using the `py_install()` function, also from your `reticulate` library:
 
 ```r
 library(reticulate) # if not already loaded
@@ -54,4 +54,13 @@ py_install("umap-learn")
 If you restart your R session this will now take effect and the `RunUMAP()` *should* work without errors.
 
 *Keep an eye out for any error messages!!!* 
+
+> #### What if that doesn't work?
+> If the `reticulate` package does not work for you, you can try a conda install of `umap-learn` since you have Miniconda.
+>
+> `system("conda install -c conda-forge umap-learn")`
+>
+> Restart R and try the `RunUMAP()` function. If it still doesn't work some find us for help.
+
+
 
