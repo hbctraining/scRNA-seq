@@ -80,7 +80,7 @@ Uninteresting sources of biological variation can result in gene expression betw
 <img src="../img/sc_biol_variability.png" width="500">
 </p>
 
-_**Image credit:** Nat Biotechnol. 2016 Nov 8; 34(11): 1145–1160. doi:https://dx.doi.org/10.1038%2Fnbt.3711_
+_**Image credit:** Wagner, A, et al. Revealing the vectors of cellular identity with single-cell genomics, Nat Biotechnol. 2016 (doi:https://dx.doi.org/10.1038%2Fnbt.3711)_
 
 ### Technical variability across cells/samples
 
