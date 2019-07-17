@@ -8,12 +8,10 @@ Approximate time: 90 minutes
 
 ## Learning Objectives:
 
-* Understand how to bring in data from single-cell RNA-seq experiments
 * Construct QC metrics and associated plots to visually explore the quality of the data
 * Evaluate the QC metrics and set filters to remove low quality cells
 
 # Single-cell RNA-seq: Quality control
-
 
 <p align="center">
 <img src="../img/sc_workflow.png" width="800">
