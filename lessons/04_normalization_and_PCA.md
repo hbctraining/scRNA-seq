@@ -61,7 +61,7 @@ We also see the genes vary somewhat above and below the line. We could draw anot
 <img src="../img/PCA_2sample_variation1.png" width="600">
 </p>
 
-The genes near the ends of each line would be those with the highest variation between the two samples (high expression in one sample and low expression in the other). These genes have the greatest influence on the direction of the line, mathematically. 
+The genes near the ends of each line would be those with the highest variation; these genes have the greatest influence on the direction of the line, mathematically. 
 
 <p align="center">
 <img src="../img/PCA_2sample_variation2.png" width="600">
