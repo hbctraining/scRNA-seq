@@ -588,7 +588,7 @@ DimPlot(seurat_control,
 
 ***
 
-[Click here for next lesson]()
+[Click here for next lesson](06_SC_clustering_quality_control.md)
 
 ***
 
