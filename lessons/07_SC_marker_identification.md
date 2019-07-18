@@ -225,7 +225,7 @@ These results and plots can help us determine the identity of these clusters or 
 
 **[Exercises](https://hbctraining.github.io/scRNA-seq/lessons/sc_exercises_marker_analysis.html)**
 
-1. **Download [the file](https://raw.githubusercontent.com/hbctraining/scRNA-seq/master/data/stim_all_markers.csv) contaning the results from `FindAllMarkers()`**. You will want to right-click and "Save as.." into your `results` folder. Read that file into your R session to a variable called `markers_stim`. 
+1. **Download [the file](https://raw.githubusercontent.com/hbctraining/scRNA-seq/master/data/stim_all_markers.csv) contaning the results from `FindAllMarkers()` on the stimulated sample**. You will want to right-click and "Save as.." into your `results` folder. Read that file into your R session to a variable called `markers_stim`. 
 2. **Annotate** the markers with gene descriptions.
 3. **Reorder the columns** to be in the order shown below
 4. **Arrange rows** by cluster, then by p-adjusted values
