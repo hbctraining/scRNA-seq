@@ -119,20 +119,18 @@ Then, we can plot the cell cycle by UMAP and PCA:
 library(cowplot)
 
 # Function to plot UMAP and PCA as grids
-  map(group_by, function(metric) {
-    plot_grid(
+plot_grid(
       ggplot(class_umap_data, aes(UMAP_1, UMAP_2)) +
-        geom_point(aes_string(color = metric), alpha = 0.7) +
+        geom_point(aes_string(color = group_by), alpha = 0.7) +
         scale_color_brewer(palette = "Set2")  +
         geom_text(data=umap_label, aes(label=ident, x, y)),
       ggplot(class_pca_data, aes(PC_1, PC_2)) +
-        geom_point(aes_string(color = metric), alpha = 0.7) +
+        geom_point(aes_string(color = group_by), alpha = 0.7) +
         scale_color_brewer(palette = "Set2")  +
         geom_text(data=pca_label, 
                   aes(label=ident, x, y)),
       nrow = 1, 
       align = "v")
-  })
 ```
 
 <p align="center">
