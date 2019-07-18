@@ -79,7 +79,6 @@ class_umap_data <- FetchData(seurat_control,
 # Adding cluster label to center of cluster on UMAP
 umap_label <- FetchData(seurat_control, 
                         vars = c("ident", "UMAP_1", "UMAP_2"))  %>%
-        as.data.frame() %>% 
         group_by(ident) %>%
         summarise(x=mean(UMAP_1), y=mean(UMAP_2))
 ```
@@ -108,7 +107,6 @@ class_pca_data <- FetchData(seurat_control,
 # Adding cluster label to center of cluster on PCA
 pca_label <- FetchData(seurat_control, 
                        vars = c("ident", "PC_1", "PC_2"))  %>%
-        as.data.frame() %>%
         mutate(ident = seurat_control@active.ident) %>%
         group_by(ident) %>%
         summarise(x=mean(PC_1), y=mean(PC_2))
@@ -135,7 +133,6 @@ library(cowplot)
       nrow = 1, 
       align = "v")
   })
-
 ```
 
 <p align="center">
@@ -211,7 +208,6 @@ We can see how the clusters are represented by the different PCs. For instance, 
 ```r
 # Examine PCA results 
 print(seurat_control[["pca"]], dims = 1:5, nfeatures = 5)
-
 ```
 
 <p align="center">
