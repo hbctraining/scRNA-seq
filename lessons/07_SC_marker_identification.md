@@ -76,9 +76,11 @@ For this analysis we are comparing each cluster against all other clusters to id
 	
 You could use one or the other of these arguments or both. We will be a bit lenient and use only the log2 fold change threshold greater than 0.25. We will also specify to return only the positive markers for each cluster
 
-> **NOTE:** This command can quite take long to run (~15 minutes). In the interest of time and for us to get through materials in a timely manner, we ask that you **download the data** using the [link provided]() and load this data into your R environment.
+> **NOTE:** This command can quite take long to run (~15 minutes). In the interest of time and for us to get through materials in a timely manner, we ask that you **download the data** using the [link provided](). *Right-click and "Save as.." into your `results` folder.* Now you can load this data into your R environment:
 > 
-> 
+> `read.csv("results/control_all_markers.csv")`
+>
+
 
 ```r
 ## DO NOT RUN THIS CODE ##
@@ -131,7 +133,7 @@ If the format looks good, we can save our marker analysis results to file.
 ```r
 # Save markers to file
 write.csv(ann_markers, 
-          file = "results/control_all_markers.csv", 
+          file = "results/control_all_markers_annotated.csv", 
           quote = FALSE, 
           row.names = FALSE)
 ```
@@ -171,23 +173,23 @@ Based on these marker results, we can determine whether the markers make sense f
 | Erythrocytes | - |
 | Unknown | 7 |
 
-If there were any questions about the identity of any clusters, exploring the cluster's markers would be the first step. Let's look at the `ann_markers`, filtering for cluster 7.
+If there were any questions about the identity of any clusters, exploring the cluster's markers would be the first step. Let's look at the `ann_markers`, filtering for cluster 7 and see if we can **obtain any hints about our unknown cluster**.
 
 <p align="center">
 <img src="../img/cluster7_markers_loadObj.png" width="800">
 </p>
 
-We see a lot of heat shock and DNA damage genes appear. Based on these markers, it is likely that these are stressed or dying cells. However, we also see T cell-associated genes and markers of activation. It is possible that these could be activated (cytotoxic) T cells. We could explore the quality metrics for these cells in more detail before removing just to support that argument.
+We see a lot of heat shock and DNA damage genes appear. Based on these markers, it is likely that these are **stressed or dying cells**. However, we also see T cell-associated genes and markers of activation. It is possible that these could be activated (cytotoxic) T cells. We could explore the quality metrics for these cells in more detail before removing just to support that argument.
 
 We also had questions regarding the identity of cluster 6. Is cluster 6 a CD8+ T cell, an NK cell, or an NK T cell?
 
-We can look at the markers of cluster 6 to try to resolve the identity:
+We can look at the markers of **cluster 6 to try to resolve the identity**:
 
 <p align="center">
 <img src="../img/cluster6_markers_loadObj.png" width="800">
 </p>
 
-There are definitely T cell receptors that are enriched among cluster 6. Since NK cells cannot have expression of the T cell receptor genes we can therefore conclude that these cannot be NK cells. On the other hand CD8+ T cells can have expression of killer cell receptors. So, could these be NK T cells? Probably not, since NK T cells are usually a rare population and in our case we have many cells here. Thus, we hypothesize that cluster 6 represents activated CD8+ T cells (cytotoxic T cells).
+There are definitely T cell receptors that are enriched among cluster 6. Since NK cells cannot have expression of the T cell receptor genes we can therefore conclude that these cannot be NK cells. On the other hand CD8+ T cells can have expression of killer cell receptors. So, could these be NK T cells? Probably not, since NK T cells are usually a rare population and in our case we have many cells here. Thus, we **hypothesize that cluster 6 represents activated CD8+ T cells (cytotoxic T cells)**.
 
 To get a better idea of cell type identity we can explore the expression of different identified markers by cluster using the `FeaturePlot()` function. For example, we can look at the cluster 6 markers:
 
