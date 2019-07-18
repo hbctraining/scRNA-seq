@@ -44,85 +44,21 @@ Remember that we had the following questions from the clustering analysis:
 3. *Do the clusters corresponding to the same cell types have biologically meaningful differences? Are there subpopulations of these cell types?*
 4. *Can we acquire higher confidence in these cell type identities by identifying other marker genes for these clusters?*
 
-Remember that we have a few different types of marker identification, each with their own benefits and drawbacks:
-
-1. **Identification of all markers for each cluster**
-	
-	- *Useful for identifying unknown clusters and improving confidence in hypothesized cell types.*
-
-2. **Identification of conserved markers for each cluster regardless of condition** 
-	
-	- *Useful for identifying unknown clusters and improving confidence in cell type identities when more than one condition. Returns fewer, but higher confidence markers of cell type. Tends to take much longer to run.*  	
-
-3. **Marker identification between specific clusters**
-	
-	- *Useful for determining differences in gene expression between clusters with markers that are similar in the above analyses.*
-
-Since we have more than a single condition, we can explore all methods of marker identification.
-
-## Identification of all markers for each cluster
-
-This analysis compares each cluster against all others and outputs the genes that are differentially expressed/present using the `FindAllMarkers()` function. 
-
-We have already accomplished this with the `ctrl` and `stim` samples separately. Let's use our knownledge to complete the exercises below.
-
-***
-
-**[Exercises](https://hbctraining.github.io/scRNA-seq/lessons/sc_exercises_integ_marker_identification.html)**
-
-1. **Find all markers** for the `combined` data using the `FindAllMarkers()` function with arguments to return only the positive markers and those markers with log2 fold-change greater than 0.25.
-2. **Annotate** the markers with gene descriptions.
-3. **Reorder the columns** to be in the order shown below.
-
-	<p align="center">
-	<img src="../img/all_comb_markers.png" width="800">
-	</p>
-
-4. **Arrange rows** by cluster, then by p-adjusted values
-5. **Save** our rearranged marker analysis results to a file called `combined_all_markers.csv` in the `results` folder.
-6. **Extract the top 5 markers** by log2 fold change for each cluster and view them.
-7. Based on these marker results, **determine whether the markers make sense** for our hypothesized identities for each cluster:
-
-	| Cell Type | Clusters |
-	|:---:|:---:|
-	| CD14+ Monocytes | 0 | 
-	| FCGR3A+ Monocytes | 7 |
-	| Conventional dendritic cells | 13 |
-	| Plasmacytoid dendritic cells | 18 |
-	| Naive B cells | 4, 15 |
-	| Activated B cells | 14 |
-	| Naive CD4+ T cells | 1, 2, 9, 16 |
-	| Activated CD4+ T cells | 3 |
-	| Naive CD8+ T cells| 11 |
-	| Activated (cytotoxic) CD8+ T cells| 6, 10 |
-	| NK cells | 5 |
-	| Megakaryocytes | 12 |
-	| Erythrocytes | 19 |
-	| Stressed / dying cells | 8 |
-	| Unknown | 17, 20 |
-
-***
-
-If there were any questions about the identity of any clusters, exploring the cluster's markers would be the first step. Let's look at the `ann_comb_markers`, filtering for cluster 17. ATAD2 can be associated with activation, so maybe cluster 17 corresponds to activated CD4+ T cells.
-
-<p align="center">
-<img src="../img/sc_integ_cluster17.png" width="800">
-</p>
-
-We also had questions regarding the identity of cluster 20. We can look at the markers of cluster 20 to try to resolve the identity:
-
-<p align="center">
-<img src="../img/sc_integ_cluster20.png" width="800">
-</p>
-
-The enriched genes appear to be markers of proliferation. In addition, we see expression of genes encoding T cell inhibitory receptors. However, cluster 20 had low levels of the T cell markers CD3D, CD4 and CD8. So this cluster is still a bit of a mystery.
-
 
 ## Identification of conserved markers in all conditions
 
-Identifying conserved markers allows for identifying only those genes the are significantly differentially expressed relative to the other clusters for all conditions. This function is most useful to run if unsure of the identity for a cluster after running the `FindAllMarkers()`. You could run it on all clusters if you wanted to, but it takes a while to run, so we are just going to run it on the unknown clusters 17 and 20.
+Identifying conserved markers allows for identifying only those genes the are significantly differentially expressed relative to the other clusters for all conditions. This function performs differential gene expression testing for a single cluster against all other clusters within each group and then combines the p-values using meta-analysis methods from the MetaDE R package.
 
-The function we will use is the `FindConservedMarkers()`, which has the following structure:
+Before we start our marker identification we need to explicitly set our default assay. Because of the nature of how `FindConservedMarkers()` works (i.e finding DE within each group and then looking for conservation), we need to use the **original counts and not the integrated data**.
+
+```r
+DefaultAssay(combined) <- "RNA"
+
+```
+
+This function is used on multiple samples in lieu of `FindAllMarkers()`. You could run it on all clusters if you wanted to, but it takes a while to run, so we are just going to **run it on the unknown clusters 17 and 20**.
+
+The function `FindConservedMarkers()`, has the following structure:
 
 **`FindConservedMarkers()` syntax:**
 
@@ -137,7 +73,7 @@ The function **accepts a single cluster at a time**, so if we want to have the f
 
 Since these functions will **remove our row names** (gene names), we need to transfer the row names to columns before mapping across clusters. We also need a column specifying **to which cluster the significant genes correspond**.
 
-To do that we will create our own function to:
+To do that we will **create our own function** to:
 
 1. Run the `FindConservedMarkers()` function
 2. Transfer row names to a column using `rownames_to_column()` function
