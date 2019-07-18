@@ -123,6 +123,9 @@ DimPlot(seurat_stim,
         group.by= "Phase")
 ```
 
+<p align="center">
+<img src="../img/stim_cellcycle_pca.png" width="800">
+</p>
 
 We do see differences on PC1, with the G1 cells to the right of the other cells on PC1. Based on this plot, we would regress out the variation due to cell cycle. 
 
@@ -152,6 +155,11 @@ DimPlot(object = seurat_stim,
 
 ```
 
+<p align="center">
+<img src="../img/stim_regressed_pca.png" width="800">
+</p>
+
+
 Regressing out cell cycle has resulted in more overlap of cells in the different phases of the cell cycle.
 
 ## Clustering cells based on top PCs (metagenes)
@@ -167,6 +175,11 @@ The elbow plot is helpful when determining how many PCs to use for the downstrea
 ElbowPlot(object = seurat_stim, 
           ndims = 30)
 ```
+
+<p align="center">
+<img src="../img/stim_elbow_plot.png" width="800">
+</p>
+
 
 Based on this plot, we could choose where the elbow occurs (touches the ground) to be between PC12-PC16. While this gives us a good rough idea of the number of PCs to include, a **more quantitative approach** may be a bit more reliable. We will identify a PC threshold by calculating where the principal components start to elbow by **taking the larger value of**:
 
@@ -224,6 +237,11 @@ plot_df <- data.frame(pct = pct,
  
 ```
 
+
+<p align="center">
+<img src="../img/stim_elbowplot_colored.png" width="800">
+</p>
+
 However, it's often a good idea to check the genes associated with some higher PCs to make sure that other PCs shouldn't be included due to association with some rarer cell populations.
 
 ```r
@@ -276,6 +294,11 @@ DimPlot(seurat_stim,
         label.size = 6,
         plot.title = "UMAP")
 ```
+
+<p align="center">
+<img src="../img/stim_umap_res_0.8.png" width="800">
+</p>
+
 
 
 [Click here for next lesson]()
