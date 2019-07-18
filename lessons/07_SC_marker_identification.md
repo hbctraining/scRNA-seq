@@ -76,9 +76,9 @@ For this analysis we are comparing each cluster against all other clusters to id
 	
 You could use one or the other of these arguments or both. We will be a bit lenient and use only the log2 fold change threshold greater than 0.25. We will also specify to return only the positive markers for each cluster
 
-> **NOTE:** This command can quite take long to run (~15 minutes). In the interest of time and for us to get through materials in a timely manner, we ask that you **download the data** using the [link provided](). *Right-click and "Save as.." into your `results` folder.* Now you can load this data into your R environment:
+> **NOTE:** This command can quite take long to run (~15 minutes). In the interest of time and for us to get through materials in a timely manner, we ask that you **download the data** using the [link provided](https://raw.githubusercontent.com/hbctraining/scRNA-seq/master/data/control_all_markers.csv). *Right-click and "Save as.." into your `results` folder.* Now you can load this data into your R environment:
 > 
-> `read.csv("results/control_all_markers.csv")`
+> `markers <- read.csv("results/control_all_markers.csv")`
 >
 
 
