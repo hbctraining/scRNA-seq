@@ -389,7 +389,7 @@ ElbowPlot(object = seurat_control,
 Based on this plot, we could choose where the elbow occurs (touches the ground) to be between PC12-PC16. While this gives us a good rough idea of the number of PCs to include, a **more quantitative approach** may be a bit more reliable. We will identify a PC threshold by calculating where the principal components start to elbow by **taking the larger value of**:
 
 1. The point where the principal components only contribute 5% of standard deviation and the principal components cumulatively contribute 90% of the standard deviation.
-2. The point where the percent change in variation between the consequtive PCs is less than 0.1%.
+2. The point where the percent change in variation between the consecutive PCs is less than 0.1%.
 
 We will start by calculating the first metric:
 
