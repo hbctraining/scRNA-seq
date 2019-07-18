@@ -31,4 +31,4 @@
 | 13:25 - 14:55 | [Sample integration and clustering](../lessons/08_SC_clustering_analysis_integration.md) | Mary |
 | 14:55 - 15:05 | Coffee | |
 | 15:05 - 16:30 | [Marker identification of integrated data](../lessons/09_SC_marker_identification_integration.md) | Meeta |
-| 16:30 - 17:00 | [Wrap-up]() | Radhika |
+| 16:30 - 17:00 | [Wrap-up](https://github.com/hbctraining/scRNA-seq/blob/master/slides/workshop_wrapup.pdf) | Radhika |
