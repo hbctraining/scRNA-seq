@@ -527,6 +527,8 @@ DimPlot(seurat_control,
         plot.title = "UMAP")
 ```
 
+> **Need help with UMAP?** Click the [link for helpful code](umap-installation.md)
+
 <p align="center">
 <img src="../img/SC_umap.png" width="800">
 </p>
