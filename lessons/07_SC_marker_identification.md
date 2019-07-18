@@ -223,7 +223,7 @@ These results and plots can help us determine the identity of these clusters or 
 
 ***
 
-**Exercises**
+**[Exercises](https://hbctraining.github.io/scRNA-seq/lessons/sc_exercises_marker_analysis.html)**
 
 1. **Find all markers** for the `seurat_stim` data using the `FindAllMarkers()` function with arguments to return only the positive markers and those markers with log2 fold-change greater than 0.25.
 2. **Annotate** the markers with gene descriptions.
