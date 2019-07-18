@@ -76,7 +76,12 @@ For this analysis we are comparing each cluster against all other clusters to id
 	
 You could use one or the other of these arguments or both. We will be a bit lenient and use only the log2 fold change threshold greater than 0.25. We will also specify to return only the positive markers for each cluster
 
+> **NOTE:** This command can quite take long to run (~15 minutes). In the interest of time and for us to get through materials in a timely manner, we ask that you **download the data** using the [link provided]() and load this data into your R environment.
+> 
+> 
+
 ```r
+## DO NOT RUN THIS CODE ##
 # Find markers for every cluster compared to all remaining cells, report only the positive ones
 markers <- FindAllMarkers(object = seurat_control, 
                           only.pos = TRUE,
