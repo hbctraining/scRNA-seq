@@ -55,12 +55,18 @@ ann_markers_stim <- ann_markers_stim %>%
 # Take a look a the new data frame
 View(ann_markers_stim)
  ```
+ 
+ <p align="center">
+<img src="../img/stim_markers_annot.png" width="800">
+</p>
 
-## Save our rearranged marker analysis results to a file called `stim_all_markers_annotated.csv` in the results folder.
+## Save our results to file
+
+Save our rearranged marker analysis results to a file called `stim_all_markers_annotated.csv` in the results folder.
 
 ```r
 # Save markers to file
-write.csv(ann_markers, 
+write.csv(ann_markers_stim, 
           file = "results/stim_all_markers_annotated.csv", 
           quote = FALSE, 
           row.names = FALSE)
@@ -71,44 +77,48 @@ write.csv(ann_markers,
 
 ```r
 # Extract top 5 markers per cluster
-top5 <- ann_markers %>% 
+top5_stim <- ann_markers_stim %>% 
         group_by(cluster) %>% 
         top_n(n = 5, 
               wt = avg_logFC)
 
 # Visualize top 5 markers per cluster
-View(top5)
+View(top5_stim)
 
 ```
 
+<p align="center">
+<img src="../img/stim_top5_markers.png" width="800">
+</p>
 
-## Visualize top 5 markers for cluster 0 using the `FeaturePlot()` and `VlnPlot()` functions.
 
-To get a better idea of cell type identity we can explore the expression of different identified markers by cluster using the `FeaturePlot()` function. For example, we can look at the cluster 0 markers:
+## Visualize top 5 markers for cluster 0 
+
+To get a better idea of cell type identity we can explore the expression of different identified markers by cluster **using the `FeaturePlot()` function**. For example, we can look at the cluster 0 markers:
 
 ```r
-# Plot top 5 markers for cluster 6
-FeaturePlot(object = seurat_control, 
-            features = top5[top5$cluster == 6, "gene"] %>%
+# Plot top 5 markers for cluster 0
+FeaturePlot(object = seurat_stim, 
+            features = top5_stim[top5_stim$cluster == 0, "gene"] %>%
                     pull(gene))
 ```
 
 <p align="center">
-<img src="../img/fig_cluster6_loadObj.png" width="800">
+<img src="../img/stim_cluster0_featureplot.png">
 </p>
 
 
 ### Violin plot
 
 ```r
-# Vln plot - cluster 6
-VlnPlot(object = seurat_control, 
-        features = top5[top5$cluster == 6, "gene"] %>%
+# Vln plot - cluster 0
+VlnPlot(object = seurat_stim, 
+        features = top5_stim[top5_stim$cluster == 0, "gene"] %>%
                     pull(gene))
 ```        
 
 <p align="center">
-<img src="../img/fig_cluster6_loadObj_violin.png" width="800">
+<img src="../img/stim_cluster0_violin_plot.png" width="800">
 </p>
 
 
