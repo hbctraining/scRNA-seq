@@ -35,7 +35,7 @@ This action will guide you through the conda installation. The last step of the 
 
 ### Mac command prompt
 
-Use spotlight to search for the `Terminal` program. It would look something like: **`Janes-iMac:~ janedoe$`**. This is known as the **command line**. The command line is where you give text instructions to your computer. 
+Use Spotlight to search for the `Terminal` program. It would look something like: **`Janes-iMac:~ janedoe$`**. This is known as the **command line**. The command line is where you give text instructions to your computer. 
 
 ### Windows command prompt
 
