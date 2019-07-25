@@ -24,7 +24,7 @@ Before we install `conda`, **close your R and RStudio**.
 The `conda` package management tool is part of the Anaconda software package. Install `conda` by navigating to the [Anaconda download page](https://www.anaconda.com/distribution/). Scroll down to choose a tab for the OS of your computer:
 
 <p align="center">
-<img src="../img/os_tab.png" width="400">
+<img src="../img/os_tab.png" width="500">
 </p>
 
 Download Python by clicking on the "64-bit Graphical Installer" link. It is a big download, so it is best to be on fast network. Open the installer file you just downloaded. It should be named something like `Anaconda[version]-Windows-x86_64`.
@@ -32,7 +32,7 @@ Download Python by clicking on the "64-bit Graphical Installer" link. It is a bi
 This action will guide you through the conda installation. The last step of the installation process will ask you if you want to add Anaconda to my the PATH environment variable and whether you would like to make this your default Python. **Ensure both options are checked.**
 
 <p align="center">
-<img src="../img/box_check.png" width="400">
+<img src="../img/box_check.png" width="500">
 </p>
 
 The following warning will also pop up if you have Miniconda3 or another python installed, to which you should select `OK` (unless you need this other python for other purposes):
