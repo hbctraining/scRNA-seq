@@ -35,6 +35,12 @@ This action will guide you through the conda installation. The last step of the 
 <img src="../img/box_check.png" width="600">
 </p>
 
+The following warning will also pop up if you have Miniconda3 or another python installed, to which you should select `OK` (unless you need this other python for other purposes):
+
+<p align="center">
+<img src="../img/overwrite_python.png" width="600">
+</p>
+
 ## Command prompt
 
 ### Mac command prompt
@@ -89,7 +95,7 @@ You should receive the warning:
         certifi
         conda
 
-You should type `y`.
+You will be asked `y/n`, and you should type `y`.
 
 
 Let's verify we installed `umap-learn` with the following command:
