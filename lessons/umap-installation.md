@@ -33,7 +33,7 @@ This action will guide you through the conda installation.
 
 For Mac OS, the installation will automatically make Anaconda the default Python, which is great.
 
-For Windows OS, the last step of the installation process will ask you if you want to add Anaconda to my the PATH environment variable and whether you would like to make this your default Python. **Ensure both options are checked.**
+For Windows OS, the last step of the installation process will ask you if you want to add Anaconda to the PATH environment variable and whether you would like to make this your default Python. **Ensure both options are checked.**
 
 <p align="center">
 <img src="../img/box_check.png" width="500">
@@ -116,7 +116,7 @@ should yield amongst other libraries:
 
 Now we can restart our R session, load our libraries, and continue with running the `RunUMAP()` function.
 
->**NOTE:** If your R session crashes on a Mac OS, then you can try the running the following in R:
+>**NOTE:** If your R session crashes on a Mac OS, then you can try running the following in R:
 > ```r
 > library(reticulate)
 > use_python(python = "~/Anaconda3/bin/python", required = TRUE)
