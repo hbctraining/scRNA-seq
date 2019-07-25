@@ -29,13 +29,17 @@ The `conda` package management tool is part of the Anaconda software package. In
 
 Download Python by clicking on the "**64-bit Graphical Installer**" link. It is a big download, so it is best to be on fast network. Open the installer file you just downloaded. It should be named something like `Anaconda[version]-Windows-x86_64`.
 
-This action will guide you through the conda installation. The last step of the installation process will ask you if you want to add Anaconda to my the PATH environment variable and whether you would like to make this your default Python. **Ensure both options are checked.**
+This action will guide you through the conda installation. 
+
+For Mac OS, the installation will automatically make Anaconda the default Python, which is great.
+
+For Windows OS, the last step of the installation process will ask you if you want to add Anaconda to my the PATH environment variable and whether you would like to make this your default Python. **Ensure both options are checked.**
 
 <p align="center">
 <img src="../img/box_check.png" width="500">
 </p>
 
-The following warning will also pop up if you have Miniconda3 or another python installed, to which you should select `OK` (unless you need this other python for other purposes):
+The following warning will also pop up on Windows if you have Miniconda3 or another python installed, to which you should select `OK` (unless you need this other python for other purposes):
 
 <p align="center">
 <img src="../img/overwrite_python.png" width="500">
@@ -112,4 +116,8 @@ should yield amongst other libraries:
 
 Now we can restart our R session, load our libraries, and continue with running the `RunUMAP()` function.
 
-
+>**NOTE:** If your R session crashes on a Mac OS, then you can try the following:
+> ```r
+> library(reticulate)
+> use_python(python = "~/Anaconda3/bin/python", required = TRUE)
+> ```
