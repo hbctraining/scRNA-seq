@@ -79,7 +79,7 @@ We can now install `umap-learn`:
 
     conda install -c conda-forge umap-learn
 
-Let's verify we installed `metpy` with the following command:
+Let's verify we installed `umap-learn` with the following command:
 
     conda list
 
