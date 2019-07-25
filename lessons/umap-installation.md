@@ -116,8 +116,10 @@ should yield amongst other libraries:
 
 Now we can restart our R session, load our libraries, and continue with running the `RunUMAP()` function.
 
->**NOTE:** If your R session crashes on a Mac OS, then you can try the following:
+>**NOTE:** If your R session crashes on a Mac OS, then you can try the running the following in R:
 > ```r
 > library(reticulate)
 > use_python(python = "~/Anaconda3/bin/python", required = TRUE)
 > ```
+>
+> Then try to re-run the `RunUMAP()`.
