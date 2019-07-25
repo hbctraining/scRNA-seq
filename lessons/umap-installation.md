@@ -27,7 +27,7 @@ The `conda` package management tool is part of the Anaconda software package. In
 <img src="../img/os_tab.png" width="500">
 </p>
 
-Download Python by clicking on the "64-bit Graphical Installer" link. It is a big download, so it is best to be on fast network. Open the installer file you just downloaded. It should be named something like `Anaconda[version]-Windows-x86_64`.
+Download Python by clicking on the "**64-bit Graphical Installer**" link. It is a big download, so it is best to be on fast network. Open the installer file you just downloaded. It should be named something like `Anaconda[version]-Windows-x86_64`.
 
 This action will guide you through the conda installation. The last step of the installation process will ask you if you want to add Anaconda to my the PATH environment variable and whether you would like to make this your default Python. **Ensure both options are checked.**
 
