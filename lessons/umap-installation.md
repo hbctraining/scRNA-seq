@@ -9,7 +9,7 @@ In the Seurat package there is a function to use the UMAP visualization (`RunUMA
 
 _**These materials were modified from [https://unidata.github.io/online-python-training/conda-windows.html](https://unidata.github.io/online-python-training/conda-windows.html).**_
 
-The aim of this web page is to help you get started with Python. We will explain what a package management tool is, how to download `conda` package management tool via the Anaconda installer, and guide you on the Mac/Windows Command Prompt so that you can use `conda` from the command line. Finally, we will wrap up by installing one library with `conda`.
+The aim of this web page is to help you get started with Python. We will explain what a package management tool is, how to download `conda` package management tool via the Anaconda installer, and guide you on the Mac/Windows command prompt so that you can use `conda` from the command line. Finally, we will wrap up by installing one library with `conda`.
 
 ## What Is a Package Management Tool?
 
