@@ -32,13 +32,13 @@ Download Python by clicking on the "64-bit Graphical Installer" link. It is a bi
 This action will guide you through the conda installation. The last step of the installation process will ask you if you want to add Anaconda to my the PATH environment variable and whether you would like to make this your default Python. **Ensure both options are checked.**
 
 <p align="center">
-<img src="../img/box_check.png" width="600">
+<img src="../img/box_check.png" width="400">
 </p>
 
 The following warning will also pop up if you have Miniconda3 or another python installed, to which you should select `OK` (unless you need this other python for other purposes):
 
 <p align="center">
-<img src="../img/overwrite_python.png" width="600">
+<img src="../img/overwrite_python.png" width="400">
 </p>
 
 ## Command prompt
