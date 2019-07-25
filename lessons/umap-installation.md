@@ -39,7 +39,7 @@ Use Spotlight to search for the `Terminal` program. It would look something like
 
 ### Windows command prompt
 
-The Windows Command Prompt installed by the Anaconda program that is a software program giving you the ability to give text based instructions to your computer. 
+The Windows Command Prompt, installed by the Anaconda program, is a software program giving you the ability to give text based instructions to your computer. 
 
 To open the Windows Command Prompt, left-click on the Windows Start menu located in the lower left portion  of the desktop and search for 'Command Prompt' in the search box located at the bottom of the menu.
 
