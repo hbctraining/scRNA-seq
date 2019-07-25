@@ -31,6 +31,10 @@ Download Python by clicking on the "64-bit Graphical Installer" link. It is a bi
 
 This action will guide you through the conda installation. The last step of the installation process will ask you if you want to add Anaconda to my the PATH environment variable and whether you would like to make this your default Python. **Ensure both options are checked.**
 
+<p align="center">
+<img src="../img/box_check.png" width="600">
+</p>
+
 ## Command prompt
 
 ### Mac command prompt
@@ -78,6 +82,15 @@ We first have to give `conda` an instruction on where to find `umap-learn` on th
 We can now install `umap-learn`:
 
     conda install -c conda-forge umap-learn
+    
+You should receive the warning: 
+
+    The following packages will be SUPERCEDED by a higher priority channel:
+        certifi
+        conda
+
+You should type `y`.
+
 
 Let's verify we installed `umap-learn` with the following command:
 
@@ -88,7 +101,7 @@ should yield amongst other libraries:
     # packages in environment at /Users/Jane/anaconda:
     #
     ...
-    umap-learn                     ####                   py    conda-forge
+    umap-learn                     0.3.9                   py37_0    conda-forge
     ...
 
 Now we can restart our R session, load our libraries, and continue with running the `RunUMAP()` function.
