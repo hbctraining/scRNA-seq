@@ -37,7 +37,7 @@ This action will guide you through the conda installation. The last step of the 
 
 Use spotlight to search for the `Terminal` program. It would look something like: **`Janes-iMac:~ janedoe$`**. This is known as the **command line**. The command line is where you give text instructions to your computer. 
 
-### Windows Command Prompt
+### Windows command prompt
 
 The Windows Command Prompt installed by the Anaconda program that is a software program giving you the ability to give text based instructions to your computer. 
 
