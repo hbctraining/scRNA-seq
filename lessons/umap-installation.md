@@ -38,7 +38,7 @@ This action will guide you through the conda installation. The last step of the 
 The following warning will also pop up if you have Miniconda3 or another python installed, to which you should select `OK` (unless you need this other python for other purposes):
 
 <p align="center">
-<img src="../img/overwrite_python.png" width="400">
+<img src="../img/overwrite_python.png" width="500">
 </p>
 
 ## Command prompt
