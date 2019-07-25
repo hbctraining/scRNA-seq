@@ -1,13 +1,13 @@
 
 # Installing and using UMAP
 
-_**These materials were modified from https://unidata.github.io/online-python-training/conda-windows.html.**_
-
 To visualize the cell clusters, there are a few different dimensionality reduction techniques that can be helpful. The most popular methods include t-distributed stochastic neighbor embedding (t-SNE) and **Uniform Manifold Approximation and Projection (UMAP)** techniques.
 
 In the Seurat package there is a function to use the UMAP visualization (`RunUMAP()`), however it does require the user to  **first install the `umap-learn` python package.**  To install this package follow the instructions below.
 
 # Getting Going with Python
+
+_**These materials were modified from https://unidata.github.io/online-python-training/conda-windows.html.**_
 
 The aim of this web page is to help you get started with Python. We will explain what a package management tool is, how to download `conda` package management tool via the Anaconda installer, and guide you on the Mac/Windows Command Prompt so that you can use `conda` from the command line. Finally, we will wrap up by installing one library with `conda`.
 
