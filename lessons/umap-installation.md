@@ -21,7 +21,11 @@ When you start using Python, you will want use software libraries that are not p
 
 Before we install `conda`, **close your R and RStudio**.
 
-The `conda` package management tool is part of the Anaconda software package. Install `conda` by navigating to the [Anaconda download page](https://www.anaconda.com/distribution/). Scroll down to choose a tab for the OS of your computer (e.g. Windows | Mac | Linux ) portion of the web page.
+The `conda` package management tool is part of the Anaconda software package. Install `conda` by navigating to the [Anaconda download page](https://www.anaconda.com/distribution/). Scroll down to choose a tab for the OS of your computer portion of the web page:
+
+<p align="center">
+<img src="../img/os_tab.png" width="800">
+</p>
 
 Download Python by clicking on the "64-bit Graphical Installer" link. It is a big download, so it is best to be on fast network. Open the installer file you just downloaded. It should be named something like `Anaconda[version]-Windows-x86_64`.
 
