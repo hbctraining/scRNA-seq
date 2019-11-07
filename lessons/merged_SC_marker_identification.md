@@ -38,6 +38,32 @@ _**Recommendations:**_
 
 ***
 
+Our clustering analysis resulted in the following clusters:
+
+<p align="center">
+<img src="../img/" width="800">
+</p>
+
+Remember that we had the following questions from the clustering analysis: (**These questions will change!**)
+
+1. *What is the cell type identity of cluster 7?*
+2. *Is cluster 6 a CD8+ T cell or an NK cell?* *Is cluster 13 a T cell or an NK cell?*
+3. *Do the clusters corresponding to the same cell types have biologically meaningful differences? Are there subpopulations of these cell types?*
+4. *Can we acquire higher confidence in these cell type identities by identifying other marker genes for these clusters?*
+
+There are a few different types of marker identification that we can explore using Seurat to get to the answer of these questions. Each with their own benefits and drawbacks:
+
+1. **Identification of all markers for each cluster:** this analysis compares each cluster against all others and outputs the genes that are differentially expressed/present. 
+	- *Useful for identifying unknown clusters and improving confidence in hypothesized cell types.*
+
+2. **Identification of conserved markers for each cluster:** This analysis looks for genes that are differentially expressed/present within each condition first, and then reports those genes that are conserved in the cluster across all conditions. These genes can help to figure out the identity for the cluster. 
+	- *Useful with more than one condition to identify cell type markers that are conserved across conditions.*  	
+ 
+3. **Marker identification between specific clusters:** this analysis explores differentially expressed genes between specific clusters. 
+	- *Useful for determining differences in gene expression between clusters that appear to be representing the same celltype (i.e with markers that are similar) from the above analyses.*
+
+
+
 [Click here for next lesson](08_SC_clustering_analysis_integration.md)
 
 ***
