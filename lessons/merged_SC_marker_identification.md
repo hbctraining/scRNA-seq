@@ -63,8 +63,114 @@ There are a few different types of marker identification that we can explore usi
 	- *Useful for determining differences in gene expression between clusters that appear to be representing the same celltype (i.e with markers that are similar) from the above analyses.*
 
 
+## Identification of conserved markers in all conditions
 
-[Click here for next lesson](08_SC_clustering_analysis_integration.md)
+Since we have samples representing different conditions in our dataset, our best option is to find conserved markers. Identifying conserved markers allows for identifying only those genes the are significantly differentially expressed relative to the other clusters for all conditions. This function performs differential gene expression testing for a single cluster against all other clusters within each group and then combines the p-values using meta-analysis methods from the MetaDE R package.
+
+Before we start our marker identification we need to explicitly set our default assay. Because of the nature of how `FindConservedMarkers()` works (i.e finding DE within each group and then looking for conservation), we need to use the **original counts and not the integrated data**.
+
+```r
+DefaultAssay(combined) <- "RNA"
+```
+
+This function is used on multiple samples in lieu of `FindAllMarkers()`. You could run it on all clusters if you wanted to, but it takes a while to run, so we are just going to **run it on the unknown clusters 17 and 20**.
+
+The function `FindConservedMarkers()`, has the following structure:
+
+**`FindConservedMarkers()` syntax:**
+
+```r
+FindConservedMarkers(seurat_obj,
+                     ident.1 = cluster,
+                     grouping.var = "group",
+                     only.pos = TRUE)
+```
+
+The function **accepts a single cluster at a time**, so if we want to have the function run on all clusters, then we can use the `map` family of functions to iterate across clusters. 
+
+Since these functions will **remove our row names** (gene names), we need to transfer the row names to columns before mapping across clusters. We also need a column specifying **to which cluster the significant genes correspond**.
+
+To do that we will **create our own function** to:
+
+1. Run the `FindConservedMarkers()` function
+2. Transfer row names to a column using `rownames_to_column()` function
+3. Create the column of cluster IDs using the `cbind()` function
+
+```r
+# Create function to get conserved markers for any given cluster
+get_conserved <- function(cluster){
+        FindConservedMarkers(combined,
+                             ident.1 = cluster,
+                             grouping.var = "sample",
+                             only.pos = TRUE) %>%
+                rownames_to_column(var = "gene") %>%
+                cbind(cluster_id = cluster, .)
+}
+```
+
+Since we want the output of the `map` family of functions to be a **dataframe with each cluster output bound together by rows**, we will use the `map_dfr()` function.
+
+Remember the map family of functions uses the following syntax:
+
+**`map` family syntax:**
+
+```r
+map_dfr(inputs_to_function, name_of_function)
+```
+
+Now, let's find the conserved markers for clusters 17 and 20. 
+
+```r
+# Iterate function across desired clusters
+conserved_markers <- map_dfr(c(17,20), get_conserved)
+```
+
+> **NOTE:** If you wanted to run this on all clusters, you could input `0:20` instead of `c(17,20)`; however, it would take quite a while to run.
+
+To better analyze the output, we can include the gene descriptions as well.
+
+```r
+# Extract the gene descriptions for each gene
+gene_descriptions <- unique(annotations[, c("gene_name", "description")])
+
+# Merge gene descriptions with markers
+ann_conserved_markers <- left_join(x = conserved_markers,
+                                   y = gene_descriptions,
+                                   by = c("gene" = "gene_name"))
+```
+
+<p align="center">
+<img src="../img/sc_integ_marker_unknown.png" width="800">
+</p>
+
+For clusters 17 and 20, we see many of the conserved enriched genes encode inhibitory receptors, such as TIGIT and LAG3, which can be indicative of exhausted T cells.
+
+## Identifying gene markers for each cluster
+
+The last set of questions we had regarding the analysis involved whether the clusters corresponding to the same cell types have biologically meaningful differences. Sometimes the list of markers returned don't sufficiently separate some of the clusters. 
+
+Again, we performed this analysis with the single samples, so we are going to perform it by completing the exercises below.
+
+***
+
+**Exercises**
+
+1. Determine differentiating markers for CD8+ T cells - clusters 6 versus 10 - using the `FindMarkers()` function.
+2. **Annotate** the markers with gene descriptions.
+3. **Reorder the columns** to be in the order shown below.
+
+	<p align="center">
+	<img src="../img/sc_cd8_t_markers_diff.png" width="800">
+	</p>
+
+4. **Arrange rows** by `avg_logFC` values
+5. **Save** our rearranged marker analysis results to a file called `cluster6vs10_markers.csv` in the `results` folder.
+6. Based on these marker results, **determine whether we need to separate** clusters 6 and 10 as their own clusters.
+7. **Extra credit:** Repeat above steps for the clusters assigned to `Naive CD4+ T cells`, in addition to repeating for `Naive B cells`.
+
+***
+
+[Click here for next lesson]()
 
 ***
 
