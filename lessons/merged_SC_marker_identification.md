@@ -65,15 +65,15 @@ There are a few different types of marker identification that we can explore usi
 
 ## Identification of conserved markers in all conditions
 
-Since we have samples representing different conditions in our dataset, our best option is to find conserved markers. Identifying conserved markers allows for identifying only those genes the are significantly differentially expressed relative to the other clusters for all conditions. This function performs differential gene expression testing for a single cluster against all other clusters within each group and then combines the p-values using meta-analysis methods from the MetaDE R package.
+Since we have samples representing different conditions in our dataset, our best option is to find conserved markers. Identifying conserved markers allows for **identifying only those genes the are significantly differentially expressed relative to the other clusters for all conditions**. This function separates out cells by condition, and then performs differential gene expression testing for a single specified cluster against all other clusters (or a second cluster, if specified). Gene-level p-values are computed for each condition and then combined across groups using meta-analysis methods from the MetaDE R package.
 
-Before we start our marker identification we need to explicitly set our default assay. Because of the nature of how `FindConservedMarkers()` works (i.e finding DE within each group and then looking for conservation), we need to use the **original counts and not the integrated data**.
+Before we start our marker identification will explicitly set our default assay. Because of the nature of how `FindConservedMarkers()` works (i.e finding DE within each group and then looking for conservation), we need to use the **original counts and not the integrated data**.
 
 ```r
 DefaultAssay(combined) <- "RNA"
 ```
 
-This function is used on multiple samples in lieu of `FindAllMarkers()`. You could run it on all clusters if you wanted to, but it takes a while to run, so we are just going to **run it on the unknown clusters 17 and 20**.
+> **NOTE:*** Although the default setting for this function is to fetch data from the "RNA" slot, we encourage you to run this line of code to be transparent and absolutely sure that the current active was not set somewhere upstream in your analysis.
 
 The function `FindConservedMarkers()`, has the following structure:
 
@@ -83,8 +83,29 @@ The function `FindConservedMarkers()`, has the following structure:
 FindConservedMarkers(seurat_obj,
                      ident.1 = cluster,
                      grouping.var = "group",
-                     only.pos = TRUE)
+                     only.pos = TRUE,
+		     min.diff.pct = 0.25,
+                     min.pct = 0.25,
+		     logfc.threshold = 0.25)
 ```
+
+For this analysis we are comparing each cluster against all other clusters to identify cluster markers within each condition first, and so internally it is using the `FindAllMarkers()` function. Here we list **some important arguments** which provide thresholds for determining whether a gene is a marker:
+
+- `logfc.threshold`: minimum log2 foldchange for average expression of gene in cluster relative to the average expression in all other clusters combined
+	- **Cons:** 
+		- could miss those cell markers that are expressed in the cluster being compared, but not in the other clusters, if the average log2FC doesn't meet the threshold
+		- could return a lot of metabolic/ribosomal genes due to slight differences in metabolic output by different cell types, which are not as useful to distinguish cell type identities
+- `min.diff.pct`: minimum percent difference between the percent of cells expressing the gene in the cluster and the percent of cells expressing gene in all other clusters combined
+	- **Cons:** could miss those cell markers that are expressed in all cells, but are highly up-regulated in this specific cell type
+- `min.pct`: only test genes that are detected in a minimum fraction of cells in either of the two populations. Meant to speed up the function by not testing genes that are very infrequently expressed. 
+	- **Cons ??:** 
+	
+You could use one or all of these arguments or both. We will be a bit lenient and use only the log2 fold change threshold greater than 0.25. We will also specify to return only the positive markers for each cluster
+
+
+Let's test it out on one cluster:
+
+
 
 The function **accepts a single cluster at a time**, so if we want to have the function run on all clusters, then we can use the `map` family of functions to iterate across clusters. 
 
