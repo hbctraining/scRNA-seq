@@ -64,7 +64,7 @@ There are a few different types of marker identification that we can explore usi
 
 ## Identification of all markers for each cluster
 
-This type of analysis is typically recommended for when evaluating a single sample group/condition. We are comparing each cluster against all other clusters to identify cluster markers using the ` FindAllMarkers()` function. The cells in each cluster are treated as replicates, and a differential expression analysis is performed with the specified statistical test. The default is a Wilcoxon Rank Sum test, but there are other options available. \
+This type of analysis is typically recommended for when evaluating a single sample group/condition. We are comparing each cluster against all other clusters to identify marker genes using the ` FindAllMarkers()` function. The cells in each cluster are treated as replicates, and a differential expression analysis is performed with the specified statistical test. The default is a Wilcoxon Rank Sum test, but there are other options available. 
 
 The `FindAllMarkers()` function has two important arguments which provide thresholds for determining whether a gene is a marker:
 
@@ -74,6 +74,8 @@ The `FindAllMarkers()` function has two important arguments which provide thresh
 		- could return a lot of metabolic/ribosomal genes due to slight differences in metabolic output by different cell types, which are not as useful to distinguish cell type identities
 - `min.diff.pct`: minimum percent difference between the percent of cells expressing the gene in the cluster and the percent of cells expressing gene in all other clusters combined.
 	- **Cons:** could miss those cell markers that are expressed in all cells, but are highly up-regulated in this specific cell type
+- `min.pct`: only test genes that are detected in a minimum fraction of cells in either of the two populations. Meant to speed up the function by not testing genes that are very infrequently expressed. Default is 0.1.
+	- **Cons:** if set to a very high value could incur many false negatives due to the fact that not all genes are detected in all cells (even if it is expressed) 
 	
 You could use one or the other of these arguments or both. By default this function will return to you genes that exhibit both positive and negative expression changes. Typically, we opt for keeping only the positive changes. The code to find markers for each cluster is shown below. **We will not run this code, however we will revisit this function a little bit later in the lesson.**
 
@@ -121,20 +123,20 @@ View(ann_markers)
 - **p_val\_adj:** Adjusted p-value, based on bonferroni correction using all genes in the dataset, used to determine significance
 
 
-**Note, since each cell is being treated as a replicate this will result in inflated p-values!** For example, a gene may have an incredibly low p-value < 1e-50 but that doesn't translate as a highly reliable marker gene. When looking at the output, **we suggest looking for markers with large differences in expression between `pct.1` and `pct.2` and larger fold changes**. For instance if `pct.1` = 0.90 and `pct.2` = 0.80, it may not be as exciting of a marker. However, if `pct.2` = 0.1 instead, the bigger difference would be more convincing. Also, of interest is if the majority of cells expressing the marker is in my cluster of interest. If `pct.1` is low, such as 0.3, it may not be as interesting.
+**Note, since each cell is being treated as a replicate this will result in inflated p-values!** For example, a gene may have an incredibly low p-value < 1e-50 but that doesn't translate as a highly reliable marker gene. When looking at the output, **we suggest looking for markers with large differences in expression between `pct.1` and `pct.2` and larger fold changes**. For instance if `pct.1` = 0.90 and `pct.2` = 0.80, it may not be as exciting of a marker. However, if `pct.2` = 0.1 instead, the bigger difference would be more convincing. Also, of interest is if the majority of cells expressing the marker is in my cluster of interest. If `pct.1` is low, such as 0.3, it may not be as interesting. Both of these are also possible parameters to include when running the function, as described above.
 
 
 ## Identification of conserved markers in all conditions
 
-Since we have samples representing different conditions in our dataset, our best option is to find conserved markers. Identifying conserved markers allows for **identifying only those genes the are significantly differentially expressed relative to the other clusters for all conditions**. This function separates out cells by condition, and then performs differential gene expression testing for a single specified cluster against all other clusters (or a second cluster, if specified). Gene-level p-values are computed for each condition and then combined across groups using meta-analysis methods from the MetaDE R package.
+Since we have samples representing different conditions in our dataset, **our best option is to find conserved markers**. This function separates out cells by sample group/condition, and then performs differential gene expression testing for a single specified cluster against all other clusters (or a second cluster, if specified). Gene-level p-values are computed for each condition and then combined across groups using meta-analysis methods from the MetaDE R package.
 
-Before we start our marker identification will explicitly set our default assay. Because of the nature of how `FindConservedMarkers()` works (i.e finding DE within each group and then looking for conservation), we need to use the **original counts and not the integrated data**.
+Before we start our marker identification will explicitly set our default assay, we will want to use the **original counts and not the integrated data**.
 
 ```r
 DefaultAssay(combined) <- "RNA"
 ```
 
-> **NOTE:*** Although the default setting for this function is to fetch data from the "RNA" slot, we encourage you to run this line of code to be transparent and absolutely sure that the current active was not set somewhere upstream in your analysis.
+> **NOTE:*** Although the default setting for this function is to fetch data from the "RNA" slot, we encourage you to run this line of code above to be absolutely sure in case the active slot was changed somewhere upstream in your analysis.
 
 The function `FindConservedMarkers()`, has the following structure:
 
@@ -150,16 +152,11 @@ FindConservedMarkers(seurat_obj,
 		     logfc.threshold = 0.25)
 ```
 
-For this analysis we are comparing each cluster against all other clusters to identify cluster markers within each condition first, and so internally it is using the `FindAllMarkers()` function. Here we list **some important arguments** which provide thresholds for determining whether a gene is a marker:
+You will recognize some of the arguments described previously for the `FindAllMarkers()` function; this is because internally it is using that function to first find markers within each group. Here, we list **some additional arguments** which provide for when using `FindConservedMarkers()`:
 
-- `logfc.threshold`: minimum log2 foldchange for average expression of gene in cluster relative to the average expression in all other clusters combined
-	- **Cons:** 
-		- could miss those cell markers that are expressed in the cluster being compared, but not in the other clusters, if the average log2FC doesn't meet the threshold
-		- could return a lot of metabolic/ribosomal genes due to slight differences in metabolic output by different cell types, which are not as useful to distinguish cell type identities
-- `min.diff.pct`: minimum percent difference between the percent of cells expressing the gene in the cluster and the percent of cells expressing gene in all other clusters combined
-	- **Cons:** could miss those cell markers that are expressed in all cells, but are highly up-regulated in this specific cell type
-- `min.pct`: only test genes that are detected in a minimum fraction of cells in either of the two populations. Meant to speed up the function by not testing genes that are very infrequently expressed. 
-	- **Cons ??:** 
+- `ident.1`: this function only evaluates one cluster at a time; here you would specify the cluster of interest.
+- `grouping.var`: the variable (column header) in your metadata which specifies the separation of cells into groups
+
 	
 You could use one or all of these arguments or both. We will be a bit lenient and use only the log2 fold change threshold greater than 0.25. We will also specify to return only the positive markers for each cluster
 
