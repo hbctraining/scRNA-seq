@@ -62,6 +62,67 @@ There are a few different types of marker identification that we can explore usi
 3. **Marker identification between specific clusters:** this analysis explores differentially expressed genes between specific clusters. 
 	- *Useful for determining differences in gene expression between clusters that appear to be representing the same celltype (i.e with markers that are similar) from the above analyses.*
 
+## Identification of all markers for each cluster
+
+This type of analysis is typically recommended for when evaluating a single sample group/condition. We are comparing each cluster against all other clusters to identify cluster markers using the ` FindAllMarkers()` function. The cells in each cluster are treated as replicates, and a differential expression analysis is performed with the specified statistical test. The default is a Wilcoxon Rank Sum test, but there are other options available. \
+
+The `FindAllMarkers()` function has two important arguments which provide thresholds for determining whether a gene is a marker:
+
+- `logfc.threshold`: minimum log2 foldchange for average expression of gene in cluster relative to the average expression in all other clusters combined. Default is 0.25.
+	- **Cons:** 
+		- could miss those cell markers that are expressed in the cluster being compared, but not in the other clusters, if the average log2FC doesn't meet the threshold
+		- could return a lot of metabolic/ribosomal genes due to slight differences in metabolic output by different cell types, which are not as useful to distinguish cell type identities
+- `min.diff.pct`: minimum percent difference between the percent of cells expressing the gene in the cluster and the percent of cells expressing gene in all other clusters combined.
+	- **Cons:** could miss those cell markers that are expressed in all cells, but are highly up-regulated in this specific cell type
+	
+You could use one or the other of these arguments or both. By default this function will return to you genes that exhibit both positive and negative expression changes. Typically, we opt for keeping only the positive changes. The code to find markers for each cluster is shown below. **We will not run this code, however we will revisit this function a little bit later in the lesson.**
+
+```r
+## DO NOT RUN THIS CODE ##
+# Find markers for every cluster compared to all remaining cells, report only the positive ones
+markers <- FindAllMarkers(object = seurat_control, 
+                          only.pos = TRUE,
+                          logfc.threshold = 0.25)                     
+```
+
+> **NOTE:** This command can quite take long to run, as it is processing each inidividual cluster against all other cells.
+
+The output from the `FindAllMarkers()` function, is a matrix containing a ranked list of putative markers, and associated statistics. The order of the columns isn't the most intuitive, so itr can be helpful to reorder the columns with the `cluster` first followed by the `gene`, and add columns with gene annotation information:
+
+```r
+## DO NOT RUN THIS CODE ##
+
+# Combine markers with gene descriptions 
+ann_markers <- inner_join(x = markers, 
+                          y = annotations[, c("gene_name", "description")],
+                          by = c("gene" = "gene_name")) %>%
+        unique()
+
+# Rearrange the columns to be more intuitive
+ann_markers <- ann_markers[ , c(6, 7, 2:4, 1, 5,8)]
+
+# Order the rows by p-adjusted values
+ann_markers <- ann_markers %>%
+        dplyr::arrange(cluster, p_val_adj)
+
+View(ann_markers)
+```
+
+<p align="center">
+<img src="../img/marker_table_loadObj.png" width="800">
+</p>
+
+- **cluster:** number corresponding to cluster
+- **gene:** gene id
+- **avg_logFC:** average log2 fold change. Positive values indicate that the gene is more highly expressed in the cluster.
+- **pct.1**: The percentage of cells where the gene is detected in the cluster
+- **pct.2**: The percentage of cells where the gene is detected on average in the other clusters
+- **p_val:** p-value not adjusted for multiple test correction
+- **p_val\_adj:** Adjusted p-value, based on bonferroni correction using all genes in the dataset, used to determine significance
+
+
+**Note, since each cell is being treated as a replicate this will result in inflated p-values!** For example, a gene may have an incredibly low p-value < 1e-50 but that doesn't translate as a highly reliable marker gene. When looking at the output, **we suggest looking for markers with large differences in expression between `pct.1` and `pct.2` and larger fold changes**. For instance if `pct.1` = 0.90 and `pct.2` = 0.80, it may not be as exciting of a marker. However, if `pct.2` = 0.1 instead, the bigger difference would be more convincing. Also, of interest is if the majority of cells expressing the marker is in my cluster of interest. If `pct.1` is low, such as 0.3, it may not be as interesting.
+
 
 ## Identification of conserved markers in all conditions
 
