@@ -1,7 +1,7 @@
 ---
 title: "Single-cell RNA-seq: Marker identification"
 author: "Mary Piper, Lorena Pantano, Meeta Mistry, Radhika Khetani"
-date: Monday, July 15, 2019
+date: Friday, November 15, 2019
 ---
 
 Approximate time: 45 minutes
@@ -38,7 +38,7 @@ _**Recommendations:**_
 
 ***
 
-Our clustering analysis resulted in the following clusters:
+Our clustering analysis resulted in the following clusters: (**ADD NEW CLUSTERING FIGURE HERE**)
 
 <p align="center">
 <img src="../img/" width="800">
@@ -66,7 +66,7 @@ There are a few different types of marker identification that we can explore usi
 
 This type of analysis is typically recommended for when evaluating a single sample group/condition. We are comparing each cluster against all other clusters to identify marker genes using the ` FindAllMarkers()` function. The cells in each cluster are treated as replicates, and a differential expression analysis is performed with the specified statistical test. The default is a Wilcoxon Rank Sum test, but there are other options available. 
 
-The `FindAllMarkers()` function has two important arguments which provide thresholds for determining whether a gene is a marker:
+The `FindAllMarkers()` function has three important arguments which provide thresholds for determining whether a gene is a marker:
 
 - `logfc.threshold`: minimum log2 foldchange for average expression of gene in cluster relative to the average expression in all other clusters combined. Default is 0.25.
 	- **Cons:** 
@@ -77,7 +77,7 @@ The `FindAllMarkers()` function has two important arguments which provide thresh
 - `min.pct`: only test genes that are detected in a minimum fraction of cells in either of the two populations. Meant to speed up the function by not testing genes that are very infrequently expressed. Default is 0.1.
 	- **Cons:** if set to a very high value could incur many false negatives due to the fact that not all genes are detected in all cells (even if it is expressed) 
 	
-You could use one or the other of these arguments or both. By default this function will return to you genes that exhibit both positive and negative expression changes. Typically, we opt for keeping only the positive changes. The code to find markers for each cluster is shown below. **We will not run this code, however we will revisit this function a little bit later in the lesson.**
+You could use any combination of these arguments depending on how stringent/lenient you want to be. Also, by default this function will return to you genes that exhibit both positive and negative expression changes. Typically, we add an argument `only.pos` to opt for keeping only the positive changes. The code to find markers for each cluster is shown below. **We will not run this code, however we will revisit this function a little bit later in the lesson.**
 
 ```r
 ## DO NOT RUN THIS CODE ##
@@ -89,7 +89,7 @@ markers <- FindAllMarkers(object = seurat_control,
 
 > **NOTE:** This command can quite take long to run, as it is processing each inidividual cluster against all other cells.
 
-The output from the `FindAllMarkers()` function, is a matrix containing a ranked list of putative markers, and associated statistics. The order of the columns isn't the most intuitive, so itr can be helpful to reorder the columns with the `cluster` first followed by the `gene`, and add columns with gene annotation information:
+**The output from the `FindAllMarkers()` function**, is a matrix containing a ranked list of putative markers, and associated statistics. The order of the columns isn't the most intuitive, so it can be helpful to reorder the columns with the `cluster` first followed by the `gene`, and add columns with gene annotation information:
 
 ```r
 ## DO NOT RUN THIS CODE ##
@@ -123,7 +123,9 @@ View(ann_markers)
 - **p_val\_adj:** Adjusted p-value, based on bonferroni correction using all genes in the dataset, used to determine significance
 
 
-**Note, since each cell is being treated as a replicate this will result in inflated p-values!** For example, a gene may have an incredibly low p-value < 1e-50 but that doesn't translate as a highly reliable marker gene. When looking at the output, **we suggest looking for markers with large differences in expression between `pct.1` and `pct.2` and larger fold changes**. For instance if `pct.1` = 0.90 and `pct.2` = 0.80, it may not be as exciting of a marker. However, if `pct.2` = 0.1 instead, the bigger difference would be more convincing. Also, of interest is if the majority of cells expressing the marker is in my cluster of interest. If `pct.1` is low, such as 0.3, it may not be as interesting. Both of these are also possible parameters to include when running the function, as described above.
+**Note, since each cell is being treated as a replicate this will result in inflated p-values!** A gene may have an incredibly low p-value < 1e-50 but that doesn't translate as a highly reliable marker gene. 
+
+When looking at the output, **we suggest looking for markers with large differences in expression between `pct.1` and `pct.2` and larger fold changes**. For instance if `pct.1` = 0.90 and `pct.2` = 0.80, it may not be as exciting of a marker. However, if `pct.2` = 0.1 instead, the bigger difference would be more convincing. Also, of interest is if the majority of cells expressing the marker is in my cluster of interest. If `pct.1` is low, such as 0.3, it may not be as interesting. Both of these are also possible parameters to include when running the function, as described above.
 
 
 ## Identification of conserved markers in all conditions
