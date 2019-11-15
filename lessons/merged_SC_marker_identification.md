@@ -206,16 +206,14 @@ Now that we have this function created  we can use it as an argument to the appr
 map_dfr(inputs_to_function, name_of_function)
 ```
 
-Now, let's try this function to find the conserved markers for clusters 17 and 20 (**Change these cluster??**). 
+Now, let's try this function to find the conserved markers for clusters 17 and 20 (**Change these clusters??**). 
 
 ```r
 # Iterate function across desired clusters
 conserved_markers <- map_dfr(c(17,20), get_conserved)
 ```
 
-> **NOTE:** If you wanted to run this on all clusters, you could input `0:20` instead of `c(17,20)`; however, it would take quite a while to run.
-
-To better analyze the output, we can include the gene descriptions as well.
+To better analyze the output we get from `FindConservedMarkers()`, we can **include the gene descriptions as well**.
 
 ```r
 # Extract the gene descriptions for each gene
@@ -231,7 +229,100 @@ ann_conserved_markers <- left_join(x = conserved_markers,
 <img src="../img/sc_integ_marker_unknown.png" width="800">
 </p>
 
-For clusters 17 and 20, we see many of the conserved enriched genes encode inhibitory receptors, such as TIGIT and LAG3, which can be indicative of exhausted T cells.
+For your data, you will want to run this on all clusters, you could input `0:20` instead of `c(17,20)`; however, it would take quite a while to run. Also, it is possible that when you run this function on all clusters, in **some cases you will have clusters that do not have enough cells for a particular group** - in which case your function will fail. For these clusters you will need to use `FindAllMarkers()`.
+
+We have gone through and identified all cluster marker genes for you, and have provided them [as a file for you to download]().
+
+
+### Evaluating marker genes
+
+After loading in the marker file, we can view the top 5 markers by log2 fold change for each cluster for a quick perusal.
+
+```r
+
+# Add a load file code here
+
+
+# Extract top 5 markers per cluster
+top5 <- ann_markers %>% 
+        group_by(cluster) %>% 
+        top_n(n = 5, 
+              wt = avg_logFC)
+
+# Visualize top 5 markers per cluster
+View(top5)
+
+```
+
+<p align="center">
+<img src="../img/top5_markers_loadObj.png" width="800">
+</p>
+
+Based on these marker results, we can determine whether the markers make sense for our hypothesized identities for each cluster:
+
+| Cell Type | Clusters |
+|:---:|:---:|
+| CD14+ monocytes | 0, 15 | 
+| FCGR3A+ monocytes | 8 |
+| Conventional dendritic cells | 12 |
+| Plasmacytoid dendritic cells | 12 |
+| B cells | 4, 11 |
+| T cells | 1, 2, 3, 6, 9, 10, 13, 14 |
+| CD4+ T cells | 1, 2, 3, 9, 10, 13, 14 |
+| CD8+ T cells| 6 |
+| NK cells | 5,6, 13 |
+| Megakaryocytes | 10 |
+| Erythrocytes | - |
+| Unknown | 7 |
+
+If there were any questions about the identity of any clusters, exploring the cluster's markers would be the first step. Let's look at the `ann_markers`, filtering for cluster 7 and see if we can **obtain any hints about our unknown cluster**.
+
+<p align="center">
+<img src="../img/cluster7_markers_loadObj.png" width="800">
+</p>
+
+We see a lot of heat shock and DNA damage genes appear. Based on these markers, it is likely that these are **stressed or dying cells**. However, we also see T cell-associated genes and markers of activation. It is possible that these could be activated (cytotoxic) T cells. We could explore the quality metrics for these cells in more detail before removing just to support that argument.
+
+We also had questions regarding the identity of cluster 6. Is cluster 6 a CD8+ T cell, an NK cell, or an NK T cell?
+
+We can look at the markers of **cluster 6 to try to resolve the identity**:
+
+<p align="center">
+<img src="../img/cluster6_markers_loadObj.png" width="800">
+</p>
+
+There are definitely T cell receptors that are enriched among cluster 6. Since NK cells cannot have expression of the T cell receptor genes we can therefore conclude that these cannot be NK cells. On the other hand CD8+ T cells can have expression of killer cell receptors. So, could these be NK T cells? Probably not, since NK T cells are usually a rare population and in our case we have many cells here. Thus, we **hypothesize that cluster 6 represents activated CD8+ T cells (cytotoxic T cells)**.
+
+To get a better idea of cell type identity we can explore the expression of different identified markers by cluster using the `FeaturePlot()` function. For example, we can look at the cluster 6 markers:
+
+```r
+# Plot top 5 markers for cluster 6
+FeaturePlot(object = seurat_control, 
+            features = top5[top5$cluster == 6, "gene"] %>%
+                    pull(gene))
+```
+
+<p align="center">
+<img src="../img/fig_cluster6_loadObj.png" width="800">
+</p>
+
+We can also explore the range in expression of specific markers by using violin plots:
+
+> **Violin plots** are similar to box plots, except that they also show the probability density of the data at different values, usually smoothed by a kernel density estimator. A violin plot is more informative than a plain box plot. While a box plot only shows summary statistics such as mean/median and interquartile ranges, the violin plot shows the full distribution of the data. The difference is particularly useful when the data distribution is multimodal (more than one peak). In this case a violin plot shows the presence of different peaks, their position and relative amplitude.
+
+```r
+# Vln plot - cluster 6
+VlnPlot(object = seurat_control, 
+        features = top5[top5$cluster == 6, "gene"] %>%
+                    pull(gene))
+```        
+
+<p align="center">
+<img src="../img/fig_cluster6_loadObj_violin.png" width="800">
+</p>
+
+These results and plots can help us determine the identity of these clusters or verify what we hypothesize the identity to be after exploring the canonical markers of expected cell types previously.
+
 
 ## Identifying gene markers for each cluster
 
