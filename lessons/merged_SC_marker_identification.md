@@ -130,7 +130,7 @@ When looking at the output, **we suggest looking for markers with large differen
 
 ## Identification of conserved markers in all conditions
 
-Since we have samples representing different conditions in our dataset, **our best option is to find conserved markers**. This function separates out cells by sample group/condition, and then performs differential gene expression testing for a single specified cluster against all other clusters (or a second cluster, if specified). Gene-level p-values are computed for each condition and then combined across groups using meta-analysis methods from the MetaDE R package.
+Since we have samples representing different conditions in our dataset, **our best option is to find conserved markers**. This function internally separates out cells by sample group/condition, and then performs differential gene expression testing for a single specified cluster against all other clusters (or a second cluster, if specified). Gene-level p-values are computed for each condition and then combined across groups using meta-analysis methods from the MetaDE R package.
 
 Before we start our marker identification will explicitly set our default assay, we will want to use the **original counts and not the integrated data**.
 
@@ -138,7 +138,7 @@ Before we start our marker identification will explicitly set our default assay,
 DefaultAssay(combined) <- "RNA"
 ```
 
-> **NOTE:*** Although the default setting for this function is to fetch data from the "RNA" slot, we encourage you to run this line of code above to be absolutely sure in case the active slot was changed somewhere upstream in your analysis.
+> **NOTE:** Although the default setting for this function is to fetch data from the "RNA" slot, we encourage you to run this line of code above to be absolutely sure in case the active slot was changed somewhere upstream in your analysis.
 
 The function `FindConservedMarkers()`, has the following structure:
 
@@ -159,23 +159,32 @@ You will recognize some of the arguments described previously for the `FindAllMa
 - `ident.1`: this function only evaluates one cluster at a time; here you would specify the cluster of interest.
 - `grouping.var`: the variable (column header) in your metadata which specifies the separation of cells into groups
 
-	
-You could use one or all of these arguments or both. We will be a bit lenient and use only the log2 fold change threshold greater than 0.25. We will also specify to return only the positive markers for each cluster
 
 
-Let's test it out on one cluster:
+For our analysis we will **only implement which parameters from above??** We will be a bit lenient and use only the log2 fold change threshold greater than 0.25. We will also specify to return only the positive markers for each cluster.
 
 
+Let's **test it out on one cluster**:
 
-The function **accepts a single cluster at a time**, so if we want to have the function run on all clusters, then we can use the `map` family of functions to iterate across clusters. 
+```r
+cluster0_conserved_markers <- FindConservedMarkers(seurat_obj,
+                              ident.1 = 0,
+                     	      grouping.var = "group",
+                              only.pos = TRUE,
+		              logfc.threshold = 0.25)
+```
 
-Since these functions will **remove our row names** (gene names), we need to transfer the row names to columns before mapping across clusters. We also need a column specifying **to which cluster the significant genes correspond**.
+**ADD A SCREENSHOT OF WHAT THE OUTPUT TABLE LOOKS LIKE**
 
-To do that we will **create our own function** to:
+
+### Running on multiple samples
+
+The function `FindConservedMarkers()` **accepts a single cluster at a time**, and we could run this function as many times as we have clusters. However, this is not very efficient. Instead we will first create a function to find the conserved markers including all the parameters we want to include. We will also **add a few lines of code to modify the output**. Our function will:
 
 1. Run the `FindConservedMarkers()` function
 2. Transfer row names to a column using `rownames_to_column()` function
 3. Create the column of cluster IDs using the `cbind()` function
+
 
 ```r
 # Create function to get conserved markers for any given cluster
@@ -189,9 +198,7 @@ get_conserved <- function(cluster){
 }
 ```
 
-Since we want the output of the `map` family of functions to be a **dataframe with each cluster output bound together by rows**, we will use the `map_dfr()` function.
-
-Remember the map family of functions uses the following syntax:
+Now that we have this function created  we can use it as an argument to the appropriate `map` function. We want the output of the `map` family of functions to be a **dataframe with each cluster output bound together by rows**, we will use the `map_dfr()` function.
 
 **`map` family syntax:**
 
@@ -199,7 +206,7 @@ Remember the map family of functions uses the following syntax:
 map_dfr(inputs_to_function, name_of_function)
 ```
 
-Now, let's find the conserved markers for clusters 17 and 20. 
+Now, let's try this function to find the conserved markers for clusters 17 and 20 (**Change these cluster??**). 
 
 ```r
 # Iterate function across desired clusters
