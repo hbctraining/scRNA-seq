@@ -1,0 +1,347 @@
+---
+title: "Single-cell RNA-seq: Normalization, identification of most variable genes, and integration"
+author: "Mary Piper, Meeta Mistry, Radhika Khetani"
+date: Thursday, November 21, 2019
+---
+
+Approximate time: 90 minutes
+
+## Learning Objectives:
+
+* Execute the normalization, variance estimation, and identification of the most variable genes for each sample
+* Perform integration of cells across conditions using the most variant genes to identify cells most similar to each other
+
+
+# Single-cell RNA-seq clustering analysis
+
+
+Now that we have our high quality cells, we want to cluster our cells so that the cells of the same cell type cluster together. 
+
+<img src="../img/sc_workflow.png" width="800">
+
+However, in order to perform the clustering, we need to normalize our gene expression values and align our cells across conditions based on the greatest sources of variation in our dataset. 
+
+In this lesson, we perform these initial steps prior to clustering.
+
+***
+
+_**Goals:**_ 
+ 
+ - _To accurately **normalize and scale the gene expression values** to account for differences in sequencing depth and overdispersed count values._
+ - _To **identify the most variant genes** likely to be indicative of the different cell types present._
+ - _To **align similar cells** across conditions._
+
+_**Challenges:**_
+ 
+ - _**Checking and removing unwanted variation** so that we do not have cells clustering by artifacts downstream_
+ - _**Aligning cells of similar cell types** so that we do not have cell-type specific clustering downstream_
+
+_**Recommendations:**_
+ 
+ - _Have a good idea of your expectations for the **cell types to be present** prior to performing the clustering. Know whether you expect cell types of low complexity or higher mitochondrial content AND whether the cells are differentiating_
+ - _**Regress out** number of UMIs (default using sctransform), mitochondrial content, and cell cycle, if needed and appropriate for experiment, so not to drive clustering downstream_
+ 
+***
+
+## Clustering workflow
+
+For something to be informative, it needs to exhibit variation, but not all variation is informative. The goal of our clustering analysis is to keep the major sources of variation in our dataset that should define our cell types (in addition to batches, cell cycle, etc.), while restricting the variation due to uninteresting sources of variation (noise).
+
+Therefore, to determine the cell types present, we are going to perform a clustering analysis using the most variable genes to define the major sources of variation in the dataset. Since we have two conditions, `Control` and `Stimulated`, we will work through the workflow for the `Control` sample to determine the cell types present, then integrate with the `Stimulated` to identify the cell types present in both of the samples. 
+
+The workflow for this analysis is adapted from the following sources:
+
+- Satija Lab: [Seurat v3 Guided Integration Tutorial](https://satijalab.org/seurat/v3.0/immune_alignment.html)
+- Paul Hoffman: [Cell-Cycle Scoring and Regression](http://satijalab.org/seurat/cell_cycle_vignette.html)
+
+To identify clusters, the following steps will be performed:
+
+1. **Normalization**, **variance stabilization**, and **regression of unwanted variation** (e.g. mitochondrial transcript abundance, cell cycle phase, etc.) for each sample
+2. **Integration** of the samples using shared highly variable genes (optional, but recommended to align cells from different samples/conditions if cell types are separating by sample/condition)
+3. **Clustering cells** based on top PCs (metagenes)
+4. Exploration of **quality control metrics**: determine whether clusters unbalanced wrt UMIs, genes, cell cycle, mitochondrial content, samples, etc.
+5. Searching for expected cell types using **known cell type-specific gene markers**
+
+## Set-up
+
+To perform this analysis, we will be mainly using functions available in the Seurat package. Therefore, we need to load the Seurat library in addition to the tidyverse library, if not already loaded. Create the script `clustering_analysis.R` and load the libraries:
+
+```r
+# Single-cell RNA-seq analysis - clustering analysis
+
+# Load libraries
+library(Seurat)
+library(tidyverse)
+library(RCurl)
+library(AnnotationHub)
+library(ensembldb)
+```
+
+To perform the analysis, Seurat requires the data to be present as a `seurat` object. We have created this object in the QC lesson, so we can use that and just reassign it to a new variable name:
+
+```r
+# Create new object - we don't want to accidentally delete 
+seurat_raw <- clean_seurat
+```
+
+To perform clustering of our data, we must identify the sources of variation present in our data based on the most variable genes. The assumption being that the most variable genes will determine the principal components (PCs) distinguishing the differences between cell types. After normalization of the expression values, we extract the most variable genes to determine the major sources of variation in the data, or significant PCs.
+
+## **Normalization**, **variance stabilization**, and **regression of unwanted variation** for each sample
+
+The first step in the analysis is to normalize the raw counts to account for differences in sequencing depth per cell **for each sample**. Seurat recently introduced a new method for **normalization and variance stabilization** of scRNA-seq data called _**sctransform**_.
+
+The sctransform method models the UMI counts using a **regularized negative binomial model** to remove the variation due to sequencing depth (total nUMIs per cell), while adjusting the variance based on pooling information across genes with similar abundances (similar to some bulk RNA-seq methods). 
+
+<p align="center">
+<img src="../img/sctransform image?" width="800">
+</p>
+
+The **output of the model** (residuals) is the normalized expression levels for each transcript tested.
+
+Sctransform automatically regresses out sequencing depth (nUMIs); however, there are other sources of uninteresting variation in the data that is often specific to the dataset. For example, for some datasets, cell cycle phase may be a source of significant variation, while for other datasets it isn't. Before you would regress out variation due to cell cycle phase, you would need to check whether cell cycle phase is a major source of variation in the data.
+
+### Cell cycle scoring
+
+It's recommended to check the cell cycle phase before performing the sctranform method. Since the counts need to be comparable between cells and each cell has a different number of total UMIs, we do a rough normalization by dividing by total counts per cell and taking the natural log. This method isn't as accurate as the sctransform method that we will use to identify cell clusters, but it is sufficient to explore sources of variation in our data. 
+
+```r
+# Normalize the counts
+seurat_phase <- NormalizeData(seurat_raw)
+```
+
+Once the data is normalized for sequencing depth, we can assign each cell a score, based on its expression of G2/M and S phase markers. 
+
+We have provided a list of cell cycle markers for human data to download; however, we have [additional materials]() about how to acquire cell cycle markers for other organisms of interest.
+
+```r
+# Load cell cycle markers
+load("data/cycle.rda")
+
+# Score cells for cell cycle
+seurat_phase <- CellCycleScoring(seurat_phase, 
+                                 g2m.features = g2m_genes, 
+                                 s.features = s_genes)
+
+# View cell cycle scores and phases assigned to cells                                 
+View(seurat_phase@meta.data)                                
+```
+
+After scoring the cells for cell cycle, we would like to perform the PCA to determine whether cell cycle is a major source of variation in our dataset using PCA. To perform the PCA, we need to first choose the most variable features, then scale the data to.... To do find the features and scale the data, we can use the `FindVariableFeatures()` and `ScaleData()` functions.
+
+```r
+# Identify the most variable genes
+seurat_phase <- FindVariableFeatures(seurat_phase, 
+                     selection.method = "vst",
+                     nfeatures = 2000, 
+                     verbose = FALSE)
+
+# Scale the counts
+seurat_phase <- ScaleData(seurat_phase)
+```
+ 
+Now, we can perform the PCA analysis and plot the top PCs:
+
+```r
+# Perform PCA
+seurat_phase <- RunPCA(seurat_phase)
+
+# Plot the PCA colored by cell cycle phase
+DimPlot(seurat_phase,
+        reduction = "pca",
+        group.by= "Phase")
+```
+
+<p align="center">
+<img src="../img/pre_phase_pca.png" width="800">
+</p>
+
+We do not see large differences due to cell cycle phase. Based on this plot, we would not regress out the variation due to cell cycle. 
+
+> **NOTE:** Alternatively, we could wait and perform the clustering without regression and see if we have clusters separated by cell cycle phase. If we do, then we could come back and perform the regression.
+
+Now we can use the sctransform method as a more accurate method of normalizing, estimating the variance of the raw filtered data, and identifying the most variable genes. However, to ensure that we can look at the quality metrics for cell cycle downstream, we need to score the cell cycle for every sample (so far we have only done so on a single sample). Then, we can perform the sctransform, while regressing out any uninteresting variation. **By default, sctransform accounts for cellular sequencing depth, or nUMIs.**
+
+We already checked cell cycle and decided that it didn't represent a major source of variation in our data, but mitochondrial expression is another factor which can greatly influence clustering. Oftentimes, it is useful to regress out variation due to mitochondrial expression. However, if the differences in mitochondrial gene expression represent a biological phenomenon that may help to distinguish cell clusters, then we advise not regressing the mitochondrial expression.
+
+We can run a 'for loop' to run the `NormalizeData()`, `CellCycleScoring()`, and `SCTransform()` on each sample, and regress out mitochondrial expression by specifying in the `vars.to.regress` argument of the `SCTransform()` function.
+
+Before we run this `for loop`, we know that the output can generate large R objects/variables in terms of memory. If we have a large dataset, then we might need to adjust the limit for allowable object sizes within R (*Default is 500 * 1024 ^ 2 = 500 Mb*) using the following code:
+
+```r
+options(future.globals.maxSize = 4000 * 1024^2)
+```
+
+Now, to perform the cell cycle scoring and sctransform on all samples:
+
+```r
+# Split seurat object by condition to perform cell cycle scoring and SCT on all samples
+split_seurat <- SplitObject(seurat_raw, split.by = "sample")
+
+split_seurat <- split_seurat[c("ctrl", "stim")]
+
+for (i in 1:length(split_seurat)) {
+    split_seurat[[i]] <- NormalizeData(split_seurat[[i]], verbose = TRUE)
+    split_seurat[[i]] <- CellCycleScoring(split_seurat[[i]], g2m.features=g2m_genes, s.features=s_genes)
+    split_seurat[[i]] <- SCTransform(split_seurat[[i]], vars.to.regress = c("mitoRatio"))
+    }
+```
+
+> _**NOTE:** By default, after normalizing, adjusting the variance, and regressing out uniteresting sources of variation, SCTransform will rank the genes by residual variance and output the 3000 most variant genes. If the dataset has larger cell numbers, then it may be beneficial to adjust this parameter higher using the `variable.features.n` argument._ 
+
+Note, the last line of output specifies "Set default assay to SCT". We can view the different assays that we have stored in our seurat object.
+
+```r
+# Check which assays are stored in objects
+split_seurat$ctrl@assays
+```
+
+Now we can see that in addition to the raw RNA counts, we now have a SCT component in our `assays` slot. The most variable features will be the only genes stored inside the SCT assay. As we move through the scRNA-seq analysis, we will choose the most appropriate assay to use for the different steps in the analysis. 
+
+## **Integrate** samples using shared highly variable genes
+
+_**This step can greatly improve your clustering when you have multiple samples**. It can help to first run samples individually if unsure what clusters to expect, but when clustering the cells from multiple conditions, integration can help ensure the same cell types cluster together._
+
+_Also, it is often a good idea to try to cluster without integration first, and if clusters are sample or condition specific, then that's a good indication that integration should be performed._
+
+Using the shared highly variable genes from each sample identified using SCTransform, we "integrate" or "harmonize" the samples to overlay cells that are similar or have a "common set of biological features" between groups. These groups can represent:
+
+- Different **conditions** (e.g. control and stimulated)
+- Different **datasets** (e.g. scRNA-seq from datasets generated using different library preparation methods on the same samples)
+- Different **modalities** (e.g. scRNA-seq and scATAC-seq)
+
+Integration is a powerful method that uses these shared sources of greatest variation to identify shared subpopulations across conditions or datasets [[Stuart and Bulter et al. (2018)](https://www.biorxiv.org/content/early/2018/11/02/460147)]. The goal of integration is to ensure that the celltypes of one condition/dataset align with the same celltypes of the other conditions/datasets (e.g. control macrophages align with stimulated macrophages).
+
+Specifically, this integration method expects "correspondences" or **shared biological states** among at least a subset of single cells across the groups. The steps in the integration analysis are outlined in the figure below:
+
+
+<p align="center">
+<img src="../img/integration.png" width="600">
+</p>
+
+_**Image credit:** Stuart T and Butler A, et al. Comprehensive integration of single cell data, bioRxiv 2018 (https://doi.org/10.1101/460147)_
+
+The different steps applied are as follows:
+
+1. Perform **canonical correlation analysis (CCA):**
+	
+	CCA identifies shared sources of variation between the conditions/groups. It is a form of PCA, in that it **identifies the greatest sources of variation** in the data, but only if it is **shared or conserved** across the conditions/groups (using the 3000 most variant genes from each sample).
+	
+	This step roughly aligns the cells using the greatest shared sources of variation.
+
+	> _**NOTE:** The shared highly variable genes are used because they are the most likely to represent those genes distinguishing the different cell types present._
+
+2. **Identify anchors** or mutual nearest neighbors (MNNs) across datasets (sometimes incorrect anchors are identified):
+	
+	MNNs can be thought of as 'best buddies'. For each cell in one condition:
+	- The cell's closest neighbor in the other condition is identified based on gene expression values - it's best buddy.
+	- The reciprical analysis is performed, and if the two cells are buddies in both directions, then those cells will be marked as **anchors** to 'anchor' the two datasets together.
+	
+	> "The difference in expression values between cells in an MNN pair provides an estimate of the batch effect, which is made more precise by averaging across many such pairs. A correction vector is obtained and applied to the expression values to perform batch correction." [[Stuart and Bulter et al. (2018)](https://www.biorxiv.org/content/early/2018/11/02/460147)]. 
+
+3. **Filter anchors** to remove incorrect anchors:
+	
+	Assess the similarity between anchor pairs by the overlap in their local neighborhoods (incorrect anchors will have low scores) - do the adjacent cells have best buddies that are adjacent to each other?
+
+4. **Integrate** the condtions/datasets:
+
+	Use anchors and corresponding scores to transform the cell expression values, allowing for the integration of the datasets (different samples, datasets, modalities)
+
+	> _**NOTE:** Transformation of each cell uses a weighted average of the two cells of each anchor across anchors of the datasets. Weights determined by cell similarity score (distance between cell and k nearest anchors) and anchor scores, so cells in the same neighborhood should have similar correction values._
+
+	**If cell types are present in one dataset, but not the other, then the cells will still appear as a separate sample-specific cluster.**
+
+
+Now, using our SCTransform object as input, let's perform the integration across conditions.
+
+First, we need to specify that we want to use all of the 3000 most variable genes identified by SCTransform for the integration. By default, this function only selects the top 2000 genes.
+
+```r
+# Select the most variable features to use for integration
+integ_features <- SelectIntegrationFeatures(object.list = split_seurat, 
+                                            nfeatures = 3000) 
+```
+
+Then, we need to prepare the SCTransform object for integration.
+
+```r                                          
+# Prepare the SCT list object for integration
+split_seurat <- PrepSCTIntegration(object.list = split_seurat, 
+                                   anchor.features = integ_features)
+```
+
+Now, we are going to find the best buddies or anchors and filter incorrect anchors.
+
+```r
+# Find best buddies - can take a while to run
+integ_anchors <- FindIntegrationAnchors(object.list = split_seurat, 
+                                        normalization.method = "SCT", 
+                                        anchor.features = integ_features)
+```
+
+Finally, we can integrate across conditions.
+
+```r
+# Integrate across conditions
+seurat_integrated <- IntegrateData(anchorset = integ_anchors, 
+                                   normalization.method = "SCT")
+```
+
+This would often be a good place to save the R object.
+
+```r
+# Save integrated seurat object
+saveRDS(seurat_integrated, "results/integrated_seurat.rds")
+```
+
+After integration, to visualize the integrated data we can use dimensionality reduction techniques, such as PCA and Uniform Manifold Approximation and Projection (UMAP). While PCA will determine all PCs, we can only plot two at a time. In contrast, UMAP will take the information from any number of top PCs to arrange the cells in this multidimensional space. It will take those distances in multidimensional space, and try to plot them in two dimensions. In this way, the distances between cells represent similarity in expression.
+
+To generate these visualizations we need to first run PCA and UMAP methods. Let's start with PCA.
+
+```r
+# Run PCA
+seurat_control <- RunPCA(object = seurat_control)
+
+# Plot PCA
+PCAPlot(seurat_integrated)
+```
+
+<p align="center">
+<img src="../img/integrated_pca.png" width="600">
+</p>
+
+We can see with the PCA mapping that we have a good overlay of both conditions by PCA. 
+
+Now, we can also visualize with UMAP. Let's run the method and plot.
+
+```r
+# Run UMAP
+seurat_integrated <- RunUMAP(seurat_integrated, 
+                             dims = 1:40)
+
+# Plot UMAP                             
+DimPlot(seurat_integrated)                             
+```
+
+<p align="center">
+<img src="../img/integrated_umap.png" width="600">
+</p>
+
+Again, we see good alignment of the two conditions using both methods. Sometimes it's easier to see whether all of the cells align well if we split the plotting between conditions, which we can do by adding the `split.by` argument to the `DimPlot()` function:
+
+```r
+DimPlot(seurat_integrated,
+        split.by = "sample")  
+```
+
+<p align="center">
+<img src="../img/integrated_umap_split.png" width="600">
+</p>
+
+
+[Click here for next lesson]()
+
+***
+
+*This lesson has been developed by members of the teaching team at the [Harvard Chan Bioinformatics Core (HBC)](http://bioinformatics.sph.harvard.edu/). These are open access materials distributed under the terms of the [Creative Commons Attribution license](https://creativecommons.org/licenses/by/4.0/) (CC BY 4.0), which permits unrestricted use, distribution, and reproduction in any medium, provided the original author and source are credited.*
+
+* *A portion of these materials and hands-on activities were adapted from the [Satija Lab's](https://satijalab.org/) [Seurat - Guided Clustering Tutorial](https://satijalab.org/seurat/pbmc3k_tutorial.html)*
