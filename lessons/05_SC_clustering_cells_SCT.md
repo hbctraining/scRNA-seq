@@ -98,7 +98,7 @@ The sctransform method models the UMI counts using a **regularized negative bino
 
 The **output of the model** (residuals) is the normalized expression levels for each transcript tested.
 
-Sctransform automatically adjusts for sequencing depth (nUMIs); however, there are other sources of uninteresting variation in the data that is often specific to the dataset. For example, for some datasets, cell cycle phase may be a source of significant variation, while for other datasets it isn't. Before you would regress out variation due to cell cycle phase, you would need to check whether cell cycle phase is a major source of variation in the data.
+Sctransform automatically regresses out sequencing depth (nUMIs); however, there are other sources of uninteresting variation in the data that is often specific to the dataset. For example, for some datasets, cell cycle phase may be a source of significant variation, while for other datasets it isn't. Before you would regress out variation due to cell cycle phase, you would need to check whether cell cycle phase is a major source of variation in the data.
 
 ### Cell cycle scoring
 
@@ -199,22 +199,20 @@ Now we can see that in addition to the raw RNA counts, we now have a SCT compone
 
 ## **Integrate** samples using shared highly variable genes
 
-_**This step can greatly improve your clustering when you have multiple samples**. It can help to first run samples individually if unsure what clusters to expect, but when clustering the cells from multiple conditions, integration can help ensure the same cell types cluster together._ Often it is a good idea to try to cluster without integration first, and if clusters are sample or condition specific, then that's a good indication that integration should be performed.
+_**This step can greatly improve your clustering when you have multiple samples**. It can help to first run samples individually if unsure what clusters to expect, but when clustering the cells from multiple conditions, integration can help ensure the same cell types cluster together._
 
-Using the shared highly variable genes from each sample, we integrate the samples to overlay cells that are similar or have a "common set of biological features". The process of integration uses canonical correlation analysis (CCA) and mutual nearest neighbors (MNN) methods to identify shared subpopulations across samples or datasets [[Stuart and Bulter et al. (2018)](https://www.biorxiv.org/content/early/2018/11/02/460147)]. 
+_Also, it is often a good idea to try to cluster without integration first, and if clusters are sample or condition specific, then that's a good indication that integration should be performed._
 
-Specifically, this integration method expects "correspondences" or **shared biological states** among at least a subset of single cells across the samples. The steps applied are as follows:
+Using the shared highly variable genes from each sample identified using SCTransform, we "integrate" or "harmonize" the samples to overlay cells that are similar or have a "common set of biological features" between groups. These groups can represent:
 
-1. Canonical correlation analysis (CCA) is performed, which uses **shared highly variable genes** to reduce the dimensionality of the data and align the cells in each sample into the maximally correlated space (based on sets of genes exhibiting robust correlation in expression). **Shared highly variable genes are most likely to represent those genes distinguishing the different cell types present.**
-2. Identify mutual nearest neighbors (MNNs), or 'anchors' across datasets (sometimes incorrect anchors are identified)
-	
-	> MNNs identify the cells that are most similar to each other across samples or conditions. "The difference in expression values between cells in an MNN pair provides an estimate of the batch effect, which is made more precise by averaging across many such pairs. A correction vector is obtained from the estimated batch effect and applied to the expression values to perform batch correction. Our approach automatically identifies overlaps in population composition between batches and uses only the overlapping subsets for correction, thus avoiding the assumption of equal composition required by other methods." [[Stuart and Bulter et al. (2018)](https://www.biorxiv.org/content/early/2018/11/02/460147)]. 
+- Different **conditions** (e.g. control and stimulated)
+- Different **datasets** (e.g. scRNA-seq from datasets generated using different library preparation methods on the same samples)
+- Different **modalities** (e.g. scRNA-seq and scATAC-seq)
 
-3. Assess the similarity between anchor pairs by the overlap in their local neighborhoods (incorrect anchors will have low scores)
-4. Use anchors and corresponding scores to transform cell expression values, allowing for the integration of the datasets (different samples, datasets, modalities)
-	- Transformation of each cell uses a weighted average of the two cells of each anchor across anchors of the datasets. Weights determined by cell similarity score (distance between cell and k nearest anchors) and anchor scores, so cells in the same neighborhood should have similar correction values.
+Integration is a powerful method that uses these shared sources of greatest variation to identify shared subpopulations across conditions or datasets [[Stuart and Bulter et al. (2018)](https://www.biorxiv.org/content/early/2018/11/02/460147)]. The goal of integration is to ensure that the celltypes of one condition/dataset align with the same celltypes of the other conditions/datasets (e.g. control macrophages align with stimulated macrophages).
 
-If cell types are present in one dataset, but not the other, then the cells will still appear as a separate sample-specific cluster.
+Specifically, this integration method expects "correspondences" or **shared biological states** among at least a subset of single cells across the groups. The steps in the integration analysis are outlined in the figure below:
+
 
 <p align="center">
 <img src="../img/integration.png" width="600">
@@ -222,20 +220,36 @@ If cell types are present in one dataset, but not the other, then the cells will
 
 _**Image credit:** Stuart T and Butler A, et al. Comprehensive integration of single cell data, bioRxiv 2018 (https://doi.org/10.1101/460147)_
 
-To perform the integration it is necessary to specify the number of dimensions or correlated components (CCs) to use. 
+The different steps applied are as follows:
 
-> In CCA "the canonical correlation vectors...capture correlated gene modules that are present in both datasets, representing genes that define a shared biological state. In contrast, PCA will identify sources of variation even if they are only present in an individual experiment."
+1. Perform **canonical correlation analysis (CCA):**
+	
+	CCA identifies shared sources of variation between the conditions/groups. It is a form of PCA, in that it **identifies the greatest sources of variation** in the data, but only if it is **shared or conserved** across the conditions/groups (using the 3000 most variant genes from each sample).
+	
+	This step roughly aligns the cells using the greatest shared sources of variation.
 
+	> _**NOTE:** The shared highly variable genes are used because they are the most likely to represent those genes distinguishing the different cell types present._
 
+2. **Identify anchors** or mutual nearest neighbors (MNNs) across datasets (sometimes incorrect anchors are identified):
+	
+	MNNs can be thought of as 'best buddies'. For each cell in one condition:
+	- The cell's closest neighbor in the other condition is identified based on gene expression values - it's best buddy.
+	- The reciprical analysis is performed, and if the two cells are buddies in both directions, then those cells will be marked as **anchors** to 'anchor' the two datasets together.
+	
+	> "The difference in expression values between cells in an MNN pair provides an estimate of the batch effect, which is made more precise by averaging across many such pairs. A correction vector is obtained and applied to the expression values to perform batch correction." [[Stuart and Bulter et al. (2018)](https://www.biorxiv.org/content/early/2018/11/02/460147)]. 
 
+3. **Filter anchors** to remove incorrect anchors:
+	
+	Assess the similarity between anchor pairs by the overlap in their local neighborhoods (incorrect anchors will have low scores) - do the adjacent cells have best buddies that are adjacent to each other?
 
+4. **Integrate** the condtions/datasets:
 
+	Use anchors and corresponding scores to transform the cell expression values, allowing for the integration of the datasets (different samples, datasets, modalities)
 
+	> _**NOTE:** Transformation of each cell uses a weighted average of the two cells of each anchor across anchors of the datasets. Weights determined by cell similarity score (distance between cell and k nearest anchors) and anchor scores, so cells in the same neighborhood should have similar correction values._
 
+	**If cell types are present in one dataset, but not the other, then the cells will still appear as a separate sample-specific cluster.**
 
-
-
-The next step in the analysis is integration. Integration is performed to align cells most similar in expression between samplegroups. The goal of integration is to ensure that the celltypes of one samplegroup cluster together with the same celltypes of the other samplegroups (e.g. control macrophages cluster together with stimulated macrophages).
 
 After integration, we can check whether the cells segregate by cell cycle phase and mitochondrial expression again. We see below that the cell cycle clusters together less than previously; however, we still see some segregation. This is likely due to the cell types present, but we will keep an eye on this when we look at the clustering QC.
 
