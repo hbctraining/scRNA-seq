@@ -106,7 +106,7 @@ It's recommended to check the cell cycle phase before performing the sctranform 
 
 ```r
 # Normalize the counts
-seurat_phase <- NormalizeData(pre_regressed_seurat)
+seurat_phase <- NormalizeData(seurat_raw)
 ```
 
 Once the data is normalized for sequencing depth, we can assign each cell a score, based on its expression of G2/M and S phase markers. 
@@ -115,12 +115,31 @@ We have provided a list of cell cycle markers for human data to download; howeve
 
 ```r
 # Load cell cycle markers
-load(cycle.rda)
+load("data/cycle.rda")
 
 # Score cells for cell cycle
-seurat_phase <- CellCycleScoring(seurat_phase, g2m.features = g2m_genes, s.features = s_genes))
+seurat_phase <- CellCycleScoring(seurat_phase, 
+                                 g2m.features = g2m_genes, 
+                                 s.features = s_genes)
+
+# View cell cycle scores and phases assigned to cells                                 
+View(seurat_phase@meta.data)                                
 ```
-After scoring the cells for cell cycle, we can perform the PCA analysis and plot the top PCs:
+
+After scoring the cells for cell cycle, we would like to perform the PCA to determine whether cell cycle is a major source of variation in our dataset using PCA. To perform the PCA, we need to first choose the most variable features, then scale the data to.... To do find the features and scale the data, we can use the `FindVariableFeatures()` and `ScaleData()` functions.
+
+```r
+# Identify the most variable genes
+seurat_phase <- FindVariableFeatures(seurat_phase, 
+                     selection.method = "vst",
+                     nfeatures = 2000, 
+                     verbose = FALSE)
+
+# Scale the counts
+seurat_phase <- ScaleData(seurat_phase)
+```
+ 
+Now, we can perform the PCA analysis and plot the top PCs:
 
 ```r
 # Perform PCA
@@ -136,23 +155,95 @@ DimPlot(seurat_phase,
 <img src="../img/pre_phase_pca.png" width="800">
 </p>
 
-We do see differences on PC1, with the G1 cells to the left of the other cells on PC1. Based on this plot, we would regress out the variation due to cell cycle. 
+We do not see large differences due to cell cycle phase. Based on this plot, we would not regress out the variation due to cell cycle. 
 
 > **NOTE:** Alternatively, we could wait and perform the clustering without regression and see if we have clusters separated by cell cycle phase. If we do, then we could come back and perform the regression.
 
-Now we can use the sctransform method to normalize the raw filtered data. To perform the sctransform and regress out cell cycle variation, we need to perform cell cycle scoring on all samples. We can run a 'for loop' to run the `NormalizeData()`, `CellCycleScoring()`, and `SCTransform()` on each sample, and regress out cell cycle variation by specifying in the `vars.to.regress` argument of the `SCTransform()` function.
+Now we can use the sctransform method as a more accurate method of normalizing, estimating the variance of the raw filtered data, and identifying the most variable genes. However, to ensure that we can look at the quality metrics for cell cycle downstream, we need to score the cell cycle for every sample (so far we have only done so on a single sample). Then, we can perform the sctransform, while regressing out any uninteresting variation. **By default, sctransform accounts for cellular sequencing depth, or nUMIs.**
+
+We already checked cell cycle and decided that it didn't represent a major source of variation in our data, but mitochondrial expression is another factor which can greatly influence clustering. Oftentimes, it is useful to regress out variation due to mitochondrial expression. However, if the differences in mitochondrial gene expression represent a biological phenomenon that may help to distinguish cell clusters, then we advise not regressing the mitochondrial expression.
+
+We can run a 'for loop' to run the `NormalizeData()`, `CellCycleScoring()`, and `SCTransform()` on each sample, and regress out mitochondrial expression by specifying in the `vars.to.regress` argument of the `SCTransform()` function.
+
+Before we run this `for loop`, we know that the output can generate large R objects/variables in terms of memory. If we have a large dataset, then we might need to adjust the limit for allowable object sizes within R (*Default is 500 * 1024 ^ 2 = 500 Mb*) using the following code:
 
 ```r
-
+options(future.globals.maxSize = 4000 * 1024^2)
 ```
 
+Now, to perform the cell cycle scoring and sctransform on all samples:
+
+```r
+# Split seurat object by condition to perform cell cycle scoring and SCT on all samples
+split_seurat <- SplitObject(seurat_raw, split.by = "sample")
+
+split_seurat <- split_seurat[c("ctrl", "stim")]
+
+for (i in 1:length(split_seurat)) {
+    split_seurat[[i]] <- NormalizeData(split_seurat[[i]], verbose = TRUE)
+    split_seurat[[i]] <- CellCycleScoring(split_seurat[[i]], g2m.features=g2m_genes, s.features=s_genes)
+    split_seurat[[i]] <- SCTransform(split_seurat[[i]], vars.to.regress = c("mitoRatio"))
+    }
+```
+
+> _**NOTE:** By default, after normalizing, adjusting the variance, and regressing out uniteresting sources of variation, SCTransform will rank the genes by residual variance and output the 3000 most variant genes. If the dataset has larger cell numbers, then it may be beneficial to adjust this parameter higher using the `variable.features.n` argument._ 
+
+Note, the last line of output specifies "Set default assay to SCT". We can view the different assays that we have stored in our seurat object.
+
+```r
+# Check which assays are stored in objects
+split_seurat$ctrl@assays
+```
+
+Now we can see that in addition to the raw RNA counts, we now have a SCT component in our `assays` slot. The most variable features will be the only genes stored inside the SCT assay. As we move through the scRNA-seq analysis, we will choose the most appropriate assay to use for the different steps in the analysis. 
+
+## **Integrate** samples using shared highly variable genes
+
+_**This step can greatly improve your clustering when you have multiple samples**. It can help to first run samples individually if unsure what clusters to expect, but when clustering the cells from multiple conditions, integration can help ensure the same cell types cluster together._ Often it is a good idea to try to cluster without integration first, and if clusters are sample or condition specific, then that's a good indication that integration should be performed.
+
+Using the shared highly variable genes from each sample, we integrate the samples to overlay cells that are similar or have a "common set of biological features". The process of integration uses canonical correlation analysis (CCA) and mutual nearest neighbors (MNN) methods to identify shared subpopulations across samples or datasets [[Stuart and Bulter et al. (2018)](https://www.biorxiv.org/content/early/2018/11/02/460147)]. 
+
+Specifically, this integration method expects "correspondences" or **shared biological states** among at least a subset of single cells across the samples. The steps applied are as follows:
+
+1. Canonical correlation analysis (CCA) is performed, which uses **shared highly variable genes** to reduce the dimensionality of the data and align the cells in each sample into the maximally correlated space (based on sets of genes exhibiting robust correlation in expression). **Shared highly variable genes are most likely to represent those genes distinguishing the different cell types present.**
+2. Identify mutual nearest neighbors (MNNs), or 'anchors' across datasets (sometimes incorrect anchors are identified)
+	
+	> MNNs identify the cells that are most similar to each other across samples or conditions. "The difference in expression values between cells in an MNN pair provides an estimate of the batch effect, which is made more precise by averaging across many such pairs. A correction vector is obtained from the estimated batch effect and applied to the expression values to perform batch correction. Our approach automatically identifies overlaps in population composition between batches and uses only the overlapping subsets for correction, thus avoiding the assumption of equal composition required by other methods." [[Stuart and Bulter et al. (2018)](https://www.biorxiv.org/content/early/2018/11/02/460147)]. 
+
+3. Assess the similarity between anchor pairs by the overlap in their local neighborhoods (incorrect anchors will have low scores)
+4. Use anchors and corresponding scores to transform cell expression values, allowing for the integration of the datasets (different samples, datasets, modalities)
+	- Transformation of each cell uses a weighted average of the two cells of each anchor across anchors of the datasets. Weights determined by cell similarity score (distance between cell and k nearest anchors) and anchor scores, so cells in the same neighborhood should have similar correction values.
+
+If cell types are present in one dataset, but not the other, then the cells will still appear as a separate sample-specific cluster.
+
+<p align="center">
+<img src="../img/integration.png" width="600">
+</p>
+
+_**Image credit:** Stuart T and Butler A, et al. Comprehensive integration of single cell data, bioRxiv 2018 (https://doi.org/10.1101/460147)_
+
+To perform the integration it is necessary to specify the number of dimensions or correlated components (CCs) to use. 
+
+> In CCA "the canonical correlation vectors...capture correlated gene modules that are present in both datasets, representing genes that define a shared biological state. In contrast, PCA will identify sources of variation even if they are only present in an individual experiment."
+
+
+
+
+
+
+
+
+
+
+The next step in the analysis is integration. Integration is performed to align cells most similar in expression between samplegroups. The goal of integration is to ensure that the celltypes of one samplegroup cluster together with the same celltypes of the other samplegroups (e.g. control macrophages cluster together with stimulated macrophages).
+
+After integration, we can check whether the cells segregate by cell cycle phase and mitochondrial expression again. We see below that the cell cycle clusters together less than previously; however, we still see some segregation. This is likely due to the cell types present, but we will keep an eye on this when we look at the clustering QC.
 
 ### Apply regression variables
 
 **Regressing variation due to uninteresting sources can improve downstream identification of principal components and clustering.** To mitigate the effects of these signals, Seurat constructs linear models to predict gene expression based on the variables to regress.
 
-We generally recommend regressing out **number of UMIs, mitochondrial ratio, and possibly cell cycle** if needed, as a standard first-pass approach. However, if the differences in mitochondrial gene expression represent a biological phenomenon that may help to distinguish cell clusters, then we advise not regressing the mitochondrial expression.
-
+We generally recommend regressing out **number of UMIs, mitochondrial ratio, and possibly cell cycle** if needed, as a standard first-pass approach. 
 When regressing out the effects of cell-cycle variation, include S-phase score and G2M-phase score for regression.
 
 > **NOTE:** If using the `sctransform` tool, there is no need to regress out number of UMIs as it is corrected for in the function.
