@@ -260,6 +260,8 @@ We can continue our `for loop` by:
 - Using the `Read10X()` function. We need to specify the path to the file, so we will prepend the `data/` directory to our sample folder name using the `paste0()` function.
 
 ```r
+## DO NOT RUN
+
 # Create each individual Seurat object
 for (file in c("ctrl_raw_feature_bc_matrix", "stim_raw_feature_bc_matrix")){
         seurat_data <- Read10X(data.dir = paste0("data/", file))
