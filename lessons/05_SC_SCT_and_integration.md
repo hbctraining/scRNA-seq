@@ -267,7 +267,7 @@ integ_features <- SelectIntegrationFeatures(object.list = split_seurat,
                                             nfeatures = 3000) 
 ```
 
-Then, we need to prepare the SCTransform object for integration.
+Then, we need to **prepare the SCTransform object** for integration.
 
 ```r                                          
 # Prepare the SCT list object for integration
@@ -275,7 +275,7 @@ split_seurat <- PrepSCTIntegration(object.list = split_seurat,
                                    anchor.features = integ_features)
 ```
 
-Now, we are going to find the best buddies or anchors and filter incorrect anchors.
+Now, we are going to **find the best buddies or anchors and filter incorrect anchors**. For our dataset, this will take up to 15 minutes to run. Also note that the progress bar in your console will stay at 0%, but know that it is actually running.
 
 ```r
 # Find best buddies - can take a while to run
@@ -284,7 +284,7 @@ integ_anchors <- FindIntegrationAnchors(object.list = split_seurat,
                                         anchor.features = integ_features)
 ```
 
-Finally, we can integrate across conditions.
+Finally, we can **integrate across conditions**.
 
 ```r
 # Integrate across conditions
@@ -292,12 +292,14 @@ seurat_integrated <- IntegrateData(anchorset = integ_anchors,
                                    normalization.method = "SCT")
 ```
 
-This would often be a good place to save the R object.
+This would often be a good place to **save the R object**.
 
 ```r
 # Save integrated seurat object
 saveRDS(seurat_integrated, "results/integrated_seurat.rds")
 ```
+
+### UMAP visualization
 
 After integration, to visualize the integrated data we can use dimensionality reduction techniques, such as PCA and Uniform Manifold Approximation and Projection (UMAP). While PCA will determine all PCs, we can only plot two at a time. In contrast, UMAP will take the information from any number of top PCs to arrange the cells in this multidimensional space. It will take those distances in multidimensional space, and try to plot them in two dimensions. In this way, the distances between cells represent similarity in expression.
 
@@ -305,7 +307,7 @@ To generate these visualizations we need to first run PCA and UMAP methods. Let'
 
 ```r
 # Run PCA
-seurat_control <- RunPCA(object = seurat_control)
+seurat_ integrated <- RunPCA(object = seurat_seurat_integrated)
 
 # Plot PCA
 PCAPlot(seurat_integrated)
@@ -332,7 +334,7 @@ DimPlot(seurat_integrated)
 <img src="../img/integrated_umap.png" width="600">
 </p>
 
-Again, we see good alignment of the two conditions using both methods. Sometimes it's easier to see whether all of the cells align well if we split the plotting between conditions, which we can do by adding the `split.by` argument to the `DimPlot()` function:
+Again, we see good alignment of the two conditions using both methods. Sometimes it's easier to see whether all of the cells align well if we **split the plotting between conditions**, which we can do by adding the `split.by` argument to the `DimPlot()` function:
 
 ```r
 DimPlot(seurat_integrated,
