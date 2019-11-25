@@ -310,7 +310,8 @@ To generate these visualizations we need to first run PCA and UMAP methods. Let'
 seurat_integrated <- RunPCA(object = seurat_integrated)
 
 # Plot PCA
-PCAPlot(seurat_integrated)
+PCAPlot(seurat_integrated,
+        split.by = "sample")  
 ```
 
 <p align="center">
@@ -342,7 +343,7 @@ DimPlot(seurat_integrated,
 ```
 
 <p align="center">
-<img src="../img/SC_umap_split.png" width="600">
+<img src="../img/SC_umap_split_int.png" width="600">
 </p>
 
 
