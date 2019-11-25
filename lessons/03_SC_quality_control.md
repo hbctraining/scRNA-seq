@@ -319,8 +319,7 @@ keep_genes <- rowSums(as.matrix(nonzero)) >= 10
 filtered_counts <- counts[keep_genes, ]
 
 # Create a new Seurat object
-clean_seurat <- CreateSeuratObject(filtered_counts, meta.data = filtered_seurat@meta.data)
-
+seurat_raw <- CreateSeuratObject(filtered_counts, meta.data = filtered_seurat@meta.data)
 ```
 
 ## Re-assess QC metrics
@@ -335,7 +334,7 @@ After performing the filtering, it's recommended to look back over the metrics t
 
 	```r
 	# Save filtered subset to new metadata
-	metadata_clean <- clean_seurat@meta.data
+	metadata_clean <- seurat_raw@meta.data
 	```
 
 2. Perform all of the same plots as with the unfiltered data and determine whether the thresholds used were appropriate.
@@ -348,7 +347,7 @@ Based on these QC metrics we would identify any failed samples and move forward 
 
 ```r
 # Create .RData object to load at any time
-save(clean_seurat, file="data/clean_seurat.RData")
+save(seurat_raw, file="data/seurat_raw.RData")
 
 ```
 
