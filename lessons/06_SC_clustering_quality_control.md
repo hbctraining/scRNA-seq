@@ -51,7 +51,7 @@ We can start by exploring the distribution of cells per cluster:
 
 ```r
 # Extract identity and sample information from seurat object to determine the number of cells per cluster per sample
-n_cells <- FetchData(seurat_control, 
+n_cells <- FetchData(seurat_integrated, 
                      vars = c("ident")) %>% 
         dplyr::count(ident) %>% 
         spread(ident, n)
@@ -73,11 +73,11 @@ First we will acquire the cell cycle and UMAP coordinate information to view by 
 group_by <- c("Phase")
 
 # Getting coordinates for cells to use for UMAP and associated grouping variable information
-class_umap_data <- FetchData(seurat_control, 
+class_umap_data <- FetchData(seurat_integrated, 
                              vars = c("ident", "UMAP_1", "UMAP_2", group_by))
 
 # Adding cluster label to center of cluster on UMAP
-umap_label <- FetchData(seurat_control, 
+umap_label <- FetchData(seurat_integrated, 
                         vars = c("ident", "UMAP_1", "UMAP_2"))  %>%
         group_by(ident) %>%
         summarise(x=mean(UMAP_1), y=mean(UMAP_2))
@@ -85,13 +85,13 @@ umap_label <- FetchData(seurat_control,
 
 > **NOTE:** How did we know in the `FetchData()` function to include `UMAP_1` to obtain the UMAP coordinates? The [Seurat cheatsheet](https://satijalab.org/seurat/essential_commands.html) describes the function as being able to pull any data from the expression matrices, cell embeddings, or metadata. 
 > 
-> For instance, if you explore the `seurat_control@reductions` list object, the first component is for PCA, and includes a slot for `cell.embeddings`. We can use the column names (`PC_1`, `PC_2`, `PC_3`, etc.) to pull out the coordinates or PC scores corresponding to each cell for each of the PCs. 
+> For instance, if you explore the `seurat_integrated@reductions` list object, the first component is for PCA, and includes a slot for `cell.embeddings`. We can use the column names (`PC_1`, `PC_2`, `PC_3`, etc.) to pull out the coordinates or PC scores corresponding to each cell for each of the PCs. 
 > 
 > We could do the same thing for UMAP:
 > 
 > ```r
 > # Extract the UMAP coordinates for the first 10 cells
-> seurat_control@reductions$umap@cell.embeddings[1:10, 1:2]
+> seurat_integrated@reductions$umap@cell.embeddings[1:10, 1:2]
 >```
 >
 > The `FetchData()` function just allows us to extract the data more easily.
@@ -101,11 +101,11 @@ In addition, we can acquire the same metrics to view by PCA:
 
 ```r
 # Getting coordinates for cells to use for PCA and associated grouping variable information
-class_pca_data <- FetchData(seurat_control, 
+class_pca_data <- FetchData(seurat_integrated, 
                             vars = c("ident", "PC_1", "PC_2", group_by))
 
 # Adding cluster label to center of cluster on PCA
-pca_label <- FetchData(seurat_control, 
+pca_label <- FetchData(seurat_integrated, 
                        vars = c("ident", "PC_1", "PC_2"))  %>%
         mutate(ident = seurat_control@active.ident) %>%
         group_by(ident) %>%
@@ -140,11 +140,11 @@ plot_grid(
 Next we will explore additional metrics, such as the number of UMIs and genes per cell, S-phase and G2M-phase markers, and mitochondrial gene expression by UMAP. 
 
 ```r
-# Determine metrics to plot present in seurat_control@meta.data
+# Determine metrics to plot present in seurat_integrated@meta.data
 metrics <-  c("nUMI", "nGene", "S.Score", "G2M.Score", "mitoRatio")
 
 # Extract the UMAP coordinates for each cell and include information about the metrics to plot
-qc_data <- FetchData(seurat_control, 
+qc_data <- FetchData(seurat_integrated, 
                      vars = c(metrics, "ident", "UMAP_1", "UMAP_2"))
 
 # Plot a UMAP plot for each metric
@@ -173,16 +173,16 @@ We can also explore how well our clusters separate by the different PCs; we hope
 
 ```r
 # Defining the information in the seurat object of interest
-columns <- c(paste0("PC_", 1:14),
+columns <- c(paste0("PC_", 1:40),
             "ident",
             "UMAP_1", "UMAP_2")
 
 # Extracting this data from the seurat object
-pc_data <- FetchData(seurat_control, 
+pc_data <- FetchData(seurat_integrated, 
                      vars = columns)
 
 # Plotting a UMAP plot for each of the PCs
-map(paste0("PC_", 1:14), function(pc){
+map(paste0("PC_", 1:40), function(pc){
         ggplot(pc_data, 
                aes(UMAP_1, UMAP_2)) +
                 geom_point(aes_string(color=pc), 
@@ -205,7 +205,7 @@ We can see how the clusters are represented by the different PCs. For instance, 
 
 ```r
 # Examine PCA results 
-print(seurat_control[["pca"]], dims = 1:5, nfeatures = 5)
+print(seurat_integrated[["pca"]], dims = 1:5, nfeatures = 5)
 ```
 
 <p align="center">
@@ -221,7 +221,7 @@ To truly determine the identity of the clusters and whether the `resolution` is 
 With the cells clustered, we can explore the cell type identities by looking for known markers. The UMAP plot with clusters marked is shown, followed by the different cell types expected.
 
 ```r
-DimPlot(object = seurat_control, 
+DimPlot(object = seurat_integrated, 
         reduction = "umap", 
         label = TRUE)
 ```
@@ -247,14 +247,14 @@ The `FeaturePlot()` function from seurat makes it easy to visualize a handful of
 | Megakaryocytes | PPBP |
 | Erythrocytes | HBB, HBA2 |
 
-Seurat's `FeaturePlot()` function let's us easily explore the known markers on top of our t-SNE or UMAP visualizations. Let's go through and determine the identities of the clusters. 
+Seurat's `FeaturePlot()` function let's us easily explore the known markers on top of our UMAP visualizations. Let's go through and determine the identities of the clusters. 
 
 We are looking for consistency of expression of the markers across the clusters. For example, if there are two markers for a cell type and only one of them is expressed in a cluster - then we cannot reliably assign that cluster to the celltype.
 
 **CD14+ monocyte markers**
 
 ```r
-FeaturePlot(seurat_control, 
+FeaturePlot(seurat_integrated, 
             reduction = "umap", 
             features = c("CD14", "LYZ"))
 ```
@@ -268,7 +268,7 @@ CD14+ monocytes appear to correspond to clusters 0, 8, and 15.
 **FCGR3A+ monocyte markers**
 
 ```r
-FeaturePlot(seurat_control, 
+FeaturePlot(seurat_integrated, 
             reduction = "umap", 
             features = c("FCGR3A", "MS4A7"))
 ```
@@ -282,7 +282,7 @@ FCGR3A+ monocytes markers distinctly highlight cluster 8.
 **Macrophages**
 
 ```r
-FeaturePlot(seurat_control, 
+FeaturePlot(seurat_integrated, 
             reduction = "umap", 
             features = c("MARCO", "ITGAM", "ADGRE1"))
 ```
@@ -296,7 +296,7 @@ No clusters appear to correspond to macrophages; perhaps cell culture conditions
 **Conventional dendritic cell markers**
 
 ```r
-FeaturePlot(seurat_control, 
+FeaturePlot(seurat_integrated, 
             reduction = "umap", 
             features = c("FCER1A", "CST3"))
 ```
@@ -310,7 +310,7 @@ The markers corresponding to conventional dendritic cells identify cluster 12 (b
 **Plasmacytoid dendritic cell markers**
 
 ```r
-FeaturePlot(seurat_control, 
+FeaturePlot(seurat_integrated, 
             reduction = "umap", 
             features = c("IL3RA", "GZMB", "SERPINF1", "ITM2C"))
 ```
@@ -325,16 +325,16 @@ We could test out different resolutions by running the following code:
 
 ```r
 # Assign identity of clusters
-Idents(object = seurat_control) <- "RNA_snn_res.1.2"
+Idents(object = seurat_integrated) <- "RNA_snn_res.1.2"
 
 # Plot the UMAP
-DimPlot(seurat_control,
+DimPlot(seurat_integrated,
         reduction = "umap",
         label = TRUE,
         label.size = 6,
         plot.title = "UMAP")
 
-FeaturePlot(seurat_control, 
+FeaturePlot(seurat_integrated, 
         reduction = "umap", 
         features = c("IL3RA", "GZMB", "SERPINF1", "ITM2C"))
 ```
@@ -343,10 +343,10 @@ Then, we could work our way back through the analysis, starting with the **`Expl
 
 ```r
 # Assign identity of clusters
-Idents(object = seurat_control) <- "RNA_snn_res.0.8"
+Idents(object = seurat_integrated) <- "RNA_snn_res.0.8"
 
 # Plot the UMAP
-DimPlot(seurat_control,
+DimPlot(seurat_integrated,
         reduction = "umap",
         label = TRUE,
         label.size = 6,
@@ -356,7 +356,7 @@ DimPlot(seurat_control,
 **B cell markers**
 
 ```r
-FeaturePlot(seurat_control, 
+FeaturePlot(seurat_integrated, 
             reduction = "umap", 
             features = c("CD79A", "MS4A1"))
 ```
@@ -370,7 +370,7 @@ Clusters 4 and 11 have good expression of the B cell markers.
 **T cell markers**
 
 ```r
-FeaturePlot(seurat_control, 
+FeaturePlot(seurat_integrated, 
             reduction = "umap", 
             features = c("CD3D"))
 ```
@@ -384,7 +384,7 @@ All T cells markers concentrate in clusters 1, 2, 3, 6, 9, 10, 13, and 14.
 **CD4+ T cell markers**
 
 ```r
-FeaturePlot(seurat_control, 
+FeaturePlot(seurat_integrated, 
             reduction = "umap", 
             features = c("CD3D", "IL7R", "CCR7"))
 ```
@@ -398,7 +398,7 @@ The subset of T cells corresponding to the CD4+ T cells are clusters 1, 2, 3, 10
 **CD8+ T cell markers**
 
 ```r
-FeaturePlot(seurat_control, 
+FeaturePlot(seurat_integrated, 
             reduction = "umap", 
             features = c("CD3D", "CD8A"))
 ```
@@ -412,7 +412,7 @@ For CD8+ T cells the only consistent expression for both markers is observed for
 **NK cell markers**
 
 ```r
-FeaturePlot(seurat_control, 
+FeaturePlot(seurat_integrated, 
             reduction = "umap", 
             features = c("GNLY", "NKG7"))
 ```
@@ -426,7 +426,7 @@ The NK cell markers are expressed in cluster 5, 6 and 13.
 **Megakaryocyte markers**
 
 ```r
-FeaturePlot(seurat_control, 
+FeaturePlot(seurat_integrated, 
             reduction = "umap", 
             features = c("PPBP"))
 ```
@@ -440,7 +440,7 @@ The megakaryocyte markers seem to be expressed mainly in cluster 10.
 **Erythrocyte markers**
 
 ```r
-FeaturePlot(seurat_control, 
+FeaturePlot(seurat_integrated, 
             reduction = "umap", 
             features = c("HBB", "HBA2"))
 ```
