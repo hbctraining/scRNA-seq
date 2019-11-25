@@ -172,7 +172,7 @@ Before we run this `for loop`, we know that the output can generate large R obje
 options(future.globals.maxSize = 4000 * 1024^2)
 ```
 
-Now, to **perform the cell cycle scoring and sctransform on all samples**:
+Now, to **perform the cell cycle scoring and sctransform on all samples**. This may take some time (~10 minutes):
 
 ```r
 # Split seurat object by condition to perform cell cycle scoring and SCT on all samples
