@@ -307,7 +307,7 @@ To generate these visualizations we need to first run PCA and UMAP methods. Let'
 
 ```r
 # Run PCA
-seurat_ integrated <- RunPCA(object = seurat_seurat_integrated)
+seurat_integrated <- RunPCA(object = seurat_integrated)
 
 # Plot PCA
 PCAPlot(seurat_integrated)
