@@ -163,7 +163,7 @@ It can be useful to **explore other resolutions as well**. It will give you a qu
 
 ```r
 # Assign identity of clusters
-Idents(object = seurat_integrated) <- "RNA_snn_res.0.4"
+Idents(object = seurat_integrated) <- "integrated_snn_res.0.4"
 
 # Plot the UMAP
 DimPlot(seurat_integrated,
@@ -192,10 +192,10 @@ Using this new R object we will continue with the UMAP method and the 0.8 resolu
 
 ```r
 # Assign identity of clusters
-Idents(object = seurat_control) <- "RNA_snn_res.0.8"
+Idents(object = seurat_integrated) <- "integrated_snn_res.0.8"
 
 # Plot the UMAP
-DimPlot(seurat_control,
+DimPlot(seurat_integrated,
         reduction = "umap",
         label = TRUE,
         label.size = 6,
@@ -203,7 +203,7 @@ DimPlot(seurat_control,
 ```
 
 <p align="center">
-<img src="../img/SC_umap_loadimg.png" width="800">
+<img src="../img/SC_umap.png" width="800">
 </p>
 
 ***
