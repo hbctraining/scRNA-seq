@@ -13,7 +13,6 @@ Approximate time: 90 minutes
 
 # Single-cell RNA-seq clustering analysis
 
-
 Now that we have our high quality cells integrated, we want to know the different cell types present within our population of cells. 
 
 **UPDATE THIS WORKFLOW IMAGE!**
@@ -78,11 +77,9 @@ We only specified 10 dimensions, but we could easily include as many as we wish 
 <img src="../img/PC_print.png" width="400">
 </p>
 
-The elbow plot is helpful when determining how many PCs we need to capture the majority of the variation in the data. The elbow plot visualizes the standard deviation of each PC. Where the elbow appears is usually the threshold for identifying the majority of the variation. However, this method can be a bit subjective about where the elbow is located. 
+The **elbow plot** is helpful when determining how many PCs we need to capture the majority of the variation in the data. The elbow plot visualizes the standard deviation of each PC. **Where the elbow appears is usually the threshold for identifying the majority of the variation**. However, this method can be a bit subjective about where the elbow is located. 
 
-The SCTransform method is more accurate than some of the older methods of normalization and identification of variable genes used by Seurat. The older methods incorporated some technical sources of variation into some of the higher PCs, so selection of PCs was more important using these older methods. SCTransform does not exhibit these technical sources of variation as being present in the higher PCs, and the main reason not to use all PCs for the clustering is the computational resources and time that would require. Therefore, we try to capture as much variation as possible within the PCs for clustering. 
-
-We will try the top 40 dimensions:
+We will try the elbow plot using the top 40 dimensions:
 
 ```r
 # Plot the elbow plot
@@ -95,37 +92,12 @@ ElbowPlot(object = seurat_integrated,
 </p>
 
 
-Based on this plot, we could roughly determine the majority of the variation by where the elbow occurs (touches the ground) to be between PC12-PC16. While this gives us a good rough idea of the number of PCs needed to be included, a **more quantitative approach** may be a bit more reliable. We can calculate where the principal components start to elbow by **taking the larger value of**:
+Based on this plot, we could roughly determine the majority of the variation by where the elbow occurs (touches the ground) to be somewhere between PC12-PC16. While this gives us a good rough idea of the number of PCs needed to be included, you can also use a [**more quantitative approach**](lessons/elbow_plot_metric.md) which may be a bit more reliable.  
 
-1. The point where the principal components only contribute 5% of standard deviation and the principal components cumulatively contribute 90% of the standard deviation.
-2. The point where the percent change in variation between the consecutive PCs is less than 0.1%.
+Since the SCTransform method is more accurate than some of the older methods of normalization and identification of variable genes used by Seurat, it is not as imperative to determine the a specific PC value. As long as we choose a PC that is large enough to capture the majority of the variation, we can choose that value and move forward with it. For our analysis, we will use the first **40 PCs** to generate the clusters. 
 
-We will start by calculating the first metric:
-
-```r
-# Determine percent of variation associated with each PC
-pct <- seurat_integrated[["pca"]]@stdev / sum(seurat_integrated[["pca"]]@stdev) * 100
-
-# Calculate cumulative percents for each PC
-cumu <- cumsum(pct)
-
-# Determine which PC exhibits cumulative percent greater than 90% and % variation associated with the PC as less than 5
-co1 <- which(cumu > 90 & pct < 5)[1]
-
-co1
-```
-
-The first metric returns PC86 as the PC matching these requirements. Let's check the second metric, which identifies the PC where the percent change in variation between consecutive PCs is less than 0.1%:
-
-```r
-# Determine the difference between variation of PC and subsequent PC
-co2 <- sort(which((pct[1:length(pct) - 1] - pct[2:length(pct)]) > 0.1), decreasing = T)[1] + 1
-
-# last point where change of % of variation is more than 0.1%.
-co2
-```
-
-This second metric returns PC11. Usually, we would choose the minimum of these two metrics as the PCs covering the majority of the variation in the data. However, since including more PCs may aid our clustering, we will use the first **40 PCs** to generate the clusters. 
+> #### Why is selection of PCs mre important for older methods?
+> The older methods incorporated some technical sources of variation into some of the higher PCs, so selection of PCs was more important. SCTransform does not exhibit these technical sources of variation as being present in the higher PCs. We could in theory use all of the PCs for clustering, but the main reason not to use them is the computational resources and time that would require. 
 
 ### Cluster the cells
 
