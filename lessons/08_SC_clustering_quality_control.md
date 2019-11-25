@@ -331,7 +331,7 @@ We could test out different resolutions by running the following code:
 
 ```r
 # Assign identity of clusters
-Idents(object = seurat_integrated) <- "RNA_snn_res.1.2"
+Idents(object = seurat_integrated) <- "integrated_snn_res.1.2"
 
 # Plot the UMAP
 DimPlot(seurat_integrated,
@@ -349,7 +349,7 @@ Then, we could work our way back through the analysis, starting with the **`Expl
 
 ```r
 # Assign identity of clusters
-Idents(object = seurat_integrated) <- "RNA_snn_res.0.8"
+Idents(object = seurat_integrated) <- "integrated_snn_res.0.8"
 
 # Plot the UMAP
 DimPlot(seurat_integrated,
