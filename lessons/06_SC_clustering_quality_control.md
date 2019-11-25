@@ -167,7 +167,7 @@ map(metrics, function(qc){
 <img src="../img/SC_metrics_umpa_loadObj.png" width="800">
 </p>
 
-The metrics seem to be relatively even across the clusters, with the exception of the `nUMIs` and `nGene` exhibiting higher values in clusters 8 and 12 (and 11 to some extent). We will keep an eye on these clusters to see whether the cell types may explain the increase.
+The metrics seem to be relatively even across the clusters, with the exception of the `nUMIs` and `nGene` exhibiting higher values in clusters. We will keep an eye on these clusters to see whether the cell types may explain the increase.
 
 We can also explore how well our clusters separate by the different PCs; we hope that the defined PCs separate the cell types well. In the UMAP plots below, the cells are colored by their PC score for each respective principal component.
 
@@ -247,9 +247,15 @@ The `FeaturePlot()` function from seurat makes it easy to visualize a handful of
 | Megakaryocytes | PPBP |
 | Erythrocytes | HBB, HBA2 |
 
-Seurat's `FeaturePlot()` function let's us easily explore the known markers on top of our UMAP visualizations. Let's go through and determine the identities of the clusters. 
+Seurat's `FeaturePlot()` function let's us easily explore the known markers on top of our UMAP visualizations. Let's go through and determine the identities of the clusters. To access the expression levels of all genes, rather than just the 3000 most highly variable genes, we can use the normalized count data stored in the `RNA` assay slot.
+
+```r
+# Select the RNA counts slot to be the default assay
+DefaultAssay(seurat_integrated) <- "RNA"
+```
 
 We are looking for consistency of expression of the markers across the clusters. For example, if there are two markers for a cell type and only one of them is expressed in a cluster - then we cannot reliably assign that cluster to the celltype.
+
 
 **CD14+ monocyte markers**
 
