@@ -118,7 +118,11 @@ seurat_phase <- CellCycleScoring(seurat_phase,
 View(seurat_phase@meta.data)                                
 ```
 
-After scoring the cells for cell cycle, we would like to perform the PCA to determine whether cell cycle is a major source of variation in our dataset using PCA. To perform the PCA, we need to first choose the most variable features, then scale the data to.... To do find the features and scale the data, we can use the `FindVariableFeatures()` and `ScaleData()` functions.
+After scoring the cells for cell cycle, we would like to perform the PCA to determine whether cell cycle is a major source of variation in our dataset using PCA. To perform the PCA, we need to **first choose the most variable features, then scale the data**. Since highly expressed genes exhibit the highest amount of variation and we don't want our 'highly variable genes' only to reflect high expression, we need to scale the data to scale variation with expression level. The Seurat `ScaleData()` function will scale the data by:
+
+* adjusting the expression of each gene to give a mean expression across cells to be 0
+* scaling expression of each gene to give a variance across cells to be 1
+
 
 ```r
 # Identify the most variable genes
@@ -126,11 +130,16 @@ seurat_phase <- FindVariableFeatures(seurat_phase,
                      selection.method = "vst",
                      nfeatures = 2000, 
                      verbose = FALSE)
+```
+> **NOTE:** For the `selection.method` and `nfeatures` arguments the values specified are the default settings. Therefore, you do not neccessarily need to include these in your code. We have included it here for transparency and inform you what you are using.	
 
+To find the variable features we can use the `FindVariableFeatures()`function:
+
+```r
 # Scale the counts
 seurat_phase <- ScaleData(seurat_phase)
 ```
- 
+
 Now, we can perform the PCA analysis and plot the top PCs:
 
 ```r
