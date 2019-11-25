@@ -157,19 +157,22 @@ We do not see large differences due to cell cycle phase. Based on this plot, we 
 
 > **NOTE:** Alternatively, we could wait and perform the clustering without regression and see if we have clusters separated by cell cycle phase. If we do, then we could come back and perform the regression.
 
-Now we can use the sctransform method as a more accurate method of normalizing, estimating the variance of the raw filtered data, and identifying the most variable genes. However, to ensure that we can look at the quality metrics for cell cycle downstream, we need to score the cell cycle for every sample (so far we have only done so on a single sample). Then, we can perform the sctransform, while regressing out any uninteresting variation. **By default, sctransform accounts for cellular sequencing depth, or nUMIs.**
+
+### SCTransform
+
+Now we can use the sctransform method as a **more accurate method of normalizing, estimating the variance of the raw filtered data, and identifying the most variable genes**. By default, sctransform accounts for cellular sequencing depth, or nUMIs.
 
 We already checked cell cycle and decided that it didn't represent a major source of variation in our data, but mitochondrial expression is another factor which can greatly influence clustering. Oftentimes, it is useful to regress out variation due to mitochondrial expression. However, if the differences in mitochondrial gene expression represent a biological phenomenon that may help to distinguish cell clusters, then we advise not regressing the mitochondrial expression.
 
-We can run a 'for loop' to run the `NormalizeData()`, `CellCycleScoring()`, and `SCTransform()` on each sample, and regress out mitochondrial expression by specifying in the `vars.to.regress` argument of the `SCTransform()` function.
+We can **use a 'for loop'** to run the `NormalizeData()`, `CellCycleScoring()`, and `SCTransform()` on each sample, and regress out mitochondrial expression by specifying in the `vars.to.regress` argument of the `SCTransform()` function.
 
-Before we run this `for loop`, we know that the output can generate large R objects/variables in terms of memory. If we have a large dataset, then we might need to adjust the limit for allowable object sizes within R (*Default is 500 * 1024 ^ 2 = 500 Mb*) using the following code:
+Before we run this `for loop`, we know that the output can generate large R objects/variables in terms of memory. If we have a large dataset, then we might need to **adjust the limit for allowable object sizes within R** (*Default is 500 * 1024 ^ 2 = 500 Mb*) using the following code:
 
 ```r
 options(future.globals.maxSize = 4000 * 1024^2)
 ```
 
-Now, to perform the cell cycle scoring and sctransform on all samples:
+Now, to **perform the cell cycle scoring and sctransform on all samples**:
 
 ```r
 # Split seurat object by condition to perform cell cycle scoring and SCT on all samples
@@ -184,7 +187,7 @@ for (i in 1:length(split_seurat)) {
     }
 ```
 
-> _**NOTE:** By default, after normalizing, adjusting the variance, and regressing out uniteresting sources of variation, SCTransform will rank the genes by residual variance and output the 3000 most variant genes. If the dataset has larger cell numbers, then it may be beneficial to adjust this parameter higher using the `variable.features.n` argument._ 
+> _**NOTE:** By default, after normalizing, adjusting the variance, and regressing out uninteresting sources of variation, SCTransform will rank the genes by residual variance and output the 3000 most variant genes. If the dataset has larger cell numbers, then it may be beneficial to adjust this parameter higher using the `variable.features.n` argument._ 
 
 Note, the last line of output specifies "Set default assay to SCT". We can view the different assays that we have stored in our seurat object.
 
