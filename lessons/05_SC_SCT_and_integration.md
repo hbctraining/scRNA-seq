@@ -123,22 +123,18 @@ After scoring the cells for cell cycle, we would like to perform the PCA to dete
 * adjusting the expression of each gene to give a mean expression across cells to be 0
 * scaling expression of each gene to give a variance across cells to be 1
 
-
 ```r
 # Identify the most variable genes
 seurat_phase <- FindVariableFeatures(seurat_phase, 
                      selection.method = "vst",
                      nfeatures = 2000, 
                      verbose = FALSE)
-```
-> **NOTE:** For the `selection.method` and `nfeatures` arguments the values specified are the default settings. Therefore, you do not neccessarily need to include these in your code. We have included it here for transparency and inform you what you are using.	
-
-To find the variable features we can use the `FindVariableFeatures()`function:
-
-```r
+		     
 # Scale the counts
 seurat_phase <- ScaleData(seurat_phase)
 ```
+
+> **NOTE:** For the `selection.method` and `nfeatures` arguments the values specified are the default settings. Therefore, you do not neccessarily need to include these in your code. We have included it here for transparency and inform you what you are using.	
 
 Now, we can perform the PCA analysis and plot the top PCs:
 
@@ -149,7 +145,8 @@ seurat_phase <- RunPCA(seurat_phase)
 # Plot the PCA colored by cell cycle phase
 DimPlot(seurat_phase,
         reduction = "pca",
-        group.by= "Phase")
+        group.by= "Phase",
+        split.by = "Phase")
 ```
 
 <p align="center">
