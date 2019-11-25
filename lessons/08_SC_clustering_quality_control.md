@@ -227,7 +227,7 @@ DimPlot(object = seurat_integrated,
 ```
 
 <p align="center">
-<img src="../img/SC_umap_loadimg.png" width="800">
+<img src="../img/SC_umap.png" width="800">
 </p>
 
 
