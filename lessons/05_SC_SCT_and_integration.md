@@ -206,9 +206,14 @@ _Also, it is often a good idea to try to cluster without integration first, and 
 Using the shared highly variable genes from each sample identified using SCTransform, we "integrate" or "harmonize" the samples to overlay cells that are similar or have a "common set of biological features" between groups. These groups can represent:
 
 - Different **conditions** (e.g. control and stimulated)
-- Different **datasets** (e.g. scRNA-seq from datasets generated using different library preparation methods on the same samples)
-- Different **modalities** (e.g. scRNA-seq and scATAC-seq)
+	<img src="../img/seurat_condition_integ.png" width="800">
 
+- Different **datasets** (e.g. scRNA-seq from datasets generated using different library preparation methods on the same samples)
+	<img src="../img/seurat_dataset_integ.png" width="800">
+
+- Different **modalities** (e.g. scRNA-seq and scATAC-seq)
+	<img src="../img/seurat_modality_integ.png" width="800">
+	
 Integration is a powerful method that uses these shared sources of greatest variation to identify shared subpopulations across conditions or datasets [[Stuart and Bulter et al. (2018)](https://www.biorxiv.org/content/early/2018/11/02/460147)]. The goal of integration is to ensure that the celltypes of one condition/dataset align with the same celltypes of the other conditions/datasets (e.g. control macrophages align with stimulated macrophages).
 
 Specifically, this integration method expects "correspondences" or **shared biological states** among at least a subset of single cells across the groups. The steps in the integration analysis are outlined in the figure below:
