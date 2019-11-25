@@ -35,7 +35,7 @@ co1 <- which(cumu > 90 & pct < 5)[1]
 co1
 ```
 
-The first metric returns PC86 as the PC matching these requirements. Let's check the second metric, which identifies the PC where the percent change in variation between consecutive PCs is less than 0.1%:
+The first metric returns PC42 as the PC matching these requirements. Let's check the second metric, which identifies the PC where the percent change in variation between consecutive PCs is less than 0.1%:
 
 ```r
 # Determine the difference between variation of PC and subsequent PC
@@ -45,7 +45,7 @@ co2 <- sort(which((pct[1:length(pct) - 1] - pct[2:length(pct)]) > 0.1), decreasi
 co2
 ```
 
-This second metric returns PC11. Usually, we would choose the minimum of these two metrics as the PCs covering the majority of the variation in the data.
+This second metric returns PC14. Usually, we would choose the minimum of these two metrics as the PCs covering the majority of the variation in the data.
 
 ```r
 # Minimum of the two calculation
@@ -54,7 +54,7 @@ pcs <- min(co1, co2)
 pcs
 ```
 
-Based on these metrics, for the clustering of cells in Seurat we will use the first **eleven PCs** to generate the clusters. We can plot the elbow plot again and overlay the information determined using our metrics:
+Based on these metrics, for the clustering of cells in Seurat we will use the first **fourteen PCs** to generate the clusters. We can plot the elbow plot again and overlay the information determined using our metrics:
 
 ```r
 # Create a dataframe with values
