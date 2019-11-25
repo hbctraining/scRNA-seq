@@ -12,16 +12,13 @@ Approximate time: 90 minutes
 * Perform integration of cells across conditions using the most variant genes to identify cells most similar to each other
 
 
-# Single-cell RNA-seq clustering analysis
+# Single-cell RNA-seq clustering analysis: aligning cells across conditions
 
+Now that we have our high quality cells, we have a few steps before we can cluster cells and identify different potential celltypes. Our dataset has two samples from two different conditions (Control and Stimulated), so it would be helpful to integrate these samples to better make comparisons between them. We will need to **normalize our gene expression values and align our cells across conditions** based on the greatest sources of variation in our dataset. In this lesson, we will discuss in detail, and perform these initial steps prior to clustering.
 
-Now that we have our high quality cells, we want to cluster our cells so that the cells of the same cell type cluster together. 
+**UPDATE THIS WORKFLOW??**
 
 <img src="../img/sc_workflow.png" width="800">
-
-However, in order to perform the clustering, we need to normalize our gene expression values and align our cells across conditions based on the greatest sources of variation in our dataset. 
-
-In this lesson, we perform these initial steps prior to clustering.
 
 ***
 
@@ -62,9 +59,11 @@ To identify clusters, the following steps will be performed:
 4. Exploration of **quality control metrics**: determine whether clusters unbalanced wrt UMIs, genes, cell cycle, mitochondrial content, samples, etc.
 5. Searching for expected cell types using **known cell type-specific gene markers**
 
+**In this lesson, we will cover the first two steps of the clustering workflow.**
+
 ## Set-up
 
-To perform this analysis, we will be mainly using functions available in the Seurat package. Therefore, we need to load the Seurat library in addition to the tidyverse library, if not already loaded. Create the script `clustering_analysis.R` and load the libraries:
+To perform this analysis, we will be mainly using functions available in the Seurat package. Therefore, we need to load the Seurat library in addition to the tidyverse library, if not already loaded. Create the script `SCT_integration_analysis.R` and load the libraries:
 
 ```r
 # Single-cell RNA-seq analysis - clustering analysis
@@ -77,14 +76,7 @@ library(AnnotationHub)
 library(ensembldb)
 ```
 
-To perform the analysis, Seurat requires the data to be present as a `seurat` object. We have created this object in the QC lesson, so we can use that and just reassign it to a new variable name:
-
-```r
-# Create new object - we don't want to accidentally delete 
-seurat_raw <- clean_seurat
-```
-
-To perform clustering of our data, we must identify the sources of variation present in our data based on the most variable genes. The assumption being that the most variable genes will determine the principal components (PCs) distinguishing the differences between cell types. After normalization of the expression values, we extract the most variable genes to determine the major sources of variation in the data, or significant PCs.
+To perform the analysis, Seurat requires the data to be present as a `seurat` object. We have created this object in the QC lesson (`seurat_raw`), so we can just use that. 
 
 ## **Normalization**, **variance stabilization**, and **regression of unwanted variation** for each sample
 
@@ -102,7 +94,7 @@ Sctransform automatically regresses out sequencing depth (nUMIs); however, there
 
 ### Cell cycle scoring
 
-It's recommended to check the cell cycle phase before performing the sctranform method. Since the counts need to be comparable between cells and each cell has a different number of total UMIs, we do a rough normalization by dividing by total counts per cell and taking the natural log. This method isn't as accurate as the sctransform method that we will use to identify cell clusters, but it is sufficient to explore sources of variation in our data. 
+It is **recommended to check the cell cycle phase before performing the sctransform method**. Since the counts need to be comparable between cells and each cell has a different number of total UMIs, we do a rough normalization by dividing by total counts per cell and taking the natural log. This method isn't as accurate as the sctransform method that we will use ultimately to identify cell clusters, but it is sufficient to explore sources of variation in our data. 
 
 ```r
 # Normalize the counts
