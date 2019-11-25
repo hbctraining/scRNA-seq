@@ -76,7 +76,11 @@ We only specified 10 dimensions, but we could easily include as many as we wish 
 <img src="../img/PC_print.png" width="400">
 </p>
 
-The elbow plot is helpful when determining whether the PCs . The elbow plot visualizes the standard deviation of each PC, and where the elbow appears is usually the threshold for identifying the significant PCs. However, this method can be a bit subjective about where the elbow is located.
+The elbow plot is helpful when determining how many PCs we need to capture the majority of the variation in the data. The elbow plot visualizes the standard deviation of each PC. Where the elbow appears is usually the threshold for identifying the majority of the variation. However, this method can be a bit subjective about where the elbow is located. 
+
+The SCTransform method is more accurate than some of the older methods of normalization and identification of variable genes used by Seurat. The older methods incorporated some technical sources of variation into some of the higher PCs, so selection of PCs was more important using these older methods. SCTransform does not exhibit these technical sources of variation as being present in the higher PCs, and the main reason not to use all PCs for the clustering is the computational resources and time that would require. Therefore, we try to capture as much variation as possible within the PCs for clustering. 
+
+We will try the top 40 dimensions:
 
 ```r
 # Plot the elbow plot
@@ -89,7 +93,7 @@ ElbowPlot(object = seurat_integrated,
 </p>
 
 
-Based on this plot, we could choose where the elbow occurs (touches the ground) to be between PC12-PC16. While this gives us a good rough idea of the number of PCs to include, a **more quantitative approach** may be a bit more reliable. We will identify a PC threshold by calculating where the principal components start to elbow by **taking the larger value of**:
+Based on this plot, we could roughly determine the majority of the variation by where the elbow occurs (touches the ground) to be between PC12-PC16. While this gives us a good rough idea of the number of PCs needed to be included, a **more quantitative approach** may be a bit more reliable. We can calculate where the principal components start to elbow by **taking the larger value of**:
 
 1. The point where the principal components only contribute 5% of standard deviation and the principal components cumulatively contribute 90% of the standard deviation.
 2. The point where the percent change in variation between the consecutive PCs is less than 0.1%.
@@ -108,58 +112,18 @@ co1 <- which(cumu > 90 & pct < 5)[1]
 
 co1
 ```
-The first metric returns PC43 as the PC matching these requirements. Let's check the second metric, which identifies the PC where the percent change in variation between consequtive PCs is less than 0.1%:
+
+The first metric returns PC86 as the PC matching these requirements. Let's check the second metric, which identifies the PC where the percent change in variation between consecutive PCs is less than 0.1%:
 
 ```r
 # Determine the difference between variation of PC and subsequent PC
 co2 <- sort(which((pct[1:length(pct) - 1] - pct[2:length(pct)]) > 0.1), decreasing = T)[1] + 1
 
 # last point where change of % of variation is more than 0.1%.
-
 co2
 ```
 
-The second metric returned PC14. Now, to determine the selection of PCs, we will use the minimum of the two metrics:
-
-```r
-# Minimum of the two calculation
-pcs <- min(co1, co2)
-
-pcs
-```
-
-Based on these metrics, for the clustering of cells in Seurat we will use the first **fourteen PCs** to generate the clusters. We can plot the elbow plot again and overlay the information determined using our metrics:
-
-```r
-# Create a dataframe with values
-plot_df <- data.frame(pct = pct, 
-           cumu = cumu, 
-           rank = 1:length(pct))
-
-# Elbow plot to visualize 
-  ggplot(plot_df, aes(cumu, pct, label = rank, color = rank > pcs)) + 
-  geom_text() + 
-  geom_vline(xintercept = 90, color = "grey") + 
-  geom_hline(yintercept = min(pct[pct > 5]), color = "grey") +
-  theme_bw()
- 
- ```
- 
- <p align="center">
-<img src="../img/SC_elbowplot_colored.png" width="500">
-</p>
-
-
-However, it's often a good idea to check the genes associated with some higher PCs to make sure that other PCs shouldn't be included due to association with some rarer cell populations.
-
-```r
-# Printing out the most variable genes driving PCs
-print(x = seurat_integrated[["pca"]], 
-      dims = 1:25, 
-      nfeatures = 5)
-```
-
-If we saw the highest positive and negative PCA scores for genes associated with a particular PC corresponding to known marker genes for a rare cell type, then we would include all PCs up to that one. 
+This second metric returns PC11. Usually, we would choose the minimum of these two metrics as the PCs covering the majority of the variation in the data. However, since including more PCs may aid our clustering, we will use the first **40 PCs** to generate the clusters. 
 
 ### Cluster the cells
 
