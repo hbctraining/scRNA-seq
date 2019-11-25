@@ -340,7 +340,7 @@ DimPlot(seurat_integrated,
 ```
 
 <p align="center">
-<img src="../img/integrated_umap_split.png" width="600">
+<img src="../img/SC_umap_split.png" width="600">
 </p>
 
 
