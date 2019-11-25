@@ -247,6 +247,8 @@ For our experiment, we have two samples that we would like to read into R using 
 We can specify these samples in the *input* part for our `for loop` as elements of a vector using `c()`. We are assigning these to a *variable* and we can call that variable anything we would like (try to give it a name that makes sense). In this example, we called the *variable* `file`:
 
 ```r
+## DO NOT RUN
+
 # Create each individual Seurat object
 for (file in c("ctrl_raw_feature_bc_matrix", "stim_raw_feature_bc_matrix")){
 ```
@@ -268,6 +270,8 @@ for (file in c("ctrl_raw_feature_bc_matrix", "stim_raw_feature_bc_matrix")){
 Now, we can create the Seurat object by using the `CreateSeuratObject()` function, adding in the argument `project`, where we can add the sample name.
 
 ```r
+## DO NOT RUN
+
 for (file in c("ctrl_raw_feature_bc_matrix", "stim_raw_feature_bc_matrix")){
         seurat_data <- Read10X(data.dir = paste0("data/", file))
         seurat_obj <- CreateSeuratObject(counts = seurat_data, 
@@ -280,6 +284,8 @@ for (file in c("ctrl_raw_feature_bc_matrix", "stim_raw_feature_bc_matrix")){
 The last command `assign`s the Seurat object created (`seurat_obj`) to a new variable. In this way, when we iterate and move on to the next sample in our `input` we will not overwrite the Seurat object created in the previous iteration:
 
 ```r
+## DO NOT RUN
+
 for (file in c("ctrl_raw_feature_bc_matrix", "stim_raw_feature_bc_matrix")){
         seurat_data <- Read10X(data.dir = paste0("data/", file))
         seurat_obj <- CreateSeuratObject(counts = seurat_data, 
