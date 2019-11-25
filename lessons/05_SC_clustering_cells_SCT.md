@@ -127,28 +127,28 @@ This second metric returns PC11. Usually, we would choose the minimum of these t
 
 ### Cluster the cells
 
-We can now use these significant PCs to determine which cells exhibit similar expression patterns for clustering. To do this, Seurat uses a graph-based clustering approach, which embeds cells in a graph structure, using a K-nearest neighbor (KNN) graph (by default), with edges drawn between cells with similar gene expression patterns. Then, it attempts to partition this graph into highly interconnected ‘quasi-cliques’ or ‘communities’ [[Seurat - Guided Clustering Tutorial](https://satijalab.org/seurat/v3.1/pbmc3k_tutorial.html)].
+We can now use these chosen PCs to determine which cells exhibit similar expression patterns for clustering. To do this, Seurat uses a graph-based clustering approach, which embeds cells in a graph structure, using a K-nearest neighbor (KNN) graph (by default), with edges drawn between cells with similar gene expression patterns. Then, it attempts to partition this graph into highly interconnected ‘quasi-cliques’ or ‘communities’ [[Seurat - Guided Clustering Tutorial](https://satijalab.org/seurat/v3.1/pbmc3k_tutorial.html)].
 
 We will use the `FindClusters()` function to perform the graph-based clustering. The `resolution` is an important argument that sets the "granularity" of the downstream clustering and will need to be optimized to the experiment.  For datasets of 3,000 - 5,000 cells, the `resolution` set between `0.4`-`1.4` generally yields good clustering. Increased resolution values lead to a greater number of clusters, which is often required for larger datasets. 
 
-We often provide a series of resolution options during clustering, which can be used downstream to choose the best resolution.
+We often provide a series of resolution options during clustering, which can be used downstream to choose the best resolution for the data.
 
 
 ```r
 # Determine the K-nearest neighbor graph
-seurat_control <- FindNeighbors(object = seurat_integrated, 
+seurat_integrated <- FindNeighbors(object = seurat_integrated, 
                                 dims = 1:40)
                                 
 # Determine the clusters for various resolutions                                
-seurat_control <- FindClusters(object = seurat_integrated,
-                               resolution = c(0.4, 0.6, 0.8, 1.0, 1.2, 1.8))
+seurat_integrated <- FindClusters(object = seurat_integrated,
+                               resolution = c(0.4, 0.6, 0.8, 1.0, 1.4))
 ```
 
-If we look at the metadata of our Seurat object(`seurat_control@metadata`), there is a separate column for each of the different resolutions calculated.
+If we look at the metadata of our Seurat object(`seurat_integrated@metadata`), there is a separate column for each of the different resolutions calculated.
 
 ```r
 # Explore resolutions
-seurat_control@meta.data %>% 
+seurat_integrated@meta.data %>% 
         View()
 ```
 
@@ -156,38 +156,21 @@ To choose a resolution to start with, we often pick something in the middle of t
 
 ```r
 # Assign identity of clusters
-Idents(object = seurat_control) <- "RNA_snn_res.0.8"
+Idents(object = seurat_integrated) <- "integrated_snn_res.0.8"
 ```
 
 To visualize the cell clusters, there are a few different dimensionality reduction techniques that can be helpful. The most popular methods include t-distributed stochastic neighbor embedding (t-SNE) and Uniform Manifold Approximation and Projection (UMAP) techniques. 
 
-Both methods aim to place cells with similar local neighborhoods in high-dimensional space together in low-dimensional space. As input, we suggest using the same PCs as input to the clustering analysis. **Note that distance between clusters in the t-SNE plot does not represent degree of similarity between clusters, whereas in the UMAP plot it does**, but we will explore both techniques.
-
-```r
-# Calculation of t-SNE
-seurat_control <- RunTSNE(object = seurat_control)
-
-# Plotting t-SNE
-DimPlot(object = seurat_control,
-        label = TRUE,
-        reduction = "tsne",
-        plot.title = "t-SNE")
-```
-
-<p align="center">
-<img src="../img/SC_tsne.png" width="800">
-</p>
-
-**How does your tSNE plot compare to the one above?** An alternative visualization to the tSNE is the UMAP method, as it can be difficult to distinguish the boundaries of the clusters. We can explore the UMAP method, which should separate the clusters more based on similarity.
+Both methods aim to place cells with similar local neighborhoods in high-dimensional space together in low-dimensional space. As input, we suggest using the same PCs as input to the clustering analysis. **Note that distance between clusters in the t-SNE plot does not represent degree of similarity between clusters, whereas in the UMAP plot it does**. Therefore, we will proceed with the UMAP method for visualizations, which should separate the clusters more based on similarity.
 
 ```r
 # Calculation of UMAP
-seurat_control <- RunUMAP(seurat_control, 
+seurat_integrated <- RunUMAP(seurat_integrated, 
                   reduction = "pca", 
-                  dims = 1:14)
+                  dims = 1:40)
 
 # Plot the UMAP
-DimPlot(seurat_control,
+DimPlot(seurat_integrated,
         reduction = "umap",
         label = TRUE,
         label.size = 6,
@@ -206,10 +189,10 @@ It can be useful to **explore other resolutions as well**. It will give you a qu
 
 ```r
 # Assign identity of clusters
-Idents(object = seurat_control) <- "RNA_snn_res.0.4"
+Idents(object = seurat_integrated) <- "RNA_snn_res.0.4"
 
 # Plot the UMAP
-DimPlot(seurat_control,
+DimPlot(seurat_integrated,
         reduction = "umap",
         label = TRUE,
         label.size = 6,
@@ -228,7 +211,7 @@ What you may have noticed is that there is some variability in the way your plot
 In order to maintain consistency in the downstream analysis and interpretation of this dataset, we will ask you to [download a new R object](https://www.dropbox.com/s/7m71je2s21kxwcf/seurat_control.rds?dl=1) to the `data` folder. Once downloaded, you will need to **load in the object to your R session and overwrite the existing one**: 
 
 ```r
-seurat_control <- readRDS("data/seurat_control.rds")
+seurat_integrated <- readRDS("data/seurat_integrated.rds")
 ```
 
 Using this new R object we will continue with the UMAP method and the 0.8 resolution to check the quality control metrics and known markers for anticipated cell types. Plot the UMAP again to make sure your image now matches what you see in the lesson:
@@ -252,11 +235,6 @@ DimPlot(seurat_control,
 ***
 
 **[Exercises](https://hbctraining.github.io/scRNA-seq/lessons/sc_exercises_clustering_analysis.html#clustering-cells-based-on-top-pcs-metagenes)**
-
-1. Identify significant PCs for the `seurat_stim` object.
-2. Perform clustering for `seurat_stim` using the resolutions: 0.4, 0.6, 0.8, 1.0, 1.2, 1.8.
-3. Assign resolution of the `seurat_stim` clusters to `RNA_snn_res.0.8`.
-4. Plot the UMAP for `seurat_stim`.
 
 ***
 
