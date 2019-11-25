@@ -213,6 +213,8 @@ In practice, you likely have many samples that you want to read the data in for 
 A `for` loop interates over a series of commands for each of the inputs given. In R, it has the following structure/syntax:
 
 ```r
+## DO NOT RUN
+
 for (variable in input){
 	command1
 	command2
