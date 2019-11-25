@@ -107,7 +107,7 @@ class_pca_data <- FetchData(seurat_integrated,
 # Adding cluster label to center of cluster on PCA
 pca_label <- FetchData(seurat_integrated, 
                        vars = c("ident", "PC_1", "PC_2"))  %>%
-        mutate(ident = seurat_control@active.ident) %>%
+        mutate(ident = seurat_integrated@active.ident) %>%
         group_by(ident) %>%
         summarise(x=mean(PC_1), y=mean(PC_2))
 ```
