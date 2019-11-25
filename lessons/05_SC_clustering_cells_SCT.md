@@ -45,7 +45,7 @@ _**Recommendations:**_
 
 ### Identify significant PCs
 
-To overcome the extensive technical noise in the expression of any single gene for scRNA-seq data, Seurat assigns cells to clusters based on their PCA scores, with each PC essentially representing a "metagene" that combines information across a correlated gene set. Determining how many PCs to include downstream is therefore an important step. Often it is useful to explore the PCs prior to identifying the significant principal components to include for the downstream clustering analysis.
+To overcome the extensive technical noise in the expression of any single gene for scRNA-seq data, Seurat assigns cells to clusters based on their PCA scores derived from the expression of the integrated most variable genes, with each PC essentially representing a "metagene" that combines information across a correlated gene set. Determining how many PCs to include downstream is therefore an important step to ensure that we are capturing the majority of the variation, or cell types, present in our dataset. Often it is useful to explore the PCs prior to deciding which PCs to include for the downstream clustering analysis.
 
 One way of exploring the PCs is using a heatmap to visualize the most variant genes for select PCs with the **genes and cells ordered by PCA scores**. The `cells` argument specifies the number of cells with the most negative or postive PCA scores to use for the plotting.
 
@@ -70,14 +70,13 @@ print(x = seurat_integrated[["pca"]],
       nfeatures = 5)
 ```
 
-We only specified 10 dimensions, but we could easily include as many as we wish to explore. It is often useful to look at the PCs and determine whether the genes driving them make sense for differentiating the different cell types. However, we won't use this method alone to pick the significant PCs to use for the clustering analysis.
+We only specified 10 dimensions, but we could easily include as many as we wish to explore. It is often useful to look at the PCs and determine whether the genes driving them make sense for differentiating the different cell types. However, we won't use this method alone to choose the PCs to use for the clustering analysis.
 
 <p align="center">
 <img src="../img/PC_print.png" width="400">
 </p>
 
-
-The elbow plot is helpful when determining how many PCs to use for the downstream analysis. The elbow plot visualizes the standard deviation of each PC, and where the elbow appears is usually the threshold for identifying the significant PCs. However, this method can be a bit subjective about where the elbow is located.
+The elbow plot is helpful when determining whether the PCs . The elbow plot visualizes the standard deviation of each PC, and where the elbow appears is usually the threshold for identifying the significant PCs. However, this method can be a bit subjective about where the elbow is located.
 
 ```r
 # Plot the elbow plot
