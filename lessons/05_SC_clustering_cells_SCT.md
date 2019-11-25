@@ -14,7 +14,9 @@ Approximate time: 90 minutes
 # Single-cell RNA-seq clustering analysis
 
 
-Now that we have our high quality cells, we want to know the different cell types present within our population of cells. 
+Now that we have our high quality cells integrated, we want to know the different cell types present within our population of cells. 
+
+**UPDATE THIS WORKFLOW IMAGE!**
 
 <img src="../img/sc_workflow.png" width="800">
 
