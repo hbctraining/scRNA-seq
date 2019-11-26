@@ -49,6 +49,8 @@ To determine whether our clusters might be due to artifacts such as cell cycle p
 
 To explore and visualize the various quality metrics, we will use the versatile `DimPlot()` and `FeaturePlot()` functions from Seurat. 
 
+### Segregation of clusters by sample
+
 We can start by exploring the distribution of cells per cluster in each sample:
 
 ```r
@@ -78,6 +80,7 @@ DimPlot(seurat_integrated,
 <img src="../img/umap_by_sample.png" width="800">
 </p>
 
+### Segregation of clusters by cell cycle phase
 
 Next we can explore whether the **cells cluster by the different cell cycle phases**. We did not regress out variation due to cell cycle phase when we performed the SCTransform normalization and regression of uninteresting sources of variation. If our cell clusters showed large differences in mitochondrial expression, this would be an indication we would want to re-run the SCTransform and add the `S.Score` and `G2M.Score` to our variables to regress, then re-run the rest of the steps.
 
@@ -94,6 +97,8 @@ DimPlot(seurat_integrated,
 </p>
 
 We do not see much clustering by cell cycle score, so we can proceed with the QC.
+
+### Segregation of clusters by various sources of uninteresting variation
 
 Next we will explore additional metrics, such as the number of UMIs and genes per cell, S-phase and G2M-phase markers, and mitochondrial gene expression by UMAP. Looking at the individual S and G2M scores can give us additional information to checking the phase as we did previously.
 
@@ -116,6 +121,8 @@ FeaturePlot(seurat_integrated,
 > _**NOTE:** The `sort.cell` argument will plot the positive cells above the negative cells, while the `min.cutoff` argument will determine the threshold for shading. A `min.cutoff` of `q10` translates to the 10% of cells with the lowest expression of the gene will not exhibit any purple shading (completely gray)._
 
 The metrics seem to be relatively even across the clusters, with the exception of the `nUMIs` and `nGene` exhibiting higher values in clusters 3, 9, 14, and 15, and, perhaps, cluster 17. We will keep an eye on these clusters to see whether the cell types may explain the increase.
+
+### Exploration of the PCs driving the different clusters
 
 We can also explore how well our clusters separate by the different PCs; we hope that the defined PCs separate the cell types well. To visualize this information, we need to extract the UMAP coordinate information for the cells along with their corresponding scores for each of the PCs to view by UMAP. 
 
