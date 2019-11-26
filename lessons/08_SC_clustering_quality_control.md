@@ -47,7 +47,9 @@ _**Recommendations:**_
 
 To determine whether our clusters might be due to artifacts such as cell cycle phase or mitochondrial expression, it can be useful to explore these metrics visually to see if any clusters exhibit enrichment or are different from the other clusters. However, if enrichment or differences are observed for particular clusters it may not be worrisome if it can be explained by the cell type. 
 
-We can start by exploring the distribution of cells per cluster:
+To explore and visualize the various quality metrics, we will use the versatile `DimPlot()` and `FeaturePlot()` functions from Seurat. 
+
+We can start by exploring the distribution of cells per cluster in each sample:
 
 ```r
 # Extract identity and sample information from seurat object to determine the number of cells per cluster per sample
@@ -64,7 +66,7 @@ View(n_cells)
 <img src="../img/SC_clustercells_loadObj.png" width="800">
 </p>
 
-We can visualize the cells per cluster using the UMAP:
+We can visualize the cells per cluster for each sample using the UMAP:
 
 ```r
 # UMAP of cells in each cluster by sample
@@ -77,7 +79,7 @@ DimPlot(seurat_integrated,
 </p>
 
 
-To explore the various quality metrics, we can use the versatile `DimPlot()` function from Seurat. We will start by exploring the distribution of cells in each sample and in the different phases of the cell cycle to view by UMAP.
+Next we can explore whether the **cells cluster by the different cell cycle phases**. We did not regress out variation due to cell cycle phase when we performed the SCTransform normalization and regression of uninteresting sources of variation. If our cell clusters showed large differences in mitochondrial expression, this would be an indication we would want to re-run the SCTransform and add the `S.Score` and `G2M.Score` to our variables to regress, then re-run the rest of the steps.
 
 
 ```r
@@ -91,7 +93,9 @@ DimPlot(seurat_integrated,
 <img src="../img/SC_phase_umap.png" width="600">
 </p>
 
-Next we will explore additional metrics, such as the number of UMIs and genes per cell, S-phase and G2M-phase markers, and mitochondrial gene expression by UMAP. 
+We do not see much clustering by cell cycle score, so we can proceed with the QC.
+
+Next we will explore additional metrics, such as the number of UMIs and genes per cell, S-phase and G2M-phase markers, and mitochondrial gene expression by UMAP. Looking at the individual S and G2M scores can give us additional information to checking the phase as we did previously.
 
 ```r
 # Determine metrics to plot present in seurat_integrated@meta.data
@@ -111,7 +115,7 @@ FeaturePlot(seurat_integrated,
 
 > _**NOTE:** The `sort.cell` argument will plot the positive cells above the negative cells, while the `min.cutoff` argument will determine the threshold for shading. A `min.cutoff` of `q10` translates to the 10% of cells with the lowest expression of the gene will not exhibit any purple shading (completely gray)._
 
-The metrics seem to be relatively even across the clusters, with the exception of the `nUMIs` and `nGene` exhibiting higher values in clusters 3, 9, 14, and 15. We will keep an eye on these clusters to see whether the cell types may explain the increase.
+The metrics seem to be relatively even across the clusters, with the exception of the `nUMIs` and `nGene` exhibiting higher values in clusters 3, 9, 14, and 15, and, perhaps, cluster 17. We will keep an eye on these clusters to see whether the cell types may explain the increase.
 
 We can also explore how well our clusters separate by the different PCs; we hope that the defined PCs separate the cell types well. To visualize this information, we need to extract the UMAP coordinate information for the cells along with their corresponding scores for each of the PCs to view by UMAP. 
 
