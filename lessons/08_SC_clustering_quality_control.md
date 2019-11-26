@@ -241,7 +241,10 @@ We are looking for consistency of expression of the markers across the clusters.
 ```r
 FeaturePlot(seurat_integrated, 
             reduction = "umap", 
-            features = c("CD14", "LYZ"))
+            features = c("CD14", "LYZ"), 
+            sort.cell = TRUE,
+            min.cutoff = 'q10', 
+            label = TRUE)
 ```
 
 <p align="center">
@@ -255,7 +258,10 @@ CD14+ monocytes appear to correspond to clusters 1, 3, and 14. We wouldn't inclu
 ```r
 FeaturePlot(seurat_integrated, 
             reduction = "umap", 
-            features = c("FCGR3A", "MS4A7"))
+            features = c("FCGR3A", "MS4A7"), 
+            sort.cell = TRUE,
+            min.cutoff = 'q10', 
+            label = TRUE)
 ```
 
 <p align="center">
@@ -269,7 +275,10 @@ FCGR3A+ monocytes markers distinctly highlight cluster 9.
 ```r
 FeaturePlot(seurat_integrated, 
             reduction = "umap", 
-            features = c("MARCO", "ITGAM", "ADGRE1"))
+            features = c("MARCO", "ITGAM", "ADGRE1"), 
+            sort.cell = TRUE,
+            min.cutoff = 'q10', 
+            label = TRUE)
 ```
 
 <p align="center">
@@ -283,7 +292,10 @@ No clusters appear to correspond to macrophages; perhaps cell culture conditions
 ```r
 FeaturePlot(seurat_integrated, 
             reduction = "umap", 
-            features = c("FCER1A", "CST3"))
+            features = c("FCER1A", "CST3"), 
+            sort.cell = TRUE,
+            min.cutoff = 'q10', 
+            label = TRUE)
 ```
 
 <p align="center">
@@ -297,7 +309,10 @@ The markers corresponding to conventional dendritic cells identify cluster 15 (b
 ```r
 FeaturePlot(seurat_integrated, 
             reduction = "umap", 
-            features = c("IL3RA", "GZMB", "SERPINF1", "ITM2C"))
+            features = c("IL3RA", "GZMB", "SERPINF1", "ITM2C"), 
+            sort.cell = TRUE,
+            min.cutoff = 'q10', 
+            label = TRUE)
 ```
 
 <p align="center">
@@ -311,7 +326,10 @@ Plasmacytoid dendritic cells represent cluster 19. While there are a lot of diff
 ```r
 FeaturePlot(seurat_integrated, 
             reduction = "umap", 
-            features = c("CD79A", "MS4A1"))
+            features = c("CD79A", "MS4A1"), 
+            sort.cell = TRUE,
+            min.cutoff = 'q10', 
+            label = TRUE)
 ```
 
 <p align="center">
@@ -325,7 +343,10 @@ Clusters 6, 11, and 17 have good expression of the B cell markers. This correspo
 ```r
 FeaturePlot(seurat_integrated, 
             reduction = "umap", 
-            features = c("CD3D"))
+            features = c("CD3D"), 
+            sort.cell = TRUE,
+            min.cutoff = 'q10', 
+            label = TRUE)
 ```
 
 <p align="center">
@@ -339,7 +360,10 @@ All T cells markers concentrate in the large group of clusters on the right-hand
 ```r
 FeaturePlot(seurat_integrated, 
             reduction = "umap", 
-            features = c("CD3D", "IL7R", "CCR7"))
+            features = c("CD3D", "IL7R", "CCR7"), 
+            sort.cell = TRUE,
+            min.cutoff = 'q10', 
+            label = TRUE)
 ```
 
 <p align="center">
@@ -353,7 +377,10 @@ The subset of T cells corresponding to the CD4+ T cells are clusters 0, 2, 4, 10
 ```r
 FeaturePlot(seurat_integrated, 
             reduction = "umap", 
-            features = c("CD3D", "CD8A"))
+            features = c("CD3D", "CD8A"), 
+            sort.cell = TRUE,
+            min.cutoff = 'q10', 
+            label = TRUE)
 ```
 
 <p align="center">
@@ -367,7 +394,10 @@ For CD8+ T cells the only consistent expression for both markers is observed for
 ```r
 FeaturePlot(seurat_integrated, 
             reduction = "umap", 
-            features = c("GNLY", "NKG7"))
+            features = c("GNLY", "NKG7"), 
+            sort.cell = TRUE,
+            min.cutoff = 'q10', 
+            label = TRUE)
 ```
 
 <p align="center">
@@ -381,7 +411,10 @@ The NK cell markers are expressed in clusters 8 and 12, in addition to cluster 5
 ```r
 FeaturePlot(seurat_integrated, 
             reduction = "umap", 
-            features = c("PPBP"))
+            features = c("PPBP"), 
+            sort.cell = TRUE,
+            min.cutoff = 'q10', 
+            label = TRUE)
 ```
 
 <p align="center">
@@ -395,7 +428,10 @@ The megakaryocyte markers seem to be expressed mainly in cluster 16.
 ```r
 FeaturePlot(seurat_integrated, 
             reduction = "umap", 
-            features = c("HBB", "HBA2"))
+            features = c("HBB", "HBA2"), 
+            sort.cell = TRUE,
+            min.cutoff = 'q10', 
+            label = TRUE)
 ```
 
 <p align="center">
