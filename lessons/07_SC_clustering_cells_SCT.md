@@ -53,12 +53,12 @@ One way of exploring the PCs is using a heatmap to visualize the most variant ge
 ```r
 # Explore heatmap of PCs
 DimHeatmap(seurat_integrated, 
-           dims = 1:6, 
+           dims = 1:9, 
            cells = 500, 
            balanced = TRUE)
 ```
 
-<img src="../img/dimheatmap.png" width="700">
+<img src="../img/heatmap_PCs_16.png" width="700">
 
 We can see which genes appear to be driving the PCs, but this method can be slow and hard to visualize individual genes if we would like to explore a large number of PCs.
 
