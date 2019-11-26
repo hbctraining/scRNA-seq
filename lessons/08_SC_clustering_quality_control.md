@@ -452,7 +452,7 @@ FeaturePlot(seurat_integrated,
 ```
 
 <p align="center">
-<img src="../img/erythrocyte_loadObj.png" width="600">
+<img src="../img/erythrocyte_loadObj.png" width="800">
 </p>
 
 There does not seem to be a cluster of erythrocytes, as the markers are spread around the different cell types. This is not a bad thing as the blood cells are often cell types to be excluded from the analysis, since they are not often informative about the condition of interest.
