@@ -94,10 +94,10 @@ ElbowPlot(object = seurat_integrated,
 
 Based on this plot, we could roughly determine the majority of the variation by where the elbow occurs (touches the ground) to be somewhere between PC12-PC16. While this gives us a good rough idea of the number of PCs needed to be included, you can also use a [**more quantitative approach**](elbow_plot_metric.md) which may be a bit more reliable.  
 
-Since the SCTransform method is more accurate than some of the older methods of normalization and identification of variable genes used by Seurat, it is not as imperative to determine the a specific PC value. As long as we choose a PC that is large enough to capture the majority of the variation, we can choose that value and move forward with it. For our analysis, we will use the first **40 PCs** to generate the clusters. 
+Since the SCTransform method is more accurate than some of the older Seurat methods of normalization and identification of variable genes, it is not as imperative to determine a specific PC value. As long as we choose a PC that is large enough to capture the majority of the variation, we can choose that value and move forward with it. The more PCs we choose, the more variation is accounted for when performing the clustering, but also, the longer it will take to perform the clustering. For our analysis, we will use the first **40 PCs** to generate the clusters. 
 
 > #### Why is selection of PCs more important for older methods?
-> The older methods incorporated some technical sources of variation into some of the higher PCs, so selection of PCs was more important. SCTransform does not exhibit these technical sources of variation as being present in the higher PCs. We could in theory use all of the PCs for clustering, but the main reason not to use them is the computational resources and time that would require. 
+> The older methods incorporated some technical sources of variation into some of the higher PCs, so selection of PCs was more important. SCTransform better estimates the variance and adjusts does not frequently identify these sources of technical variation in the higher PCs. We could in theory use all of the PCs for clustering, but the main reason not to use them is the computational resources and time that would require. 
 
 ### Cluster the cells
 
