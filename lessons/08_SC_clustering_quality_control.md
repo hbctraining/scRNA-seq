@@ -63,7 +63,7 @@ View(n_cells)
 ```
 
 <p align="center">
-<img src="../img/SC_clustercells_loadObj.png" width="800">
+<img src="../img/sc_ncells_by_sample.png" width="800">
 </p>
 
 We can visualize the cells per cluster for each sample using the UMAP:
