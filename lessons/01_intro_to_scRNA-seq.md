@@ -8,7 +8,7 @@ Approximate time: 45 minutes
 
 ## Learning Objectives:
 
-* Understand the general steps leading to generation of the count matrix
+* An introduction to single-cell RNA-seq
 
 # Single-cell RNA-seq
 
