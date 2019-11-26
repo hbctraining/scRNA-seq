@@ -57,8 +57,9 @@ DimHeatmap(seurat_integrated,
            cells = 500, 
            balanced = TRUE)
 ```
-
-<img src="../img/heatmap_PCs_16.png" width="700">
+<p align="center">
+<img src="../img/heatmap_PCs_16.png" width="800">
+</p>
 
 We can see which genes appear to be driving the PCs, but this method can be slow and hard to visualize individual genes if we would like to explore a large number of PCs.
 
