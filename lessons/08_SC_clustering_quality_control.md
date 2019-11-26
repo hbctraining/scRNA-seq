@@ -88,7 +88,7 @@ DimPlot(seurat_integrated,
 ```
 
 <p align="center">
-<img src="../img/SC_phase_umap_pca_loadObj.png" width="800">
+<img src="../img/SC_phase_umap.png" width="600">
 </p>
 
 Next we will explore additional metrics, such as the number of UMIs and genes per cell, S-phase and G2M-phase markers, and mitochondrial gene expression by UMAP. 
