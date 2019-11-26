@@ -173,7 +173,7 @@ We can also explore how well our clusters separate by the different PCs; we hope
 
 ```r
 # Defining the information in the seurat object of interest
-columns <- c(paste0("PC_", 1:40),
+columns <- c(paste0("PC_", 1:16),
             "ident",
             "UMAP_1", "UMAP_2")
 
@@ -182,7 +182,7 @@ pc_data <- FetchData(seurat_integrated,
                      vars = columns)
 
 # Plotting a UMAP plot for each of the PCs
-map(paste0("PC_", 1:40), function(pc){
+map(paste0("PC_", 1:16), function(pc){
         ggplot(pc_data, 
                aes(UMAP_1, UMAP_2)) +
                 geom_point(aes_string(color=pc), 
@@ -198,7 +198,7 @@ map(paste0("PC_", 1:40), function(pc){
 ```
 
 <p align="center">
-<img src="../img/SC_clusters_PCs_loadObj.png" width="800">
+<img src="../img/16_pcs.png" width="800">
 </p>
 
 We can see how the clusters are represented by the different PCs. For instance, the genes driving `PC_2` exhibit higher expression in clusters 4 and 11. We could look back at our genes driving this PC to get an idea of what the cell types might be:
