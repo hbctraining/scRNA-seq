@@ -127,7 +127,7 @@ seurat_integrated@meta.data %>%
         View()
 ```
 
-To choose a resolution to start with, we often pick something in the middle of the range like 0.6 or 0.8. We will start with a resolution of 0.6 by assigning the identity of the clusters using the `Idents()` function.
+To choose a resolution to start with, we often pick something in the middle of the range like 0.6 or 0.8. We will start with a resolution of 0.8 by assigning the identity of the clusters using the `Idents()` function.
 
 ```r
 # Assign identity of clusters
@@ -151,8 +151,6 @@ DimPlot(seurat_integrated,
         label.size = 6,
         plot.title = "UMAP")
 ```
-
-> **Need help with UMAP?** Click the [link for helpful code](https://hbctraining.github.io/scRNA-seq/lessons/umap-installation.html)
 
 <p align="center">
 <img src="../img/SC_umap.png" width="800">
