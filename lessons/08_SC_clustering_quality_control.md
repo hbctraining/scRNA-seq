@@ -241,7 +241,7 @@ FeaturePlot(seurat_integrated,
 <img src="../img/CD14_monocytes.png" width="800">
 </p>
 
-CD14+ monocytes appear to correspond to clusters 1, 3, 14, and 15.
+CD14+ monocytes appear to correspond to clusters 1, 3, and 14. We wouldn't include clusters 9 and 15 because they do not highly express both of these markers.
 
 **FCGR3A+ monocyte markers**
 
@@ -283,7 +283,7 @@ FeaturePlot(seurat_integrated,
 <img src="../img/DCs.png" width="800">
 </p>
 
-??The markers corresponding to conventional dendritic cells identify cluster 12 (both markers consistently show expression).
+The markers corresponding to conventional dendritic cells identify cluster 15 (both markers consistently show expression).
 
 **Plasmacytoid dendritic cell markers**
 
@@ -297,7 +297,7 @@ FeaturePlot(seurat_integrated,
 <img src="../img/pDCs.png" width="800">
 </p>
 
-Plasmacytoid dendritic cells represent cluster 19.
+Plasmacytoid dendritic cells represent cluster 19. While there are a lot of differences in the expression of these markers, we see cluster 19 is consistently expressed.
 
 **B cell markers**
 
@@ -311,7 +311,7 @@ FeaturePlot(seurat_integrated,
 <img src="../img/Bcells.png" width="800">
 </p>
 
-Clusters 6, 11, and 17 have good expression of the B cell markers. This is corresponds to the identity for these clusters that we hypothesized based on the PCs.
+Clusters 6, 11, and 17 have good expression of the B cell markers. This corresponds to the hypothesized identity based on the genes driving PC2.
 
 **T cell markers**
 
@@ -325,7 +325,7 @@ FeaturePlot(seurat_integrated,
 <img src="../img/Tcells.png" width="600">
 </p>
 
-All T cells markers concentrate in the large group of clusters on the right-hand side of this plot, with the exception of clusters 7, 8, 12, and 16. 
+All T cells markers concentrate in the large group of clusters on the right-hand side of the plot, with the exception of clusters 7, 8, 12, and 16. 
 
 **CD4+ T cell markers**
 
@@ -339,7 +339,7 @@ FeaturePlot(seurat_integrated,
 <img src="../img/CD4Tcells.png" width="800">
 </p>
 
-The subset of T cells corresponding to the CD4+ T cells are clusters 0, 2, 4, 10, 18.
+The subset of T cells corresponding to the CD4+ T cells are clusters 0, 2, 4, 10, and 18. We see expression in other clusters, as well, but these weren't expressing high levels of the T cell marker CD3D.
 
 **CD8+ T cell markers**
 
@@ -367,7 +367,7 @@ FeaturePlot(seurat_integrated,
 <img src="../img/NKcells.png" width="800">
 </p>
 
-The NK cell markers are expressed in clusters 8 and 12, in addition to cluster 5; however, we know cluster 5 expresses T cell markers.
+The NK cell markers are expressed in clusters 8 and 12, in addition to cluster 5; however, we know cluster 5 expresses T cell markers. We would hypothesize that cluster 5 may be an activated CD8+ T cell.
 
 **Megakaryocyte markers**
 
@@ -419,7 +419,7 @@ Based on these results, we can associate clusters with the cell types. However, 
 
 Now we have a decent idea as to the cell types corresponding to the majority of the clusters, but some questions remain:
 
-1. *What are the cell type identities of cluster 7 and 20?*
+1. *What are the cell type identities of clusters 7 and 20?*
 2. *Do the clusters corresponding to the same cell types have biologically meaningful differences? Are there subpopulations of these cell types?*
 3. *Can we acquire higher confidence in these cell type identities by identifying other marker genes for these clusters?*
 
