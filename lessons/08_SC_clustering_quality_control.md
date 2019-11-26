@@ -238,7 +238,7 @@ FeaturePlot(seurat_integrated,
 ```
 
 <p align="center">
-<img src="../img/CD14_monocytes_loadObj.png" width="800">
+<img src="../img/CD14_monocytes.png" width="800">
 </p>
 
 CD14+ monocytes appear to correspond to clusters 1, 3, 14, and 15.
@@ -252,7 +252,7 @@ FeaturePlot(seurat_integrated,
 ```
 
 <p align="center">
-<img src="../img/FCGR3A_monocyte_loadObj.png" width="800">
+<img src="../img/FCGR3A_monocytes" width="800">
 </p>
 
 FCGR3A+ monocytes markers distinctly highlight cluster 9. 
@@ -266,7 +266,7 @@ FeaturePlot(seurat_integrated,
 ```
 
 <p align="center">
-<img src="../img/sc_marcro_markers.png" width="800">
+<img src="../img/macrophages.png" width="800">
 </p>
 
 No clusters appear to correspond to macrophages; perhaps cell culture conditions negatively selected for macrophages (more highly adherent).
@@ -280,7 +280,7 @@ FeaturePlot(seurat_integrated,
 ```
 
 <p align="center">
-<img src="../img/DCs_loadObj.png" width="800">
+<img src="../img/DCs.png" width="800">
 </p>
 
 ??The markers corresponding to conventional dendritic cells identify cluster 12 (both markers consistently show expression).
@@ -294,42 +294,10 @@ FeaturePlot(seurat_integrated,
 ```
 
 <p align="center">
-<img src="../img/pDCs_loadObj.png" width="800">
+<img src="../img/pDCs.png" width="800">
 </p>
 
-Plasmacytoid dendritic cells (pDCs) also correspond to cluster 19 which also identifies with the conventional dendritic cells (cDCs). This indicates that we may need to increase our `resolution` clustering parameter to separate out our pDCs from our cDCs. 
-
-We could test out different resolutions by running the following code:
-
-```r
-# Assign identity of clusters
-Idents(object = seurat_integrated) <- "integrated_snn_res.1.2"
-
-# Plot the UMAP
-DimPlot(seurat_integrated,
-        reduction = "umap",
-        label = TRUE,
-        label.size = 6,
-        plot.title = "UMAP")
-
-FeaturePlot(seurat_integrated, 
-        reduction = "umap", 
-        features = c("IL3RA", "GZMB", "SERPINF1", "ITM2C"))
-```
-
-Then, we could work our way back through the analysis, starting with the **`Exploration of quality control metrics`** section. However, in the interest of time, we will continue with the clusters we saw earlier, and go back to the resolution of "0.8".
-
-```r
-# Assign identity of clusters
-Idents(object = seurat_integrated) <- "integrated_snn_res.0.8"
-
-# Plot the UMAP
-DimPlot(seurat_integrated,
-        reduction = "umap",
-        label = TRUE,
-        label.size = 6,
-        plot.title = "UMAP")
-```
+Plasmacytoid dendritic cells represent cluster 19.
 
 **B cell markers**
 
@@ -340,7 +308,7 @@ FeaturePlot(seurat_integrated,
 ```
 
 <p align="center">
-<img src="../img/Bcells_loadObj.png" width="800">
+<img src="../img/Bcells.png" width="800">
 </p>
 
 Clusters 6, 11, and 17 have good expression of the B cell markers. This is corresponds to the identity for these clusters that we hypothesized based on the PCs.
@@ -354,7 +322,7 @@ FeaturePlot(seurat_integrated,
 ```
 
 <p align="center">
-<img src="../img/Tcell_loadObj.png" width="600">
+<img src="../img/Tcells.png" width="600">
 </p>
 
 All T cells markers concentrate in the large group of clusters on the right-hand side of this plot, with the exception of clusters 7, 8, 12, and 16. 
@@ -368,7 +336,7 @@ FeaturePlot(seurat_integrated,
 ```
 
 <p align="center">
-<img src="../img/CD4Tcells_loadObj.png" width="800">
+<img src="../img/CD4Tcells.png" width="800">
 </p>
 
 The subset of T cells corresponding to the CD4+ T cells are clusters 0, 2, 4, 10, 18.
@@ -382,7 +350,7 @@ FeaturePlot(seurat_integrated,
 ```
 
 <p align="center">
-<img src="../img/CD8Tcells_loadObj.png" width="800">
+<img src="../img/CD8Tcells.png" width="800">
 </p>
 
 For CD8+ T cells the only consistent expression for both markers is observed for clusters 5 and 13.
@@ -396,7 +364,7 @@ FeaturePlot(seurat_integrated,
 ```
 
 <p align="center">
-<img src="../img/NKcells_loadObj.png" width="800">
+<img src="../img/NKcells.png" width="800">
 </p>
 
 The NK cell markers are expressed in clusters 8 and 12, in addition to cluster 5; however, we know cluster 5 expresses T cell markers.
@@ -410,7 +378,7 @@ FeaturePlot(seurat_integrated,
 ```
 
 <p align="center">
-<img src="../img/megakaryocytes_loadObj.png" width="600">
+<img src="../img/megakaryocytes.png" width="600">
 </p>
 
 The megakaryocyte markers seem to be expressed mainly in cluster 16.
@@ -424,7 +392,7 @@ FeaturePlot(seurat_integrated,
 ```
 
 <p align="center">
-<img src="../img/erythrocyte_loadObj.png" width="800">
+<img src="../img/erythrocytes.png" width="800">
 </p>
 
 There does not seem to be a cluster of erythrocytes, as the markers are spread around the different cell types. This is not a bad thing as the blood cells are often cell types to be excluded from the analysis, since they are not often informative about the condition of interest.
