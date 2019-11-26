@@ -4,11 +4,14 @@
 
 | Time |  Topic  | Instructor |
 |:-----------:|:----------:|:--------:|
-| 09:00 - 09:30 | [Introduction to scRNA-seq](../slides/Intro_to_workshop.pdf) | Mary
-| 09:20 - 10:50 | [Single-cell RNA-seq design and methods](https://github.com/hbctraining/scRNA-seq/raw/master/slides/Single_Cell_Sept_SAB_7_17_19_Final.pdf) | [Dr. Sarah Boswell](https://scholar.harvard.edu/saboswell) |
-| 10:50 - 11:05 | Break | |
-| 11:05 - 12:05 | [Single-cell RNA-seq analysis workflow](https://hbctraining.github.io/scRNA-seq/lessons/01_SC_pre-QC.html) | Mary |
-| 12:05 - 13:05 | Lunch | |
+| 09:00 - 09:15 | [Workshop introduction](../slides/Intro_to_workshop.pdf) | Radhika
+| 09:15 - 09:45 | [Introduction to scRNA-seq](../slides/Intro_to_workshop.pdf) | Mary
+| 09:45 - 10:30 | [Single-cell RNA-seq design and methods](https://github.com/hbctraining/scRNA-seq/raw/master/slides/Single_Cell_Sept_SAB_7_17_19_Final.pdf) | [Dr. Sarah Boswell](https://scholar.harvard.edu/saboswell) |
+| 10:30 - 10:45 | Break | |
+| 10:45 - 11:30 | [Single-cell RNA-seq design and methods (cont)](https://github.com/hbctraining/scRNA-seq/raw/master/slides/Single_Cell_Sept_SAB_7_17_19_Final.pdf) | [Dr. Sarah Boswell](https://scholar.harvard.edu/saboswell) |
+| 11:30 - 12:00 | [Raw data to count matrix](https://hbctraining.github.io/scRNA-seq/lessons/01_SC_pre-QC.html) | Mary |
+| 12:00 - 13:00 | Lunch | |
+| 13:00 - 13:45 | [Raw data to count matrix](https://hbctraining.github.io/scRNA-seq/lessons/01_SC_pre-QC.html) | Mary |
 | 13:05 - 13:50 | [R Refresher](https://hbctraining.github.io/DGE_workshop_salmon/lessons/R_refresher) | Meeta |
 | 13:50 - 14:35 | [Project organization and setting up for analysis ](https://hbctraining.github.io/scRNA-seq/lessons/02_SC_quality_control-setup.html)  | Radhika |
 | 14:35 - 15:00 | [Quality control of raw count data](https://hbctraining.github.io/scRNA-seq/lessons/03_SC_quality_control.html)  | Meeta |
