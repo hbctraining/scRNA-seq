@@ -185,7 +185,7 @@ With the cells clustered, we can explore the cell type identities by looking for
 ```r
 DimPlot(object = seurat_integrated, 
         reduction = "umap", 
-        label = TRUE)
+        label = TRUE) + NoLegend()
 ```
 
 <p align="center">
@@ -214,6 +214,9 @@ Seurat's `FeaturePlot()` function let's us easily explore the known markers on t
 ```r
 # Select the RNA counts slot to be the default assay
 DefaultAssay(seurat_integrated) <- "RNA"
+
+# Normalize RNA data for visualization purposes
+seurat_integrated <- NormalizeData(seurat_integrated, verbose = FALSE)
 ```
 
 We are looking for consistency of expression of the markers across the clusters. For example, if there are two markers for a cell type and only one of them is expressed in a cluster - then we cannot reliably assign that cluster to the celltype.
@@ -426,7 +429,7 @@ Based on these results, we can associate clusters with the cell types. However, 
 |:---:|:---:|
 | CD14+ monocytes | 1, 3, 14 | 
 | FCGR3A+ monocytes | 9 |
-| Conventional dendritic cells | ? |
+| Conventional dendritic cells | 15 |
 | Plasmacytoid dendritic cells | 19 |
 | B cells | 6, 11, 17 |
 | T cells | 0, 2, 4, 5, 10, 13, 18 |
@@ -437,14 +440,13 @@ Based on these results, we can associate clusters with the cell types. However, 
 | Erythrocytes | - |
 | Unknown | 7, 20 |
 
-> **NOTE:** With the pDCs, in addition to any other cluster that appears to contain two separate cell types, it's helpful to increase our clustering resolution to properly subset the clusters, as discussed above. Alternatively, if we still can't separate out the clusters using increased resolution, then it's possible that we had used too few principal components such that we are just not separating out these cell types of interest. To inform our choice of PCs, we could look at our PC gene expression overlapping the UMAP plots and determine whether our cell populations are separating by the PCs included.
+> **NOTE:** If any cluster appears to contain two separate cell types, it's helpful to increase our clustering resolution to properly subset the clusters. Alternatively, if we still can't separate out the clusters using increased resolution, then it's possible that we had used too few principal components such that we are just not separating out these cell types of interest. To inform our choice of PCs, we could look at our PC gene expression overlapping the UMAP plots and determine whether our cell populations are separating by the PCs included.
 
 Now we have a decent idea as to the cell types corresponding to the majority of the clusters, but some questions remain:
 
-1. *What is the cell type identity of cluster 7?*
-2. *Is cluster 6 a CD8+ T cell or an NK cell?* *Is cluster 13 a T cell or an NK cell?*
-3. *Do the clusters corresponding to the same cell types have biologically meaningful differences? Are there subpopulations of these cell types?*
-4. *Can we acquire higher confidence in these cell type identities by identifying other marker genes for these clusters?*
+1. *What are the cell type identities of cluster 7 and 20?*
+2. *Do the clusters corresponding to the same cell types have biologically meaningful differences? Are there subpopulations of these cell types?*
+3. *Can we acquire higher confidence in these cell type identities by identifying other marker genes for these clusters?*
 
 Marker identification analysis can help us address all of these questions!! 
 
