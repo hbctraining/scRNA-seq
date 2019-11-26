@@ -52,9 +52,9 @@ We can start by exploring the distribution of cells per cluster:
 ```r
 # Extract identity and sample information from seurat object to determine the number of cells per cluster per sample
 n_cells <- FetchData(seurat_integrated, 
-                     vars = c("ident")) %>% 
-        dplyr::count(ident) %>% 
-        spread(ident, n)
+                     vars = c("ident", "orig.ident")) %>%
+        dplyr::count(ident, orig.ident) %>%
+        tidyr::spread(ident, n)
 
 # View table
 View(n_cells)
@@ -64,23 +64,65 @@ View(n_cells)
 <img src="../img/SC_clustercells_loadObj.png" width="800">
 </p>
 
-To acquire the different cluster QC metrics, we can use the `FetchData()` function from Seurat, perform some data wrangling, and plot the metrics with ggplot2. We will start by exploring the distribution of cells in each sample and in the different phases of the cell cycle to view by UMAP and PCA.
-
-First, we will acquire the cell cycle and UMAP coordinate information to view by UMAP:
+We can visualize the cells per cluster using the UMAP:
 
 ```r
-# Establishing groups to color plots by
-group_by <- c("Phase")
+# UMAP of cells in each cluster by sample
+DimPlot(seurat_integrated, 
+        label = TRUE, 
+        split.by = "sample")  + NoLegend()
+```
+<p align="center">
+<img src="../img/umap_by_sample.png" width="800">
+</p>
 
-# Getting coordinates for cells to use for UMAP and associated grouping variable information
-class_umap_data <- FetchData(seurat_integrated, 
-                             vars = c("ident", "UMAP_1", "UMAP_2", group_by))
 
-# Adding cluster label to center of cluster on UMAP
-umap_label <- FetchData(seurat_integrated, 
-                        vars = c("ident", "UMAP_1", "UMAP_2"))  %>%
-        group_by(ident) %>%
-        summarise(x=mean(UMAP_1), y=mean(UMAP_2))
+To explore the various quality metrics, we can use the versatile `DimPlot()` function from Seurat. We will start by exploring the distribution of cells in each sample and in the different phases of the cell cycle to view by UMAP.
+
+
+```r
+# Explore whether clusters segregate by cell cycle phase
+DimPlot(seurat_integrated,
+        label = TRUE, 
+        split.by = "Phase")  + NoLegend()
+```
+
+<p align="center">
+<img src="../img/SC_phase_umap_pca_loadObj.png" width="800">
+</p>
+
+Next we will explore additional metrics, such as the number of UMIs and genes per cell, S-phase and G2M-phase markers, and mitochondrial gene expression by UMAP. 
+
+```r
+# Determine metrics to plot present in seurat_integrated@meta.data
+metrics <-  c("nUMI", "nGene", "S.Score", "G2M.Score", "mitoRatio")
+
+FeaturePlot(seurat_integrated, 
+            reduction = "umap", 
+            features = c("nUMI", "nGene"),
+            pt.size = 0.4, 
+            order = TRUE)
+```
+
+<p align="center">
+<img src="../img/SC_metrics_umpa_loadObj.png" width="800">
+</p>
+
+The metrics seem to be relatively even across the clusters, with the exception of the `nUMIs` and `nGene` exhibiting higher values in clusters 3, 9, 14, and 15. We will keep an eye on these clusters to see whether the cell types may explain the increase.
+
+We can also explore how well our clusters separate by the different PCs; we hope that the defined PCs separate the cell types well. To visualize this information, we need to extract the UMAP coordinate information for the cells along with their corresponding scores for each of the PCs to view by UMAP. 
+
+First, we identify the information we would like to extract from the Seurat object, then, we can use the `FetchData() function to extract it.
+
+```r
+# Defining the information in the seurat object of interest
+columns <- c(paste0("PC_", 1:16),
+            "ident",
+            "UMAP_1", "UMAP_2")
+
+# Extracting this data from the seurat object
+pc_data <- FetchData(seurat_integrated, 
+                     vars = columns)
 ```
 
 > **NOTE:** How did we know in the `FetchData()` function to include `UMAP_1` to obtain the UMAP coordinates? The [Seurat cheatsheet](https://satijalab.org/seurat/essential_commands.html) describes the function as being able to pull any data from the expression matrices, cell embeddings, or metadata. 
@@ -96,93 +138,11 @@ umap_label <- FetchData(seurat_integrated,
 >
 > The `FetchData()` function just allows us to extract the data more easily.
 
-
-In addition, we can acquire the same metrics to view by PCA:
-
-```r
-# Getting coordinates for cells to use for PCA and associated grouping variable information
-class_pca_data <- FetchData(seurat_integrated, 
-                            vars = c("ident", "PC_1", "PC_2", group_by))
-
-# Adding cluster label to center of cluster on PCA
-pca_label <- FetchData(seurat_integrated, 
-                       vars = c("ident", "PC_1", "PC_2"))  %>%
-        mutate(ident = seurat_integrated@active.ident) %>%
-        group_by(ident) %>%
-        summarise(x=mean(PC_1), y=mean(PC_2))
-```
-
-Then, we can plot the cell cycle by UMAP and PCA:
-
-```r
-# load cowplot library to enable visualizing 2 plots side-by-side
-library(cowplot)
-
-# Function to plot UMAP and PCA as grids
-plot_grid(
-      ggplot(class_umap_data, aes(UMAP_1, UMAP_2)) +
-        geom_point(aes_string(color = group_by), alpha = 0.7) +
-        scale_color_brewer(palette = "Set2")  +
-        geom_text(data=umap_label, aes(label=ident, x, y)),
-      ggplot(class_pca_data, aes(PC_1, PC_2)) +
-        geom_point(aes_string(color = group_by), alpha = 0.7) +
-        scale_color_brewer(palette = "Set2")  +
-        geom_text(data=pca_label, 
-                  aes(label=ident, x, y)),
-      nrow = 1, 
-      align = "v")
-```
-
-<p align="center">
-<img src="../img/SC_phase_umap_pca_loadObj.png" width="800">
-</p>
-
-Next we will explore additional metrics, such as the number of UMIs and genes per cell, S-phase and G2M-phase markers, and mitochondrial gene expression by UMAP. 
-
-```r
-# Determine metrics to plot present in seurat_integrated@meta.data
-metrics <-  c("nUMI", "nGene", "S.Score", "G2M.Score", "mitoRatio")
-
-# Extract the UMAP coordinates for each cell and include information about the metrics to plot
-qc_data <- FetchData(seurat_integrated, 
-                     vars = c(metrics, "ident", "UMAP_1", "UMAP_2"))
-
-# Plot a UMAP plot for each metric
-map(metrics, function(qc){
-        ggplot(qc_data,
-               aes(UMAP_1, UMAP_2)) +
-                geom_point(aes_string(color=qc), 
-                           alpha = 0.7) +
-                scale_color_gradient(guide = FALSE, 
-                                     low = "grey90", 
-                                     high = "blue")  +
-                geom_text(data=umap_label, 
-                          aes(label=ident, x, y)) +
-                ggtitle(qc)
-}) %>%
-        plot_grid(plotlist = .)
-```
-
-<p align="center">
-<img src="../img/SC_metrics_umpa_loadObj.png" width="800">
-</p>
-
-The metrics seem to be relatively even across the clusters, with the exception of the `nUMIs` and `nGene` exhibiting higher values in clusters 3, 9, 14, and 15. We will keep an eye on these clusters to see whether the cell types may explain the increase.
-
-We can also explore how well our clusters separate by the different PCs; we hope that the defined PCs separate the cell types well. In the UMAP plots below, the cells are colored by their PC score for each respective principal component. 
+In the UMAP plots below, the cells are colored by their PC score for each respective principal component. 
 
 Let's take a quick look at the top 16 PCs:
 
 ```r
-# Defining the information in the seurat object of interest
-columns <- c(paste0("PC_", 1:16),
-            "ident",
-            "UMAP_1", "UMAP_2")
-
-# Extracting this data from the seurat object
-pc_data <- FetchData(seurat_integrated, 
-                     vars = columns)
-
 # Plotting a UMAP plot for each of the PCs
 map(paste0("PC_", 1:16), function(pc){
         ggplot(pc_data, 
