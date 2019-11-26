@@ -16,18 +16,16 @@
 | 14:30 - 14:45 | Break | |
 | 14:45 - 15:30 | Quality control | Meeta |
 | 15:30 - 16:15 | Normalization and PCA | Radhika |
-| 16:15 - 17:00 | SCTransform and integration | Mary |
 
 
 ## Day2
 
 | Time |  Topic  | Instructor |
 |:-----------:|:----------:|:--------:|
-| 09:00 - 09:45 | SCTransform and integration (cont.) | Mary |
-| 09:45 - 10:30 | Clustering | Radhika |
+| 09:00 - 10:30 | SCTransform and integration | Mary |
 | 10:30 - 10:45 | Break | |
-| 10:45 - 11:15 | Clustering (cont.) | Radhika |
-| 11:15 - 12:00 | Clustering quality control | Mary |
+| 10:45 - 12:00 | Clustering | Radhika |
 | 12:00 - 13:00 | Lunch | |
-| 13:00 - 13:30 | Clustering quality control (cont.) | Mary |
-| 13:30 - 14:45 | Marker identification | Meeta |
+| 13:00 - 14:15 | Clustering quality control | Mary |
+| 14:15 - 14:30 | Break | |
+| 14:30 - 15:45 | Marker identification | Meeta |
