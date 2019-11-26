@@ -4,11 +4,6 @@ author: "Mary Piper, Lorena Pantano, Meeta Mistry, Radhika Khetani, Rory Kirchne
 date: Thursday, October 31st, 2019
 ---
 
-Approximate time: 45 minutes
-
-## Learning Objectives:
-
-* An introduction to single-cell RNA-seq
 
 # Single-cell RNA-seq
 
