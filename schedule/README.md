@@ -11,13 +11,12 @@
 | 10:45 - 11:30 | Single-cell RNA-seq design and methods (cont) | [Dr. Sarah Boswell](https://scholar.harvard.edu/saboswell) |
 | 11:30 - 12:00 | Raw data to count matrix | Mary |
 | 12:00 - 13:00 | Lunch | |
-| 13:00 - 13:45 | [R Refresher] | Meeta |
-| 13:50 - 14:35 | [Project organization and setting up for analysis ](https://hbctraining.github.io/scRNA-seq/lessons/02_SC_quality_control-setup.html)  | Radhika |
-| 14:35 - 15:00 | [Quality control of raw count data](https://hbctraining.github.io/scRNA-seq/lessons/03_SC_quality_control.html)  | Meeta |
-| 15:00 - 15:10 | Coffee | |
-| 15:10 - 15:30 | [Quality control of raw count data (cont.)](https://hbctraining.github.io/scRNA-seq/lessons/03_SC_quality_control.html#assessing-the-quality-metrics)  | Meeta |
-| 15:30 - 16:15 | [Normalization and PCA](../lessons/04_normalization_and_PCA.md) | Radhika |
-| 16:15 - 17:00 | [Clustering](https://hbctraining.github.io/scRNA-seq/lessons/05_SC_clustering_cells.html)  | Mary |
+| 13:00 - 13:45 | R Refresher | Meeta |
+| 13:45 - 14:30 | Quality control set-up | Radhika |
+| 14:30 - 14:45 | Break | |
+| 14:45 - 15:30 | Quality control | Meeta |
+| 15:30 - 16:15 | Normalization and PCA | Radhika |
+| 16:15 - 17:00 | SCTransform and integration | Mary |
 
 
 ## Day2
