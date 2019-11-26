@@ -92,7 +92,7 @@ ElbowPlot(object = seurat_integrated,
 </p>
 
 
-Based on this plot, we could roughly determine the majority of the variation by where the elbow occurs (touches the ground) to be somewhere between PC12-PC16. While this gives us a good rough idea of the number of PCs needed to be included, you can also use a [**more quantitative approach**](lessons/elbow_plot_metric.md) which may be a bit more reliable.  
+Based on this plot, we could roughly determine the majority of the variation by where the elbow occurs (touches the ground) to be somewhere between PC12-PC16. While this gives us a good rough idea of the number of PCs needed to be included, you can also use a [**more quantitative approach**](elbow_plot_metric.md) which may be a bit more reliable.  
 
 Since the SCTransform method is more accurate than some of the older methods of normalization and identification of variable genes used by Seurat, it is not as imperative to determine the a specific PC value. As long as we choose a PC that is large enough to capture the majority of the variation, we can choose that value and move forward with it. For our analysis, we will use the first **40 PCs** to generate the clusters. 
 
