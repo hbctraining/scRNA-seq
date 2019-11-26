@@ -119,7 +119,7 @@ The metrics seem to be relatively even across the clusters, with the exception o
 
 We can also explore how well our clusters separate by the different PCs; we hope that the defined PCs separate the cell types well. To visualize this information, we need to extract the UMAP coordinate information for the cells along with their corresponding scores for each of the PCs to view by UMAP. 
 
-First, we identify the information we would like to extract from the Seurat object, then, we can use the `FetchData() function to extract it.
+First, we identify the information we would like to extract from the Seurat object, then, we can use the `FetchData()` function to extract it.
 
 ```r
 # Defining the information in the seurat object of interest
