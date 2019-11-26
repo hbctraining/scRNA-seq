@@ -52,7 +52,6 @@ Download the most recent versions of R and RStudio for your laptop:
 1. `scales`
 1. `cowplot`
 1. `devtools`
-1. `reticulate`
 1. `BiocManager`
 
 Please install them one-by-one -
@@ -90,7 +89,6 @@ library(Matrix)
 library(RCurl)
 library(scales)
 library(cowplot)
-library(reticulate)
 library(SingleCellExperiment)
 library(AnnotationHub)
 library(ensembldb)
