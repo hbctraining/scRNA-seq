@@ -1,7 +1,7 @@
 ---
 title: "Single-cell RNA-seq: Clustering Analysis"
 author: "Mary Piper, Lorena Pantano, Meeta Mistry, Radhika Khetani"
-date: Friday, July 12th, 2019
+date: Tuesday, November 26th, 2019
 ---
 
 Approximate time: 90 minutes
@@ -64,9 +64,9 @@ View(n_cells)
 <img src="../img/SC_clustercells_loadObj.png" width="800">
 </p>
 
-Tho acquire the different cluster QC metrics, we can use the `FetchData()` function from Seurat, perform some data wrangling, and plot the metrics with ggplot2. We will start by exploring the distribution of cells in each sample and in the different phases of the cell cycle to view by UMAP and PCA.
+To acquire the different cluster QC metrics, we can use the `FetchData()` function from Seurat, perform some data wrangling, and plot the metrics with ggplot2. We will start by exploring the distribution of cells in each sample and in the different phases of the cell cycle to view by UMAP and PCA.
 
-First we will acquire the cell cycle and UMAP coordinate information to view by UMAP:
+First, we will acquire the cell cycle and UMAP coordinate information to view by UMAP:
 
 ```r
 # Establishing groups to color plots by
@@ -167,9 +167,11 @@ map(metrics, function(qc){
 <img src="../img/SC_metrics_umpa_loadObj.png" width="800">
 </p>
 
-The metrics seem to be relatively even across the clusters, with the exception of the `nUMIs` and `nGene` exhibiting higher values in clusters. We will keep an eye on these clusters to see whether the cell types may explain the increase.
+The metrics seem to be relatively even across the clusters, with the exception of the `nUMIs` and `nGene` exhibiting higher values in clusters 3, 9, 14, and 15. We will keep an eye on these clusters to see whether the cell types may explain the increase.
 
-We can also explore how well our clusters separate by the different PCs; we hope that the defined PCs separate the cell types well. In the UMAP plots below, the cells are colored by their PC score for each respective principal component.
+We can also explore how well our clusters separate by the different PCs; we hope that the defined PCs separate the cell types well. In the UMAP plots below, the cells are colored by their PC score for each respective principal component. 
+
+Let's take a quick look at the top 16 PCs:
 
 ```r
 # Defining the information in the seurat object of interest
@@ -201,7 +203,7 @@ map(paste0("PC_", 1:16), function(pc){
 <img src="../img/16_pcs.png" width="800">
 </p>
 
-We can see how the clusters are represented by the different PCs. For instance, the genes driving `PC_2` exhibit higher expression in clusters 4 and 11. We could look back at our genes driving this PC to get an idea of what the cell types might be:
+We can see how the clusters are represented by the different PCs. For instance, the genes driving `PC_2` exhibit higher expression in clusters 6, 11, and 17 (maybe a bit higher in 15, too). We could look back at our genes driving this PC to get an idea of what the cell types might be:
 
 ```r
 # Examine PCA results 
@@ -212,7 +214,7 @@ print(seurat_integrated[["pca"]], dims = 1:5, nfeatures = 5)
 <img src="../img/PC_print_loadObj.png" width="400">
 </p>
 
-With the CD79A gene and the HLA genes as positive markers of `PC_2`, we can hypothesize that clusters 4 and 11 correspond to B cells. This just hints at what the clusters identity could be, with the identities of the clusters being determined through a combination of the PCs. 
+With the CD79A gene and the HLA genes as positive markers of `PC_2`, we can hypothesize that clusters 6, 11, and 17 correspond to B cells. This just hints at what the clusters identity could be, with the identities of the clusters being determined through a combination of the PCs. 
 
 To truly determine the identity of the clusters and whether the `resolution` is appropriate, it is helpful to explore a handful of known markers for the cell types expected. 
 
@@ -269,7 +271,7 @@ FeaturePlot(seurat_integrated,
 <img src="../img/CD14_monocytes_loadObj.png" width="800">
 </p>
 
-CD14+ monocytes appear to correspond to clusters 0, 8, and 15.
+CD14+ monocytes appear to correspond to clusters 1, 3, 14, and 15.
 
 **FCGR3A+ monocyte markers**
 
@@ -283,7 +285,7 @@ FeaturePlot(seurat_integrated,
 <img src="../img/FCGR3A_monocyte_loadObj.png" width="800">
 </p>
 
-FCGR3A+ monocytes markers distinctly highlight cluster 8. 
+FCGR3A+ monocytes markers distinctly highlight cluster 9. 
 
 **Macrophages**
 
@@ -311,7 +313,7 @@ FeaturePlot(seurat_integrated,
 <img src="../img/DCs_loadObj.png" width="800">
 </p>
 
-The markers corresponding to conventional dendritic cells identify cluster 12 (both markers consistently show expression).
+??The markers corresponding to conventional dendritic cells identify cluster 12 (both markers consistently show expression).
 
 **Plasmacytoid dendritic cell markers**
 
@@ -325,7 +327,7 @@ FeaturePlot(seurat_integrated,
 <img src="../img/pDCs_loadObj.png" width="800">
 </p>
 
-Plasmacytoid dendritic cells (pDCs) also correspond to cluster 12 which also identifies with the conventional dendritic cells (cDCs). This indicates that we may need to increase our `resolution` clustering parameter to separate out our pDCs from our cDCs. 
+Plasmacytoid dendritic cells (pDCs) also correspond to cluster 19 which also identifies with the conventional dendritic cells (cDCs). This indicates that we may need to increase our `resolution` clustering parameter to separate out our pDCs from our cDCs. 
 
 We could test out different resolutions by running the following code:
 
@@ -371,7 +373,7 @@ FeaturePlot(seurat_integrated,
 <img src="../img/Bcells_loadObj.png" width="800">
 </p>
 
-Clusters 4 and 11 have good expression of the B cell markers.
+Clusters 6, 11, and 17 have good expression of the B cell markers. This is corresponds to the identity for these clusters that we hypothesized based on the PCs.
 
 **T cell markers**
 
@@ -385,7 +387,7 @@ FeaturePlot(seurat_integrated,
 <img src="../img/Tcell_loadObj.png" width="600">
 </p>
 
-All T cells markers concentrate in clusters 1, 2, 3, 6, 9, 10, 13, and 14.
+All T cells markers concentrate in the large group of clusters on the right-hand side of this plot, with the exception of clusters 7, 8, 12, and 16. 
 
 **CD4+ T cell markers**
 
@@ -399,7 +401,7 @@ FeaturePlot(seurat_integrated,
 <img src="../img/CD4Tcells_loadObj.png" width="800">
 </p>
 
-The subset of T cells corresponding to the CD4+ T cells are clusters 1, 2, 3, 10, 13, 14, and possibly cluster 9.
+The subset of T cells corresponding to the CD4+ T cells are clusters 0, 2, 4, 10, 18.
 
 **CD8+ T cell markers**
 
@@ -413,7 +415,7 @@ FeaturePlot(seurat_integrated,
 <img src="../img/CD8Tcells_loadObj.png" width="800">
 </p>
 
-For CD8+ T cells the only consistent expression for both markers is observed for cluster 6.
+For CD8+ T cells the only consistent expression for both markers is observed for clusters 5 and 13.
 
 **NK cell markers**
 
@@ -427,7 +429,7 @@ FeaturePlot(seurat_integrated,
 <img src="../img/NKcells_loadObj.png" width="800">
 </p>
 
-The NK cell markers are expressed in cluster 5, 6 and 13. 
+The NK cell markers are expressed in clusters 8 and 12, in addition to cluster 5; however, we know cluster 5 expresses T cell markers.
 
 **Megakaryocyte markers**
 
@@ -441,7 +443,7 @@ FeaturePlot(seurat_integrated,
 <img src="../img/megakaryocytes_loadObj.png" width="600">
 </p>
 
-The megakaryocyte markers seem to be expressed mainly in cluster 10.
+The megakaryocyte markers seem to be expressed mainly in cluster 16.
 
 **Erythrocyte markers**
 
@@ -462,18 +464,18 @@ Based on these results, we can associate clusters with the cell types. However, 
 
 | Cell Type | Clusters |
 |:---:|:---:|
-| CD14+ monocytes | 0, 15 | 
-| FCGR3A+ monocytes | 8 |
-| Conventional dendritic cells | 12 |
-| Plasmacytoid dendritic cells | 12 |
-| B cells | 4, 11 |
-| T cells | 1, 2, 3, 6, 9, 10, 13, 14 |
-| CD4+ T cells | 1, 2, 3, 9, 10, 13, 14 |
-| CD8+ T cells| 6 |
-| NK cells | 5, 6, 13 |
-| Megakaryocytes | 10 |
+| CD14+ monocytes | 1, 3, 14 | 
+| FCGR3A+ monocytes | 9 |
+| Conventional dendritic cells | ? |
+| Plasmacytoid dendritic cells | 19 |
+| B cells | 6, 11, 17 |
+| T cells | 0, 2, 4, 5, 10, 13, 18 |
+| CD4+ T cells | 0, 2, 4, 10, 18 |
+| CD8+ T cells| 5, 13 |
+| NK cells | 8, 12 |
+| Megakaryocytes | 16 |
 | Erythrocytes | - |
-| Unknown | 7 |
+| Unknown | 7, 20 |
 
 > **NOTE:** With the pDCs, in addition to any other cluster that appears to contain two separate cell types, it's helpful to increase our clustering resolution to properly subset the clusters, as discussed above. Alternatively, if we still can't separate out the clusters using increased resolution, then it's possible that we had used too few principal components such that we are just not separating out these cell types of interest. To inform our choice of PCs, we could look at our PC gene expression overlapping the UMAP plots and determine whether our cell populations are separating by the PCs included.
 
