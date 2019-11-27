@@ -63,9 +63,11 @@ There are a few different types of marker identification that we can explore usi
 
 ## Identification of all markers for each cluster
 
-This type of analysis is typically recommended for when evaluating a single sample group/condition. We are comparing each cluster against all other clusters to identify marker genes using the ` FindAllMarkers()` function. The cells in each cluster are treated as replicates, and a differential expression analysis is performed with the specified statistical test. The default is a Wilcoxon Rank Sum test, but there are other options available. 
+This type of analysis is typically **recommended for when evaluating a single sample group/condition**. With the ` FindAllMarkers()` function we are comparing each cluster against all other clusters to identify potential marker genes. The cells in each cluster are treated as replicates, and essentially a **differential expression analysis is performed** with some statistical test. 
 
-The `FindAllMarkers()` function has three important arguments which provide thresholds for determining whether a gene is a marker:
+> **NOTE:** The default is a Wilcoxon Rank Sum test, but there are other options available. 
+
+The `FindAllMarkers()` function has **three important arguments** which provide thresholds for determining whether a gene is a marker:
 
 - `logfc.threshold`: minimum log2 foldchange for average expression of gene in cluster relative to the average expression in all other clusters combined. Default is 0.25.
 	- **Cons:** 
@@ -76,12 +78,13 @@ The `FindAllMarkers()` function has three important arguments which provide thre
 - `min.pct`: only test genes that are detected in a minimum fraction of cells in either of the two populations. Meant to speed up the function by not testing genes that are very infrequently expressed. Default is 0.1.
 	- **Cons:** if set to a very high value could incur many false negatives due to the fact that not all genes are detected in all cells (even if it is expressed) 
 	
-You could use any combination of these arguments depending on how stringent/lenient you want to be. Also, by default this function will return to you genes that exhibit both positive and negative expression changes. Typically, we add an argument `only.pos` to opt for keeping only the positive changes. The code to find markers for each cluster is shown below. **We will not run this code, however we will revisit this function a little bit later in the lesson.**
+You could use any combination of these arguments depending on how stringent/lenient you want to be. Also, by default this function will return to you genes that exhibit both positive and negative expression changes. Typically, we add an argument `only.pos` to opt for keeping only the positive changes. The code to find markers for each cluster is shown below. **We will not run this code.**
 
 ```r
 ## DO NOT RUN THIS CODE ##
+
 # Find markers for every cluster compared to all remaining cells, report only the positive ones
-markers <- FindAllMarkers(object = seurat_control, 
+markers <- FindAllMarkers(object = seurat_integrated, 
                           only.pos = TRUE,
                           logfc.threshold = 0.25)                     
 ```
@@ -134,7 +137,7 @@ Since we have samples representing different conditions in our dataset, **our be
 Before we start our marker identification will explicitly set our default assay, we will want to use the **original counts and not the integrated data**.
 
 ```r
-DefaultAssay(combined) <- "RNA"
+DefaultAssay(seurat_integrated) <- "RNA"
 ```
 
 > **NOTE:** Although the default setting for this function is to fetch data from the "RNA" slot, we encourage you to run this line of code above to be absolutely sure in case the active slot was changed somewhere upstream in your analysis.
@@ -144,34 +147,34 @@ The function `FindConservedMarkers()`, has the following structure:
 **`FindConservedMarkers()` syntax:**
 
 ```r
-FindConservedMarkers(seurat_obj,
+FindConservedMarkers(seurat_integrated,
                      ident.1 = cluster,
-                     grouping.var = "group",
+                     grouping.var = "sample",
                      only.pos = TRUE,
 		     min.diff.pct = 0.25,
                      min.pct = 0.25,
 		     logfc.threshold = 0.25)
 ```
 
-You will recognize some of the arguments described previously for the `FindAllMarkers()` function; this is because internally it is using that function to first find markers within each group. Here, we list **some additional arguments** which provide for when using `FindConservedMarkers()`:
+You will recognize some of the arguments we described previously for the `FindAllMarkers()` function; this is because internally it is using that function to first find markers within each group. Here, we list **some additional arguments** which provide for when using `FindConservedMarkers()`:
 
 - `ident.1`: this function only evaluates one cluster at a time; here you would specify the cluster of interest.
 - `grouping.var`: the variable (column header) in your metadata which specifies the separation of cells into groups
 
+For our analysis we will be fairly lenient and **use only the log2 fold change threshold greater than 0.25**. We will also specify to return only the positive markers for each cluster.
 
 
-For our analysis we will **only implement which parameters from above??** We will be a bit lenient and use only the log2 fold change threshold greater than 0.25. We will also specify to return only the positive markers for each cluster.
-
-
-Let's **test it out on one cluster**:
+Let's **test it out on one cluster** to see how it works:
 
 ```r
-cluster0_conserved_markers <- FindConservedMarkers(seurat_obj,
+cluster0_conserved_markers <- FindConservedMarkers(seurat_integrated,
                               ident.1 = 0,
-                     	      grouping.var = "group",
+                     	      grouping.var = "sample",
                               only.pos = TRUE,
 		              logfc.threshold = 0.25)
 ```
+
+
 
 **ADD A SCREENSHOT OF WHAT THE OUTPUT TABLE LOOKS LIKE**
 
@@ -188,7 +191,7 @@ The function `FindConservedMarkers()` **accepts a single cluster at a time**, an
 ```r
 # Create function to get conserved markers for any given cluster
 get_conserved <- function(cluster){
-        FindConservedMarkers(combined,
+        FindConservedMarkers(seurat_integrated,
                              ident.1 = cluster,
                              grouping.var = "sample",
                              only.pos = TRUE) %>%
