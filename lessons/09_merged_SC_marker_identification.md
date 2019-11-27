@@ -44,11 +44,11 @@ Our clustering analysis resulted in the following clusters:
 <img src="../img/SC_umap.png" width="800">
 </p>
 
-Remember that we had the following questions from the clustering analysis: 
+**Remember that we had the following questions from the clustering analysis**: 
 
-1. What are the cell type identities of clusters 7 and 20?
-2. Do the clusters corresponding to the same cell types have biologically meaningful differences? Are there subpopulations of these cell types?
-3. Can we acquire higher confidence in these cell type identities by identifying other marker genes for these clusters?
+*1. What are the cell type identities of clusters 7 and 20?*
+*2. Do the clusters corresponding to the same cell types have biologically meaningful differences? Are there subpopulations of these cell types?*
+*3. Can we acquire higher confidence in these cell type identities by identifying other marker genes for these clusters?*
 
 There are a few different types of marker identification that we can explore using Seurat to get to the answer of these questions. Each with their own benefits and drawbacks:
 
