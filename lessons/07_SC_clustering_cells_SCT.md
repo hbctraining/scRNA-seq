@@ -210,7 +210,7 @@ DimPlot(seurat_integrated,
 
 ***
 
-[Click here for next lesson](06_SC_clustering_quality_control.md)
+[Click here for next lesson](08_SC_clustering_quality_control.md)
 
 ***
 
