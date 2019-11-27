@@ -149,7 +149,7 @@ cluster0_conserved_markers <- FindConservedMarkers(seurat_integrated,
 - **max_pval:**
 - **minimump_p_val:**
 
-It can be helpful to add columns with gene annotation information. In order to do that we will have you [download this csv file]() to your `data` folder and load it in to your R environment.
+It can be helpful to add columns with gene annotation information. In order to do that we will have you [download this csv file](https://github.com/hbctraining/scRNA-seq/raw/master/data/annotation.csv) to your `data` folder and load it in to your R environment.
 
 >**NOTE:** If you are interested in knowing how we obtained this annotation file, take a look at [the linked materials]().
 
