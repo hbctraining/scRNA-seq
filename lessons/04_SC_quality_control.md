@@ -351,6 +351,8 @@ save(seurat_raw, file="data/seurat_raw.RData")
 
 ```
 
+***
+
 [Click here for next lesson](05_normalization_and_PCA.md)
 
 ---
