@@ -158,6 +158,19 @@ In the UMAP plots below, the cells are colored by their PC score for each respec
 Let's take a quick look at the top 16 PCs:
 
 ```r
+# Establishing groups to color plots by
+group_by <- c("Phase")
+
+# Getting coordinates for cells to use for UMAP and associated grouping variable information
+class_umap_data <- FetchData(seurat_integrated, 
+                             vars = c("ident", "UMAP_1", "UMAP_2", group_by))
+
+# Adding cluster label to center of cluster on UMAP
+umap_label <- FetchData(seurat_integrated, 
+                        vars = c("ident", "UMAP_1", "UMAP_2"))  %>%
+  group_by(ident) %>%
+  summarise(x=mean(UMAP_1), y=mean(UMAP_2))
+  
 # Plotting a UMAP plot for each of the PCs
 map(paste0("PC_", 1:16), function(pc){
         ggplot(pc_data, 
