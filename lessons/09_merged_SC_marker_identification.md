@@ -238,12 +238,14 @@ View(top10)
 
 **ADD AN EXPLANATION HERE OF WHAT WE THINK CLUSTER 7 AND CLUSTER 20 CORRESPOND TO**
 
+We see a lot of heat shock and DNA damage genes appear for cluster 7. Based on these markers, it is likely that these are **stressed or dying cells**. However, we also a few T cell-associated genes and markers of activation. It is possible that these could be activated (cytotoxic) T cells. We could explore the quality metrics for these cells in more detail before removing teh cluster of cells just to support that argument.
+
 > #### Finding markers for all clusters
 > For your data, you may want to run this function on all clusters, in which case you could input `0:20` instead of `c(7,20)`; however, it would take quite a while to run. Also, it is possible that when you run this function on all clusters, in **some cases you will have clusters that do not have enough cells for a particular group** - and  your function will fail. For these clusters you will need to use `FindAllMarkers()`.
 
+Based on these marker results and our previous look at known marker genes, we can determine whether the markers make sense for our **hypothesized identities for each cluster**:
 
-Based on these marker results, we can determine whether the markers make sense for our hypothesized identities for each cluster:
-
+**NEED TO UPDATE THIS TABLE**
 
 | Cell Type | Clusters |
 |:---:|:---:|
@@ -260,38 +262,22 @@ Based on these marker results, we can determine whether the markers make sense f
 | Erythrocytes | - |
 | Unknown | 7, 20 |
 
-If there were any questions about the identity of any clusters, exploring the cluster's markers would be the first step. Let's look at the `ann_markers`, filtering for cluster 7 and see if we can **obtain any hints about our unknown cluster**.
 
-<p align="center">
-<img src="../img/cluster7_markers_loadObj.png" width="800">
-</p>
-
-We see a lot of heat shock and DNA damage genes appear. Based on these markers, it is likely that these are **stressed or dying cells**. However, we also see T cell-associated genes and markers of activation. It is possible that these could be activated (cytotoxic) T cells. We could explore the quality metrics for these cells in more detail before removing just to support that argument.
-
-We also had questions regarding the identity of cluster 6. Is cluster 6 a CD8+ T cell, an NK cell, or an NK T cell?
-
-We can look at the markers of **cluster 6 to try to resolve the identity**:
-
-<p align="center">
-<img src="../img/cluster6_markers_loadObj.png" width="800">
-</p>
-
-There are definitely T cell receptors that are enriched among cluster 6. Since NK cells cannot have expression of the T cell receptor genes we can therefore conclude that these cannot be NK cells. On the other hand CD8+ T cells can have expression of killer cell receptors. So, could these be NK T cells? Probably not, since NK T cells are usually a rare population and in our case we have many cells here. Thus, we **hypothesize that cluster 6 represents activated CD8+ T cells (cytotoxic T cells)**.
-
-To get a better idea of cell type identity we can explore the expression of different identified markers by cluster using the `FeaturePlot()` function. For example, we can look at the cluster 6 markers:
+To get a better idea of cell type identity we can **explore the expression of different identified markers** by cluster using the `FeaturePlot()` function. For example, we can look at the cluster 20 markers:
 
 ```r
-# Plot top 5 markers for cluster 6
-FeaturePlot(object = seurat_control, 
-            features = top5[top5$cluster == 6, "gene"] %>%
-                    pull(gene))
+# Plot top 5 markers for cluster 20
+FeaturePlot(object = seurat_integrated, 
+            features = top10[top10$cluster_id == 20, "gene"] %>%
+              pull(gene) %>% head(n=5))
+
 ```
 
 <p align="center">
-<img src="../img/fig_cluster6_loadObj.png" width="800">
+<img src="../img/" width="800">
 </p>
 
-We can also explore the range in expression of specific markers by using violin plots:
+We can also explore the range in expression of specific markers by using **violin plots**:
 
 > **Violin plots** are similar to box plots, except that they also show the probability density of the data at different values, usually smoothed by a kernel density estimator. A violin plot is more informative than a plain box plot. While a box plot only shows summary statistics such as mean/median and interquartile ranges, the violin plot shows the full distribution of the data. The difference is particularly useful when the data distribution is multimodal (more than one peak). In this case a violin plot shows the presence of different peaks, their position and relative amplitude.
 
@@ -313,28 +299,7 @@ These results and plots can help us determine the identity of these clusters or 
 
 The last set of questions we had regarding the analysis involved whether the clusters corresponding to the same cell types have biologically meaningful differences. Sometimes the list of markers returned don't sufficiently separate some of the clusters. 
 
-Again, we performed this analysis with the single samples, so we are going to perform it by completing the exercises below.
 
-***
-
-**Exercises**
-
-1. Determine differentiating markers for CD8+ T cells - clusters 6 versus 10 - using the `FindMarkers()` function.
-2. **Annotate** the markers with gene descriptions.
-3. **Reorder the columns** to be in the order shown below.
-
-	<p align="center">
-	<img src="../img/sc_cd8_t_markers_diff.png" width="800">
-	</p>
-
-4. **Arrange rows** by `avg_logFC` values
-5. **Save** our rearranged marker analysis results to a file called `cluster6vs10_markers.csv` in the `results` folder.
-6. Based on these marker results, **determine whether we need to separate** clusters 6 and 10 as their own clusters.
-7. **Extra credit:** Repeat above steps for the clusters assigned to `Naive CD4+ T cells`, in addition to repeating for `Naive B cells`.
-
-***
-
-[Click here for next lesson]()
 
 ***
 
