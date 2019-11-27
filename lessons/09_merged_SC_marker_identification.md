@@ -136,7 +136,7 @@ cluster0_conserved_markers <- FindConservedMarkers(seurat_integrated,
 ```
 
 <p align="center">
-<img src="../img/conserved_markers_table.png" width="800">
+<img src="../img/conserved_markers_table.png" width="1000">
 </p>
 
 **The output from the `FindConservedMarkers()` function**, is a matrix containing a ranked list of putative markers listed by gene ID for the cluster we specified, and associated statistics. Note that the same set of statistics are computed for each group (in our case, Ctrl and Stim) and the last two columns correspond to the combined p-value across the two groups. We describe some of these columns below:
