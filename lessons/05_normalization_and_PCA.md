@@ -121,7 +121,7 @@ Sometimes higher PCs are also used for this visualization, expecially if the var
 
 For our scRNA-seq data, instead of comparing the expression of 20,000+ genes across all cells, we will use between 10-100 PC scores to compare the cells, which will highlight the greatest sources of variation present in our dataset. We will use these PCs to cluster our cells based on similarity in expression, in addition to exploring the sources of variation associated with these highest PCs.
 
-[Click here for next lesson](05_SC_clustering_cells.md)
+[Click here for next lesson](06_SC_SCT_and_integration.md)
 
 ***
 
