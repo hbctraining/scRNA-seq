@@ -344,7 +344,7 @@ DimPlot(seurat_integrated,
 </p>
 
 
-[Click here for next lesson]()
+[Click here for next lesson](07_SC_clustering_cells_SCT.md)
 
 ***
 
