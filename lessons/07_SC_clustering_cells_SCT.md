@@ -146,8 +146,7 @@ seurat_integrated <- RunUMAP(seurat_integrated,
 DimPlot(seurat_integrated,
         reduction = "umap",
         label = TRUE,
-        label.size = 6,
-        plot.title = "UMAP")
+        label.size = 6)
 ```
 
 <p align="center">
@@ -166,8 +165,7 @@ Idents(object = seurat_integrated) <- "integrated_snn_res.0.4"
 DimPlot(seurat_integrated,
         reduction = "umap",
         label = TRUE,
-        label.size = 6,
-        plot.title = "UMAP")
+        label.size = 6)
 ```
 
 <p align="center">
@@ -206,8 +204,7 @@ Idents(object = seurat_integrated) <- "integrated_snn_res.0.8"
 DimPlot(seurat_integrated,
         reduction = "umap",
         label = TRUE,
-        label.size = 6,
-        plot.title = "UMAP")
+        label.size = 6)
 ```
 
 <p align="center">
