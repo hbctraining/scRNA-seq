@@ -351,6 +351,7 @@ DimPlot(seurat_integrated,
 > <img src="../img/unintegrated_umap.png" width="600">
 > </p>
 
+***
 
 [Click here for next lesson](07_SC_clustering_cells_SCT.md)
 
