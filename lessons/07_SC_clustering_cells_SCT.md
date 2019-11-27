@@ -179,11 +179,11 @@ DimPlot(seurat_integrated,
 
 It is possible that there is some variability in the way your clusters look compared to those in the lesson. In particular **you may see a difference in the labeling of clusters**. This is an unfortunate consequence of slight variations in the versions of packages (mostly Seurat dependencies).
 
-> NOTE: **If your clusters look identical to what's in the lesson, please go ahead to the next secion without any downloads.**
+**If your clusters look identical to what's in the lesson, please go ahead to the next section without any downloads.**
 
 ***
 
-If your clusters do look different from what we have in the lesson, please right-click and download [this Rdata file](https://www.dropbox.com/s/sz2xpg43xnbv7qx/seurat_integrated.RData.bz?dl=1) to the `data` folder. It contains the seurat_integrated object that we have created for the class. 
+**If your clusters do look different from what we have in the lesson**, please right-click and download [this Rdata file](https://www.dropbox.com/s/sz2xpg43xnbv7qx/seurat_integrated.RData.bz?dl=1) to the `data` folder. It contains the seurat_integrated object that we have created for the class. 
 
 Once that large file has downloaded, you will need to:
 
