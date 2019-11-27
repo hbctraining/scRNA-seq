@@ -14,7 +14,7 @@ Approximate time: 90 minutes
 # Single-cell RNA-seq: Quality control
 
 <p align="center">
-<img src="../img/sc_workflow.png" width="800">
+<img src="../img/sc_workflow_integration.png" width="800">
 </p>
 
 ***
