@@ -15,9 +15,7 @@ Approximate time: 90 minutes
 
 Now that we have our high quality cells integrated, we want to know the different cell types present within our population of cells. 
 
-**UPDATE THIS WORKFLOW IMAGE!**
-
-<img src="../img/sc_workflow.png" width="800">
+<img src="../img/sc_workflow_integration.png" width="800">
 
 ***
 
@@ -179,12 +177,15 @@ DimPlot(seurat_integrated,
 
 **How does your UMAP plot compare to the one above?**
 
-What you may have noticed is that there is some variability in the way your plots look compared to those in the lesson. In particular you may see a difference in the labeling of clusters. This is an unfortunate consequence of slight variations in the versions you are using (of the Seurat package and/or dependency packages).
+What you may have noticed is that there is some variability in the way your plots look compared to those in the lesson. In particular **you may see a difference in the labeling of clusters**. This is an unfortunate consequence of slight variations in the versions you are using (of the Seurat package and/or dependency packages).
 
-In order to maintain consistency in the downstream analysis and interpretation of this dataset, we will ask you to [download a new R object](https://www.dropbox.com/s/7m71je2s21kxwcf/seurat_control.rds?dl=1) to the `data` folder. Once downloaded, you will need to **load in the object to your R session and overwrite the existing one**: 
+In order to maintain consistency in the downstream analysis and interpretation of this dataset, we will ask you to [download a new R object](https://www.dropbox.com/s/sz2xpg43xnbv7qx/seurat_integrated.RData.bz?dl=1) to the `data` folder. Once downloaded, you will need to:
+
+1. Unzip the file by double-clicking
+2. **Load in the object to your R session and overwrite the existing one**: 
 
 ```r
-seurat_integrated <- readRDS("data/seurat_integrated.rds")
+load("data/seurat_integrated.RData")
 ```
 
 Using this new R object we will continue with the UMAP method and the 0.8 resolution to check the quality control metrics and known markers for anticipated cell types. Plot the UMAP again to make sure your image now matches what you see in the lesson:
@@ -205,13 +206,11 @@ DimPlot(seurat_integrated,
 <img src="../img/SC_umap.png" width="800">
 </p>
 
-***
 
-**[Exercises](https://hbctraining.github.io/scRNA-seq/lessons/sc_exercises_clustering_analysis.html#clustering-cells-based-on-top-pcs-metagenes)**
 
 ***
 
-[Click here for next lesson](06_SC_clustering_quality_control.md)
+[Click here for next lesson](08_SC_clustering_quality_control.md)
 
 ***
 

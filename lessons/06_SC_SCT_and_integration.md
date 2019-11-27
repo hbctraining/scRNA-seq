@@ -16,9 +16,8 @@ Approximate time: 90 minutes
 
 Now that we have our high quality cells, we have a few steps before we can cluster cells and identify different potential celltypes. Our dataset has two samples from two different conditions (Control and Stimulated), so it would be helpful to integrate these samples to better make comparisons between them. We will need to **normalize our gene expression values and align our cells across conditions** based on the greatest sources of variation in our dataset. In this lesson, we will discuss in detail, and perform these initial steps prior to clustering.
 
-**UPDATE THIS WORKFLOW??**
 
-<img src="../img/sc_workflow.png" width="800">
+<img src="../img/sc_workflow_integration.png" width="800">
 
 ***
 
@@ -72,8 +71,6 @@ To perform this analysis, we will be mainly using functions available in the Seu
 library(Seurat)
 library(tidyverse)
 library(RCurl)
-library(AnnotationHub)
-library(ensembldb)
 ```
 
 To perform the analysis, Seurat requires the data to be present as a `seurat` object. We have created this object in the QC lesson (`seurat_raw`), so we can just use that. 
@@ -85,7 +82,7 @@ The first step in the analysis is to normalize the raw counts to account for dif
 The sctransform method models the UMI counts using a **regularized negative binomial model** to remove the variation due to sequencing depth (total nUMIs per cell), while adjusting the variance based on pooling information across genes with similar abundances (similar to some bulk RNA-seq methods). 
 
 <p align="center">
-<img src="../img/sctransform image?" width="800">
+<img src="../img/sctransform_residuals.png" width="600">
 </p>
 
 The **output of the model** (residuals) is the normalized expression levels for each transcript tested.
@@ -347,7 +344,7 @@ DimPlot(seurat_integrated,
 </p>
 
 
-[Click here for next lesson]()
+[Click here for next lesson](07_SC_clustering_cells_SCT.md)
 
 ***
 

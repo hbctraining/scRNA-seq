@@ -17,7 +17,7 @@ Approximate time: 90 minutes
 
 Now that we have our high quality cells, we want to know the different cell types present within our population of cells. 
 
-<img src="../img/sc_workflow.png" width="800">
+<img src="../img/sc_workflow_integration.png" width="800">
 
 ***
 
@@ -47,40 +47,97 @@ _**Recommendations:**_
 
 To determine whether our clusters might be due to artifacts such as cell cycle phase or mitochondrial expression, it can be useful to explore these metrics visually to see if any clusters exhibit enrichment or are different from the other clusters. However, if enrichment or differences are observed for particular clusters it may not be worrisome if it can be explained by the cell type. 
 
-We can start by exploring the distribution of cells per cluster:
+To explore and visualize the various quality metrics, we will use the versatile `DimPlot()` and `FeaturePlot()` functions from Seurat. 
+
+### Segregation of clusters by sample
+
+We can start by exploring the distribution of cells per cluster in each sample:
 
 ```r
 # Extract identity and sample information from seurat object to determine the number of cells per cluster per sample
 n_cells <- FetchData(seurat_integrated, 
-                     vars = c("ident")) %>% 
-        dplyr::count(ident) %>% 
-        spread(ident, n)
+                     vars = c("ident", "orig.ident")) %>%
+        dplyr::count(ident, orig.ident) %>%
+        tidyr::spread(ident, n)
 
 # View table
 View(n_cells)
 ```
 
 <p align="center">
-<img src="../img/SC_clustercells_loadObj.png" width="800">
+<img src="../img/sc_ncells_by_sample.png" width="800">
 </p>
 
-To acquire the different cluster QC metrics, we can use the `FetchData()` function from Seurat, perform some data wrangling, and plot the metrics with ggplot2. We will start by exploring the distribution of cells in each sample and in the different phases of the cell cycle to view by UMAP and PCA.
-
-First, we will acquire the cell cycle and UMAP coordinate information to view by UMAP:
+We can visualize the cells per cluster for each sample using the UMAP:
 
 ```r
-# Establishing groups to color plots by
-group_by <- c("Phase")
+# UMAP of cells in each cluster by sample
+DimPlot(seurat_integrated, 
+        label = TRUE, 
+        split.by = "sample")  + NoLegend()
+```
+<p align="center">
+<img src="../img/umap_by_sample.png" width="800">
+</p>
 
-# Getting coordinates for cells to use for UMAP and associated grouping variable information
-class_umap_data <- FetchData(seurat_integrated, 
-                             vars = c("ident", "UMAP_1", "UMAP_2", group_by))
+### Segregation of clusters by cell cycle phase
 
-# Adding cluster label to center of cluster on UMAP
-umap_label <- FetchData(seurat_integrated, 
-                        vars = c("ident", "UMAP_1", "UMAP_2"))  %>%
-        group_by(ident) %>%
-        summarise(x=mean(UMAP_1), y=mean(UMAP_2))
+Next we can explore whether the **cells cluster by the different cell cycle phases**. We did not regress out variation due to cell cycle phase when we performed the SCTransform normalization and regression of uninteresting sources of variation. If our cell clusters showed large differences in mitochondrial expression, this would be an indication we would want to re-run the SCTransform and add the `S.Score` and `G2M.Score` to our variables to regress, then re-run the rest of the steps.
+
+
+```r
+# Explore whether clusters segregate by cell cycle phase
+DimPlot(seurat_integrated,
+        label = TRUE, 
+        split.by = "Phase")  + NoLegend()
+```
+
+<p align="center">
+<img src="../img/SC_phase_umap.png" width="600">
+</p>
+
+We do not see much clustering by cell cycle score, so we can proceed with the QC.
+
+### Segregation of clusters by various sources of uninteresting variation
+
+Next we will explore additional metrics, such as the number of UMIs and genes per cell, S-phase and G2M-phase markers, and mitochondrial gene expression by UMAP. Looking at the individual S and G2M scores can give us additional information to checking the phase as we did previously.
+
+```r
+# Determine metrics to plot present in seurat_integrated@meta.data
+metrics <-  c("nUMI", "nGene", "S.Score", "G2M.Score", "mitoRatio")
+
+FeaturePlot(seurat_integrated, 
+            reduction = "umap", 
+            features = metrics,
+            pt.size = 0.4, 
+            sort.cell = TRUE,
+            min.cutoff = 'q10',
+            label = TRUE)
+```
+
+<p align="center">
+<img src="../img/SC_metrics_umpa_loadObj.png" width="800">
+</p>
+
+> _**NOTE:** The `sort.cell` argument will plot the positive cells above the negative cells, while the `min.cutoff` argument will determine the threshold for shading. A `min.cutoff` of `q10` translates to the 10% of cells with the lowest expression of the gene will not exhibit any purple shading (completely gray)._
+
+The metrics seem to be relatively even across the clusters, with the exception of the `nUMIs` and `nGene` exhibiting higher values in clusters 3, 9, 14, and 15, and, perhaps, cluster 17. We will keep an eye on these clusters to see whether the cell types may explain the increase.
+
+### Exploration of the PCs driving the different clusters
+
+We can also explore how well our clusters separate by the different PCs; we hope that the defined PCs separate the cell types well. To visualize this information, we need to extract the UMAP coordinate information for the cells along with their corresponding scores for each of the PCs to view by UMAP. 
+
+First, we identify the information we would like to extract from the Seurat object, then, we can use the `FetchData()` function to extract it.
+
+```r
+# Defining the information in the seurat object of interest
+columns <- c(paste0("PC_", 1:16),
+            "ident",
+            "UMAP_1", "UMAP_2")
+
+# Extracting this data from the seurat object
+pc_data <- FetchData(seurat_integrated, 
+                     vars = columns)
 ```
 
 > **NOTE:** How did we know in the `FetchData()` function to include `UMAP_1` to obtain the UMAP coordinates? The [Seurat cheatsheet](https://satijalab.org/seurat/essential_commands.html) describes the function as being able to pull any data from the expression matrices, cell embeddings, or metadata. 
@@ -96,93 +153,24 @@ umap_label <- FetchData(seurat_integrated,
 >
 > The `FetchData()` function just allows us to extract the data more easily.
 
-
-In addition, we can acquire the same metrics to view by PCA:
-
-```r
-# Getting coordinates for cells to use for PCA and associated grouping variable information
-class_pca_data <- FetchData(seurat_integrated, 
-                            vars = c("ident", "PC_1", "PC_2", group_by))
-
-# Adding cluster label to center of cluster on PCA
-pca_label <- FetchData(seurat_integrated, 
-                       vars = c("ident", "PC_1", "PC_2"))  %>%
-        mutate(ident = seurat_integrated@active.ident) %>%
-        group_by(ident) %>%
-        summarise(x=mean(PC_1), y=mean(PC_2))
-```
-
-Then, we can plot the cell cycle by UMAP and PCA:
-
-```r
-# load cowplot library to enable visualizing 2 plots side-by-side
-library(cowplot)
-
-# Function to plot UMAP and PCA as grids
-plot_grid(
-      ggplot(class_umap_data, aes(UMAP_1, UMAP_2)) +
-        geom_point(aes_string(color = group_by), alpha = 0.7) +
-        scale_color_brewer(palette = "Set2")  +
-        geom_text(data=umap_label, aes(label=ident, x, y)),
-      ggplot(class_pca_data, aes(PC_1, PC_2)) +
-        geom_point(aes_string(color = group_by), alpha = 0.7) +
-        scale_color_brewer(palette = "Set2")  +
-        geom_text(data=pca_label, 
-                  aes(label=ident, x, y)),
-      nrow = 1, 
-      align = "v")
-```
-
-<p align="center">
-<img src="../img/SC_phase_umap_pca_loadObj.png" width="800">
-</p>
-
-Next we will explore additional metrics, such as the number of UMIs and genes per cell, S-phase and G2M-phase markers, and mitochondrial gene expression by UMAP. 
-
-```r
-# Determine metrics to plot present in seurat_integrated@meta.data
-metrics <-  c("nUMI", "nGene", "S.Score", "G2M.Score", "mitoRatio")
-
-# Extract the UMAP coordinates for each cell and include information about the metrics to plot
-qc_data <- FetchData(seurat_integrated, 
-                     vars = c(metrics, "ident", "UMAP_1", "UMAP_2"))
-
-# Plot a UMAP plot for each metric
-map(metrics, function(qc){
-        ggplot(qc_data,
-               aes(UMAP_1, UMAP_2)) +
-                geom_point(aes_string(color=qc), 
-                           alpha = 0.7) +
-                scale_color_gradient(guide = FALSE, 
-                                     low = "grey90", 
-                                     high = "blue")  +
-                geom_text(data=umap_label, 
-                          aes(label=ident, x, y)) +
-                ggtitle(qc)
-}) %>%
-        plot_grid(plotlist = .)
-```
-
-<p align="center">
-<img src="../img/SC_metrics_umpa_loadObj.png" width="800">
-</p>
-
-The metrics seem to be relatively even across the clusters, with the exception of the `nUMIs` and `nGene` exhibiting higher values in clusters 3, 9, 14, and 15. We will keep an eye on these clusters to see whether the cell types may explain the increase.
-
-We can also explore how well our clusters separate by the different PCs; we hope that the defined PCs separate the cell types well. In the UMAP plots below, the cells are colored by their PC score for each respective principal component. 
+In the UMAP plots below, the cells are colored by their PC score for each respective principal component. 
 
 Let's take a quick look at the top 16 PCs:
 
 ```r
-# Defining the information in the seurat object of interest
-columns <- c(paste0("PC_", 1:16),
-            "ident",
-            "UMAP_1", "UMAP_2")
+# Establishing groups to color plots by
+group_by <- c("Phase")
 
-# Extracting this data from the seurat object
-pc_data <- FetchData(seurat_integrated, 
-                     vars = columns)
+# Getting coordinates for cells to use for UMAP and associated grouping variable information
+class_umap_data <- FetchData(seurat_integrated, 
+                             vars = c("ident", "UMAP_1", "UMAP_2", group_by))
 
+# Adding cluster label to center of cluster on UMAP
+umap_label <- FetchData(seurat_integrated, 
+                        vars = c("ident", "UMAP_1", "UMAP_2"))  %>%
+  group_by(ident) %>%
+  summarise(x=mean(UMAP_1), y=mean(UMAP_2))
+  
 # Plotting a UMAP plot for each of the PCs
 map(paste0("PC_", 1:16), function(pc){
         ggplot(pc_data, 
@@ -225,11 +213,11 @@ With the cells clustered, we can explore the cell type identities by looking for
 ```r
 DimPlot(object = seurat_integrated, 
         reduction = "umap", 
-        label = TRUE)
+        label = TRUE) + NoLegend()
 ```
 
 <p align="center">
-<img src="../img/SC_umap.png" width="800">
+<img src="../img/umap_no_legend_res0.8.png" width="600">
 </p>
 
 
@@ -254,6 +242,9 @@ Seurat's `FeaturePlot()` function let's us easily explore the known markers on t
 ```r
 # Select the RNA counts slot to be the default assay
 DefaultAssay(seurat_integrated) <- "RNA"
+
+# Normalize RNA data for visualization purposes
+seurat_integrated <- NormalizeData(seurat_integrated, verbose = FALSE)
 ```
 
 We are looking for consistency of expression of the markers across the clusters. For example, if there are two markers for a cell type and only one of them is expressed in a cluster - then we cannot reliably assign that cluster to the celltype.
@@ -264,25 +255,31 @@ We are looking for consistency of expression of the markers across the clusters.
 ```r
 FeaturePlot(seurat_integrated, 
             reduction = "umap", 
-            features = c("CD14", "LYZ"))
+            features = c("CD14", "LYZ"), 
+            sort.cell = TRUE,
+            min.cutoff = 'q10', 
+            label = TRUE)
 ```
 
 <p align="center">
-<img src="../img/CD14_monocytes_loadObj.png" width="800">
+<img src="../img/CD14_monocytes.png" width="800">
 </p>
 
-CD14+ monocytes appear to correspond to clusters 1, 3, 14, and 15.
+CD14+ monocytes appear to correspond to clusters 1, 3, and 14. We wouldn't include clusters 9 and 15 because they do not highly express both of these markers.
 
 **FCGR3A+ monocyte markers**
 
 ```r
 FeaturePlot(seurat_integrated, 
             reduction = "umap", 
-            features = c("FCGR3A", "MS4A7"))
+            features = c("FCGR3A", "MS4A7"), 
+            sort.cell = TRUE,
+            min.cutoff = 'q10', 
+            label = TRUE)
 ```
 
 <p align="center">
-<img src="../img/FCGR3A_monocyte_loadObj.png" width="800">
+<img src="../img/FCGR3A_monocytes.png" width="800">
 </p>
 
 FCGR3A+ monocytes markers distinctly highlight cluster 9. 
@@ -292,11 +289,14 @@ FCGR3A+ monocytes markers distinctly highlight cluster 9.
 ```r
 FeaturePlot(seurat_integrated, 
             reduction = "umap", 
-            features = c("MARCO", "ITGAM", "ADGRE1"))
+            features = c("MARCO", "ITGAM", "ADGRE1"), 
+            sort.cell = TRUE,
+            min.cutoff = 'q10', 
+            label = TRUE)
 ```
 
 <p align="center">
-<img src="../img/sc_marcro_markers.png" width="800">
+<img src="../img/macrophages.png" width="800">
 </p>
 
 No clusters appear to correspond to macrophages; perhaps cell culture conditions negatively selected for macrophages (more highly adherent).
@@ -306,113 +306,99 @@ No clusters appear to correspond to macrophages; perhaps cell culture conditions
 ```r
 FeaturePlot(seurat_integrated, 
             reduction = "umap", 
-            features = c("FCER1A", "CST3"))
+            features = c("FCER1A", "CST3"), 
+            sort.cell = TRUE,
+            min.cutoff = 'q10', 
+            label = TRUE)
 ```
 
 <p align="center">
-<img src="../img/DCs_loadObj.png" width="800">
+<img src="../img/DCs.png" width="800">
 </p>
 
-??The markers corresponding to conventional dendritic cells identify cluster 12 (both markers consistently show expression).
+The markers corresponding to conventional dendritic cells identify cluster 15 (both markers consistently show expression).
 
 **Plasmacytoid dendritic cell markers**
 
 ```r
 FeaturePlot(seurat_integrated, 
             reduction = "umap", 
-            features = c("IL3RA", "GZMB", "SERPINF1", "ITM2C"))
+            features = c("IL3RA", "GZMB", "SERPINF1", "ITM2C"), 
+            sort.cell = TRUE,
+            min.cutoff = 'q10', 
+            label = TRUE)
 ```
 
 <p align="center">
-<img src="../img/pDCs_loadObj.png" width="800">
+<img src="../img/pDCs.png" width="800">
 </p>
 
-Plasmacytoid dendritic cells (pDCs) also correspond to cluster 19 which also identifies with the conventional dendritic cells (cDCs). This indicates that we may need to increase our `resolution` clustering parameter to separate out our pDCs from our cDCs. 
-
-We could test out different resolutions by running the following code:
-
-```r
-# Assign identity of clusters
-Idents(object = seurat_integrated) <- "integrated_snn_res.1.2"
-
-# Plot the UMAP
-DimPlot(seurat_integrated,
-        reduction = "umap",
-        label = TRUE,
-        label.size = 6,
-        plot.title = "UMAP")
-
-FeaturePlot(seurat_integrated, 
-        reduction = "umap", 
-        features = c("IL3RA", "GZMB", "SERPINF1", "ITM2C"))
-```
-
-Then, we could work our way back through the analysis, starting with the **`Exploration of quality control metrics`** section. However, in the interest of time, we will continue with the clusters we saw earlier, and go back to the resolution of "0.8".
-
-```r
-# Assign identity of clusters
-Idents(object = seurat_integrated) <- "integrated_snn_res.0.8"
-
-# Plot the UMAP
-DimPlot(seurat_integrated,
-        reduction = "umap",
-        label = TRUE,
-        label.size = 6,
-        plot.title = "UMAP")
-```
+Plasmacytoid dendritic cells represent cluster 19. While there are a lot of differences in the expression of these markers, we see cluster 19 is consistently expressed.
 
 **B cell markers**
 
 ```r
 FeaturePlot(seurat_integrated, 
             reduction = "umap", 
-            features = c("CD79A", "MS4A1"))
+            features = c("CD79A", "MS4A1"), 
+            sort.cell = TRUE,
+            min.cutoff = 'q10', 
+            label = TRUE)
 ```
 
 <p align="center">
-<img src="../img/Bcells_loadObj.png" width="800">
+<img src="../img/Bcells.png" width="800">
 </p>
 
-Clusters 6, 11, and 17 have good expression of the B cell markers. This is corresponds to the identity for these clusters that we hypothesized based on the PCs.
+Clusters 6, 11, and 17 have good expression of the B cell markers. This corresponds to the hypothesized identity based on the genes driving PC2.
 
 **T cell markers**
 
 ```r
 FeaturePlot(seurat_integrated, 
             reduction = "umap", 
-            features = c("CD3D"))
+            features = c("CD3D"), 
+            sort.cell = TRUE,
+            min.cutoff = 'q10', 
+            label = TRUE)
 ```
 
 <p align="center">
-<img src="../img/Tcell_loadObj.png" width="600">
+<img src="../img/Tcells.png" width="600">
 </p>
 
-All T cells markers concentrate in the large group of clusters on the right-hand side of this plot, with the exception of clusters 7, 8, 12, and 16. 
+All T cells markers concentrate in the large group of clusters on the right-hand side of the plot, with the exception of clusters 7, 8, 12, and 16. 
 
 **CD4+ T cell markers**
 
 ```r
 FeaturePlot(seurat_integrated, 
             reduction = "umap", 
-            features = c("CD3D", "IL7R", "CCR7"))
+            features = c("CD3D", "IL7R", "CCR7"), 
+            sort.cell = TRUE,
+            min.cutoff = 'q10', 
+            label = TRUE)
 ```
 
 <p align="center">
-<img src="../img/CD4Tcells_loadObj.png" width="800">
+<img src="../img/CD4Tcells.png" width="800">
 </p>
 
-The subset of T cells corresponding to the CD4+ T cells are clusters 0, 2, 4, 10, 18.
+The subset of T cells corresponding to the CD4+ T cells are clusters 0, 2, 4, 10, and 18. We see expression in other clusters, as well, but these weren't expressing high levels of the T cell marker CD3D.
 
 **CD8+ T cell markers**
 
 ```r
 FeaturePlot(seurat_integrated, 
             reduction = "umap", 
-            features = c("CD3D", "CD8A"))
+            features = c("CD3D", "CD8A"), 
+            sort.cell = TRUE,
+            min.cutoff = 'q10', 
+            label = TRUE)
 ```
 
 <p align="center">
-<img src="../img/CD8Tcells_loadObj.png" width="800">
+<img src="../img/CD8Tcells.png" width="800">
 </p>
 
 For CD8+ T cells the only consistent expression for both markers is observed for clusters 5 and 13.
@@ -422,25 +408,31 @@ For CD8+ T cells the only consistent expression for both markers is observed for
 ```r
 FeaturePlot(seurat_integrated, 
             reduction = "umap", 
-            features = c("GNLY", "NKG7"))
+            features = c("GNLY", "NKG7"), 
+            sort.cell = TRUE,
+            min.cutoff = 'q10', 
+            label = TRUE)
 ```
 
 <p align="center">
-<img src="../img/NKcells_loadObj.png" width="800">
+<img src="../img/NKcells.png" width="800">
 </p>
 
-The NK cell markers are expressed in clusters 8 and 12, in addition to cluster 5; however, we know cluster 5 expresses T cell markers.
+The NK cell markers are expressed in clusters 8 and 12, in addition to cluster 5; however, we know cluster 5 expresses T cell markers. We would hypothesize that cluster 5 may be an activated CD8+ T cell.
 
 **Megakaryocyte markers**
 
 ```r
 FeaturePlot(seurat_integrated, 
             reduction = "umap", 
-            features = c("PPBP"))
+            features = c("PPBP"), 
+            sort.cell = TRUE,
+            min.cutoff = 'q10', 
+            label = TRUE)
 ```
 
 <p align="center">
-<img src="../img/megakaryocytes_loadObj.png" width="600">
+<img src="../img/megakaryocytes.png" width="600">
 </p>
 
 The megakaryocyte markers seem to be expressed mainly in cluster 16.
@@ -450,11 +442,14 @@ The megakaryocyte markers seem to be expressed mainly in cluster 16.
 ```r
 FeaturePlot(seurat_integrated, 
             reduction = "umap", 
-            features = c("HBB", "HBA2"))
+            features = c("HBB", "HBA2"), 
+            sort.cell = TRUE,
+            min.cutoff = 'q10', 
+            label = TRUE)
 ```
 
 <p align="center">
-<img src="../img/erythrocyte_loadObj.png" width="800">
+<img src="../img/erythrocytes.png" width="800">
 </p>
 
 There does not seem to be a cluster of erythrocytes, as the markers are spread around the different cell types. This is not a bad thing as the blood cells are often cell types to be excluded from the analysis, since they are not often informative about the condition of interest.
@@ -466,7 +461,7 @@ Based on these results, we can associate clusters with the cell types. However, 
 |:---:|:---:|
 | CD14+ monocytes | 1, 3, 14 | 
 | FCGR3A+ monocytes | 9 |
-| Conventional dendritic cells | ? |
+| Conventional dendritic cells | 15 |
 | Plasmacytoid dendritic cells | 19 |
 | B cells | 6, 11, 17 |
 | T cells | 0, 2, 4, 5, 10, 13, 18 |
@@ -477,20 +472,19 @@ Based on these results, we can associate clusters with the cell types. However, 
 | Erythrocytes | - |
 | Unknown | 7, 20 |
 
-> **NOTE:** With the pDCs, in addition to any other cluster that appears to contain two separate cell types, it's helpful to increase our clustering resolution to properly subset the clusters, as discussed above. Alternatively, if we still can't separate out the clusters using increased resolution, then it's possible that we had used too few principal components such that we are just not separating out these cell types of interest. To inform our choice of PCs, we could look at our PC gene expression overlapping the UMAP plots and determine whether our cell populations are separating by the PCs included.
+> **NOTE:** If any cluster appears to contain two separate cell types, it's helpful to increase our clustering resolution to properly subset the clusters. Alternatively, if we still can't separate out the clusters using increased resolution, then it's possible that we had used too few principal components such that we are just not separating out these cell types of interest. To inform our choice of PCs, we could look at our PC gene expression overlapping the UMAP plots and determine whether our cell populations are separating by the PCs included.
 
 Now we have a decent idea as to the cell types corresponding to the majority of the clusters, but some questions remain:
 
-1. *What is the cell type identity of cluster 7?*
-2. *Is cluster 6 a CD8+ T cell or an NK cell?* *Is cluster 13 a T cell or an NK cell?*
-3. *Do the clusters corresponding to the same cell types have biologically meaningful differences? Are there subpopulations of these cell types?*
-4. *Can we acquire higher confidence in these cell type identities by identifying other marker genes for these clusters?*
+1. *What are the cell type identities of clusters 7 and 20?*
+2. *Do the clusters corresponding to the same cell types have biologically meaningful differences? Are there subpopulations of these cell types?*
+3. *Can we acquire higher confidence in these cell type identities by identifying other marker genes for these clusters?*
 
 Marker identification analysis can help us address all of these questions!! 
 
 The next step will be to perform marker identification analysis, which will output the genes that significantly differ in expression between clusters. Using these genes we can determine or improve confidence in the identities of the clusters/subclusters.
 
-[Click here for next lesson](07_SC_marker_identification.md)
+[Click here for next lesson](09_merged_SC_marker_identification.md)
 
 ***
 

@@ -38,18 +38,17 @@ _**Recommendations:**_
 
 ***
 
-Our clustering analysis resulted in the following clusters: (**ADD NEW CLUSTERING FIGURE HERE**)
+Our clustering analysis resulted in the following clusters:
 
 <p align="center">
-<img src="../img/" width="800">
+<img src="../img/SC_umap.png" width="800">
 </p>
 
-Remember that we had the following questions from the clustering analysis: (**These questions will change!**)
+**Remember that we had the following questions from the clustering analysis**: 
 
-1. *What is the cell type identity of cluster 7?*
-2. *Is cluster 6 a CD8+ T cell or an NK cell?* *Is cluster 13 a T cell or an NK cell?*
-3. *Do the clusters corresponding to the same cell types have biologically meaningful differences? Are there subpopulations of these cell types?*
-4. *Can we acquire higher confidence in these cell type identities by identifying other marker genes for these clusters?*
+1. *What are the cell type identities of clusters 7 and 20?*
+2. *Do the clusters corresponding to the same cell types have biologically meaningful differences? Are there subpopulations of these cell types?*
+3. *Can we acquire higher confidence in these cell type identities by identifying other marker genes for these clusters?*
 
 There are a few different types of marker identification that we can explore using Seurat to get to the answer of these questions. Each with their own benefits and drawbacks:
 
