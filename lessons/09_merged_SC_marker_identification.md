@@ -149,8 +149,14 @@ cluster0_conserved_markers <- FindConservedMarkers(seurat_integrated,
 - **max_pval:**
 - **minimump_p_val:**
 
-It can be helpful to add columns with gene annotation information. In order to do that we will have you [download this file](https://github.com/hbctraining/scRNA-seq/raw/master/data/annotation.csv) to your `data` folder by right clicking and "Save as..". Then load it in to your R environment:
+>**NOTE:** Since each cell is being treated as a replicate this will result in inflated p-values within each group! A gene may have an incredibly low p-value < 1e-50 but that doesn't translate as a highly reliable marker gene. 
 
+When looking at the output, **we suggest looking for markers with large differences in expression between `pct.1` and `pct.2` and larger fold changes**. For instance if `pct.1` = 0.90 and `pct.2` = 0.80, it may not be as exciting of a marker. However, if `pct.2` = 0.1 instead, the bigger difference would be more convincing. Also, of interest is if the majority of cells expressing the marker is in my cluster of interest. If `pct.1` is low, such as 0.3, it may not be as interesting. Both of these are also possible parameters to include when running the function, as described above.
+
+
+### Adding Gene Annotations
+
+It can be helpful to add columns with gene annotation information. In order to do that we will have you [download this file](https://github.com/hbctraining/scRNA-seq/raw/master/data/annotation.csv) to your `data` folder by right clicking and "Save as..". Then load it in to your R environment:
 
 ```r
 annotations <- read.csv("data/annotation.csv")
@@ -171,16 +177,13 @@ cluster0_ann_markers <- cluster0_conserved_markers %>%
 View(cluster0_ann_markers)
 ```
 
-**Note, since each cell is being treated as a replicate this will result in inflated p-values within each group!** A gene may have an incredibly low p-value < 1e-50 but that doesn't translate as a highly reliable marker gene. 
-
-When looking at the output, **we suggest looking for markers with large differences in expression between `pct.1` and `pct.2` and larger fold changes**. For instance if `pct.1` = 0.90 and `pct.2` = 0.80, it may not be as exciting of a marker. However, if `pct.2` = 0.1 instead, the bigger difference would be more convincing. Also, of interest is if the majority of cells expressing the marker is in my cluster of interest. If `pct.1` is low, such as 0.3, it may not be as interesting. Both of these are also possible parameters to include when running the function, as described above.
-
 ### Running on multiple samples
 
 The function `FindConservedMarkers()` **accepts a single cluster at a time**, and we could run this function as many times as we have clusters. However, this is not very efficient. Instead we will first create a function to find the conserved markers including all the parameters we want to include. We will also **add a few lines of code to modify the output**. Our function will:
 
 1. Run the `FindConservedMarkers()` function
 2. Transfer row names to a column using `rownames_to_column()` function
+3. Merge in annotations
 3. Create the column of cluster IDs using the `cbind()` function
 
 
@@ -192,6 +195,8 @@ get_conserved <- function(cluster){
                              grouping.var = "sample",
                              only.pos = TRUE) %>%
                 rownames_to_column(var = "gene") %>%
+		inner_join(y = annotations[, c("gene_name", "gene_biotype", "description")],
+                          by = c("gene" = "gene_name")) %>% unique()  %>%
                 cbind(cluster_id = cluster, .)
 }
 ```
@@ -204,24 +209,14 @@ Now that we have this function created  we can use it as an argument to the appr
 map_dfr(inputs_to_function, name_of_function)
 ```
 
-Now, let's try this function to find the conserved markers for clusters 17 and 20 (**Change these clusters??**). 
+Now, let's try this function to find the conserved markers for the clusters that were unidentified celltypes: cluster7 and cluster 20. 
 
 ```r
 # Iterate function across desired clusters
-conserved_markers <- map_dfr(c(17,20), get_conserved)
+conserved_markers <- map_dfr(c(7,20), get_conserved)
 ```
 
-To better analyze the output we get from `FindConservedMarkers()`, we can **include the gene descriptions as well**.
 
-```r
-# Extract the gene descriptions for each gene
-gene_descriptions <- unique(annotations[, c("gene_name", "description")])
-
-# Merge gene descriptions with markers
-ann_conserved_markers <- left_join(x = conserved_markers,
-                                   y = gene_descriptions,
-                                   by = c("gene" = "gene_name"))
-```
 
 <p align="center">
 <img src="../img/sc_integ_marker_unknown.png" width="800">
@@ -257,21 +252,20 @@ View(top5)
 </p>
 
 Based on these marker results, we can determine whether the markers make sense for our hypothesized identities for each cluster:
-
 | Cell Type | Clusters |
 |:---:|:---:|
-| CD14+ monocytes | 0, 15 | 
-| FCGR3A+ monocytes | 8 |
-| Conventional dendritic cells | 12 |
-| Plasmacytoid dendritic cells | 12 |
-| B cells | 4, 11 |
-| T cells | 1, 2, 3, 6, 9, 10, 13, 14 |
-| CD4+ T cells | 1, 2, 3, 9, 10, 13, 14 |
-| CD8+ T cells| 6 |
-| NK cells | 5,6, 13 |
-| Megakaryocytes | 10 |
+| CD14+ monocytes | 1, 3, 14 | 
+| FCGR3A+ monocytes | 9 |
+| Conventional dendritic cells | 15 |
+| Plasmacytoid dendritic cells | 19 |
+| B cells | 6, 11, 17 |
+| T cells | 0, 2, 4, 5, 10, 13, 18 |
+| CD4+ T cells | 0, 2, 4, 10, 18 |
+| CD8+ T cells| 5, 13 |
+| NK cells | 8, 12 |
+| Megakaryocytes | 16 |
 | Erythrocytes | - |
-| Unknown | 7 |
+| Unknown | 7, 20 |
 
 If there were any questions about the identity of any clusters, exploring the cluster's markers would be the first step. Let's look at the `ann_markers`, filtering for cluster 7 and see if we can **obtain any hints about our unknown cluster**.
 
