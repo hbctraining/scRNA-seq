@@ -215,43 +215,36 @@ Now, let's try this function to find the conserved markers for the clusters that
 # Iterate function across desired clusters
 conserved_markers <- map_dfr(c(7,20), get_conserved)
 ```
-
-
-
-<p align="center">
-<img src="../img/sc_integ_marker_unknown.png" width="800">
-</p>
-
-For your data, you will want to run this on all clusters, you could input `0:20` instead of `c(17,20)`; however, it would take quite a while to run. Also, it is possible that when you run this function on all clusters, in **some cases you will have clusters that do not have enough cells for a particular group** - in which case your function will fail. For these clusters you will need to use `FindAllMarkers()`.
-
-We have gone through and identified all cluster marker genes for you, and have provided them [as a file for you to download]().
-
-
 ### Evaluating marker genes
 
-After loading in the marker file, we can view the top 5 markers by log2 fold change for each cluster for a quick perusal.
+We would like to use these gene lists to see of we can **identify which celltypes these clusters identify with.** Let's take a look at the top genes for each of the clusters and see if that gives us any hints. We can view the top 10 markers by meta p-value for each cluster for a quick perusal:
 
 ```r
 
-# Add a load file code here
+# Extract top 10 markers per cluster
+top10 <- conserved_markers %>% 
+  group_by(cluster_id) %>% 
+  top_n(n = 10, 
+        wt = max_pval)
 
-
-# Extract top 5 markers per cluster
-top5 <- ann_markers %>% 
-        group_by(cluster) %>% 
-        top_n(n = 5, 
-              wt = avg_logFC)
-
-# Visualize top 5 markers per cluster
-View(top5)
+# Visualize top 10 markers per cluster
+View(top10)
 
 ```
 
 <p align="center">
-<img src="../img/top5_markers_loadObj.png" width="800">
+<img src="../img/unknown_marker_table.png" width="800">
 </p>
 
+**ADD AN EXPLANATION HERE OF WHAT WE THINK CLUSTER 7 AND CLUSTER 20 CORRESPOND TO**
+
+> #### Finding markers for all clusters
+> For your data, you may want to run this function on all clusters, in which case you could input `0:20` instead of `c(7,20)`; however, it would take quite a while to run. Also, it is possible that when you run this function on all clusters, in **some cases you will have clusters that do not have enough cells for a particular group** - and  your function will fail. For these clusters you will need to use `FindAllMarkers()`.
+
+
 Based on these marker results, we can determine whether the markers make sense for our hypothesized identities for each cluster:
+
+
 | Cell Type | Clusters |
 |:---:|:---:|
 | CD14+ monocytes | 1, 3, 14 | 
