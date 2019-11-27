@@ -111,7 +111,8 @@ FeaturePlot(seurat_integrated,
             features = metrics,
             pt.size = 0.4, 
             sort.cell = TRUE,
-            min.cutoff = 'q10')
+            min.cutoff = 'q10',
+            label = TRUE)
 ```
 
 <p align="center">
