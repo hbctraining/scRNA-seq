@@ -345,6 +345,12 @@ DimPlot(seurat_integrated,
 <img src="../img/SC_umap_split_int.png" width="600">
 </p>
 
+> In this workshop, we dived into integrating this dataset, but we did run UMAP on the unintegrated version of this dataset, and it is clear that this dataset benefitted from the integration!
+> 
+> <p align="center">
+> <img src="../img/unintegrated_umap.png" width="600">
+> </p>
+
 
 [Click here for next lesson](07_SC_clustering_cells_SCT.md)
 
