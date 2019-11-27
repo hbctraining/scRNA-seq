@@ -177,9 +177,15 @@ DimPlot(seurat_integrated,
 
 **How does your UMAP plot compare to the one above?**
 
-What you may have noticed is that there is some variability in the way your plots look compared to those in the lesson. In particular **you may see a difference in the labeling of clusters**. This is an unfortunate consequence of slight variations in the versions you are using (of the Seurat package and/or dependency packages).
+It is possible that there is some variability in the way your clusters look compared to those in the lesson. In particular **you may see a difference in the labeling of clusters**. This is an unfortunate consequence of slight variations in the versions of packages (mostly Seurat dependencies).
 
-In order to maintain consistency in the downstream analysis and interpretation of this dataset, we will ask you to [download a new R object](https://www.dropbox.com/s/sz2xpg43xnbv7qx/seurat_integrated.RData.bz?dl=1) to the `data` folder. Once downloaded, you will need to:
+> NOTE: **If your clusters look identical to what's in the lesson, please go ahead to the next secion without any downloads.**
+
+***
+
+If your clusters do look different from what we have in the lesson, please right-click and download [this Rdata file](https://www.dropbox.com/s/sz2xpg43xnbv7qx/seurat_integrated.RData.bz?dl=1) to the `data` folder. It contains the seurat_integrated object that we have created for the class. 
+
+Once that large file has downloaded, you will need to:
 
 1. Unzip the file by double-clicking
 2. **Load in the object to your R session and overwrite the existing one**: 
@@ -188,7 +194,9 @@ In order to maintain consistency in the downstream analysis and interpretation o
 load("data/seurat_integrated.RData")
 ```
 
-Using this new R object we will continue with the UMAP method and the 0.8 resolution to check the quality control metrics and known markers for anticipated cell types. Plot the UMAP again to make sure your image now matches what you see in the lesson:
+***
+
+We will now continue with the UMAP method and the 0.8 resolution to check the quality control metrics and known markers for anticipated cell types. Plot the UMAP again to make sure your image now matches what you see in the lesson:
 
 ```r
 # Assign identity of clusters
@@ -205,8 +213,6 @@ DimPlot(seurat_integrated,
 <p align="center">
 <img src="../img/SC_umap.png" width="800">
 </p>
-
-
 
 ***
 
