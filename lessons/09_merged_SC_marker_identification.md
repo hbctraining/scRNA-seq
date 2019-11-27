@@ -149,33 +149,31 @@ cluster0_conserved_markers <- FindConservedMarkers(seurat_integrated,
 - **max_pval:**
 - **minimump_p_val:**
 
-It can be helpful to add columns with gene annotation information. In order to do that we will have you [download this csv file](https://github.com/hbctraining/scRNA-seq/raw/master/data/annotation.csv) to your `data` folder and load it in to your R environment.
+It can be helpful to add columns with gene annotation information. In order to do that we will have you [download this file](https://github.com/hbctraining/scRNA-seq/raw/master/data/annotation.csv) to your `data` folder by right clicking and "Save as..". Then load it in to your R environment:
 
+
+```r
+annotations <- read.csv("data/annotation.csv")
+```
 >**NOTE:** If you are interested in knowing how we obtained this annotation file, take a look at [the linked materials]().
+
+First, we will turn the row names with gene identifiers into its own columns. Then we will merge this annotation file with our results from the `FindConservedMarkers()`:
 
 ```r
 
 # Combine markers with gene descriptions 
-ann_markers <- inner_join(x = markers, 
-                          y = annotations[, c("gene_name", "description")],
+cluster0_ann_markers <- cluster0_conserved_markers %>% 
+                rownames_to_column(var="gene") %>% 
+                inner_join(y = annotations[, c("gene_name", "gene_biotype", "description")],
                           by = c("gene" = "gene_name")) %>%
-        unique()
+                unique()
 
-# Rearrange the columns to be more intuitive
-ann_markers <- ann_markers[ , c(6, 7, 2:4, 1, 5,8)]
-
-# Order the rows by p-adjusted values
-ann_markers <- ann_markers %>%
-        dplyr::arrange(cluster, p_val_adj)
-
-View(ann_markers)
+View(cluster0_ann_markers)
 ```
 
-**Note, since each cell is being treated as a replicate this will result in inflated p-values!** A gene may have an incredibly low p-value < 1e-50 but that doesn't translate as a highly reliable marker gene. 
+**Note, since each cell is being treated as a replicate this will result in inflated p-values within each group!** A gene may have an incredibly low p-value < 1e-50 but that doesn't translate as a highly reliable marker gene. 
 
 When looking at the output, **we suggest looking for markers with large differences in expression between `pct.1` and `pct.2` and larger fold changes**. For instance if `pct.1` = 0.90 and `pct.2` = 0.80, it may not be as exciting of a marker. However, if `pct.2` = 0.1 instead, the bigger difference would be more convincing. Also, of interest is if the majority of cells expressing the marker is in my cluster of interest. If `pct.1` is low, such as 0.3, it may not be as interesting. Both of these are also possible parameters to include when running the function, as described above.
-
-
 
 ### Running on multiple samples
 
