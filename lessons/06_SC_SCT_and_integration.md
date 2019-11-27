@@ -16,9 +16,8 @@ Approximate time: 90 minutes
 
 Now that we have our high quality cells, we have a few steps before we can cluster cells and identify different potential celltypes. Our dataset has two samples from two different conditions (Control and Stimulated), so it would be helpful to integrate these samples to better make comparisons between them. We will need to **normalize our gene expression values and align our cells across conditions** based on the greatest sources of variation in our dataset. In this lesson, we will discuss in detail, and perform these initial steps prior to clustering.
 
-**UPDATE THIS WORKFLOW??**
 
-<img src="../img/sc_workflow.png" width="800">
+<img src="../img/sc_workflow_integration.png" width="800">
 
 ***
 
