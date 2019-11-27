@@ -266,7 +266,7 @@ FeaturePlot(seurat_integrated,
 ```
 
 <p align="center">
-<img src="../img/FCGR3A_monocytes" width="800">
+<img src="../img/FCGR3A_monocytes.png" width="800">
 </p>
 
 FCGR3A+ monocytes markers distinctly highlight cluster 9. 
