@@ -17,7 +17,7 @@ Approximate time: 90 minutes
 
 Now that we have our high quality cells, we want to know the different cell types present within our population of cells. 
 
-<img src="../img/sc_workflow.png" width="800">
+<img src="../img/sc_workflow_integration.png" width="800">
 
 ***
 
