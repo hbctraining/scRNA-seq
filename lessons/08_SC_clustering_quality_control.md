@@ -484,7 +484,7 @@ Marker identification analysis can help us address all of these questions!!
 
 The next step will be to perform marker identification analysis, which will output the genes that significantly differ in expression between clusters. Using these genes we can determine or improve confidence in the identities of the clusters/subclusters.
 
-[Click here for next lesson](07_SC_marker_identification.md)
+[Click here for next lesson](09_merged_SC_marker_identification.md)
 
 ***
 
