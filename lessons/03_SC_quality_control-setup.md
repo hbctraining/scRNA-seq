@@ -24,7 +24,7 @@ After quantifying gene expression we need to bring this data into R to generate 
 
 For this workshop we will be working with a single-cell RNA-seq dataset which is part of a larger study from [Kang et al, 2017](https://www.nature.com/articles/nbt.4042). In this paper, the authors present a a computational algorithm that harnesses genetic variation (eQTL) to determine the genetic identity of each droplet containing a single cell (singlet) and identify droplets containing two cells from different individuals (doublets).
 
-The data used to test their algorithm is comprised of pooled Peripheral Blood Mononuclear Cells (PBMCs) taken from eight lupus patients, split into control and interferon beta-treated conditions. 
+The data used to test their algorithm is comprised of pooled Peripheral Blood Mononuclear Cells (PBMCs) taken from eight lupus patients, split into control and interferon beta-treated (stimulated) conditions. 
 
 
 <p align="center">
@@ -41,7 +41,7 @@ This dataset is available on GEO ([GSE96583](https://www.ncbi.nlm.nih.gov/geo/qu
 
 ### Metadata
 
-In addition to the raw data we also need to collect **information about the data**; this is known as metadata. We are usually quick to start exploring our data, but it is not very meaningful if we know nothing about the samples that this data originated from.
+In addition to the raw data we also need to collect **information about the data**; this is known as **metadata**. There is often a temptation to just start exploring the data, but it is not very meaningful if we know nothing about the samples that this data originated from.
 
 Some relevant metadata for our dataset is provided below:
 
@@ -61,7 +61,7 @@ Some relevant metadata for our dataset is provided below:
   * macrophages
   * possibly megakaryocytes
   
-> It is recommended that you have some expectation regarding the cell types you expect to see in a dataset prior to performing the QC. This will inform you if you have any cell types with low complexity (lots of transcripts from a few genes) or cells with higher levels of mitochondrial expression. This will enable us to account for these biological factors when assessing the data quality.
+> It is recommended that you have some expectation regarding the cell types you expect to see in a dataset prior to performing the QC. This will inform you if you have any cell types with low complexity (lots of transcripts from a few genes) or cells with higher levels of mitochondrial expression. This will enable us to account for these biological factors during the analysis workflow.
 
 None of the above cell types are expected to be low complexity or anticipated to have high mitochondrial content.
 
@@ -72,7 +72,7 @@ One of the most important parts of research that involves large amounts of data,
 
 One important aspect of data management is organization. For each experiment you work on and analyze data for, it is considered best practice to get organized by creating **a planned storage space (directory structure)**. We will do that for our single-cell analysis. 
 
-Create a new R project entitled `single_cell_rnaseq`. Then, create the following directories:
+Open up RStudio and create a new R project entitled `single_cell_rnaseq`. Then, create the following directories:
 
 ```
 single_cell_rnaseq/
@@ -88,14 +88,14 @@ single_cell_rnaseq/
 - [Control sample](https://www.dropbox.com/sh/73drh0ipmzfcrb3/AADMlKXCr5QGoaQN13-GbeKSa?dl=1)
 - [Stimulated sample](https://www.dropbox.com/sh/cii4j356moc08w5/AAC2c3jfvh2hHWPmEaVsZKRva?dl=1) 
 
-Now, let's unzip the two zipped folders that we just downloaded, so we can see their contents from within RStudio.
+Now, let's unzip the two zipped folders that we just downloaded by double-clicking, so we can see their contents from within RStudio.
 
 ### New script
 
 Next, open a new Rscript file, and start with some comments to indicate what this file is going to contain:
 
 ```r
-# July 17th, 2019
+# December 2019
 # HBC single-cell RNA-seq workshop
 
 # Single-cell RNA-seq analysis - QC
@@ -118,8 +118,6 @@ library(SingleCellExperiment)
 library(Seurat)
 library(tidyverse)
 library(Matrix)
-library(AnnotationHub)
-library(ensembldb)
 library(scales)
 library(cowplot)
 library(RCurl)
@@ -133,7 +131,7 @@ Regardless of the technology or pipeline used to process your single-cell RNA-se
 2. a file with the **gene IDs**, representing all genes quantified
 3. a **matrix of counts** per gene for every cell
 
-We can explore these files in our own dataset by clicking on the `data/ctrl_raw_feature_bc_matrix` folder:
+We can explore these files by clicking on the `data/ctrl_raw_feature_bc_matrix` folder:
 
 ### 1. `barcodes.tsv` 
 This is a text file which contains all cellular barcodes present for that sample. Barcodes are listed in the order of data presented in the matrix file (i.e. these are the column names). 
@@ -159,7 +157,7 @@ This is a text file which contains a matrix of count values. The rows are associ
 </p>
 
 
-Loading this data into R requires us to **use functions that allow us to efficiently combine these three files into a single count matrix.** However, instead of creating a regular matrix data structure, we will create a **sparse matrix** to improve the amount of space, memory and CPU required to work with our huge count matrix. 
+Loading this data into R requires us to **use functions that allow us to efficiently combine these three files into a single count matrix.** However, instead of creating a regular matrix data structure, the functions we will use create a **sparse matrix** to improve the amount of space, memory and CPU required to work with our huge count matrix. 
 
 Different methods for reading in data include:
 
@@ -181,18 +179,20 @@ We are mainly interested in the `raw_feature_bc_matrix` as we wish to perform ou
 If we had a single sample, we could generate the count matrix and then subsequently create [a Seurat object](https://github.com/satijalab/seurat/wiki/Seurat):
 
 ```r
-# How to read in 10X data for a single sample
+# How to read in 10X data for a single sample (output is a sparse matrix)
 ctrl_counts <- Read10X(data.dir = "data/ctrl_raw_feature_bc_matrix")
 
-# Turn count matrix into a Seurat object
+# Turn count matrix into a Seurat object (output is a Seurat object)
 ctrl <- CreateSeuratObject(counts = ctrl_counts,
                            min.features = 100)
 ```
 
-> **NOTE**: The `min.features` argument specifies the minimum number of genes that need to be detected per cell. This argument will filter out poor quality cells that likely just have random barcodes encapsulated without any cell present. We would not be interested in analyzing any cells with less than 100 genes detected.
+> **NOTE**: The `min.features` argument specifies the minimum number of genes that need to be detected per cell. This argument will filter out poor quality cells that likely just have random barcodes encapsulated without any cell present. Usually, cells with less than 100 genes detected are not considered for analysis.
 
 
-**Seurat automatically creates some metadata** for each of the cells when you use the `Read10X()` function to read in data. This information is stored in the `meta.data` slot within the Seurat object. You can find more information about the slots in the Seurat object [on their Wiki page](https://github.com/satijalab/seurat/wiki/Seurat)
+**Seurat automatically creates some metadata** for each of the cells when you use the `Read10X()` function to read in data. This information is stored in the `meta.data` slot within the Seurat object (see more in the note below). 
+
+> The Seurat object is a custom list-like object that has well-defined spaces to store specific information/data. You can find more information about the slots in the Seurat object [at this link](https://github.com/satijalab/seurat/wiki/Seurat).
 
 ```r
 # Explore the metadata
@@ -205,12 +205,11 @@ What do the columns of metadata mean?
 - `nCount_RNA`: number of UMIs per cell
 - `nFeature_RNA`: number of genes detected per cell
 
-
 ### Reading in multiple samples with a `for loop`
 
-In practice, you likely have many samples that you want to read the data in for using the `Read10X()` or the `readMM()` functions. So, to make the data import into R more efficient we can use a `for` loop. 
+In practice, you will likely have several samples that you will need to read in data for using one of the 2 functions we discussed earlier (`Read10X()` or `readMM()`). So, to make the data import into R more efficient we can use a `for` loop, that will interate over a series of commands for each of the inputs given. 
 
-A `for` loop interates over a series of commands for each of the inputs given. In R, it has the following structure/syntax:
+In R, it has the following structure/syntax:
 
 ```r
 ## DO NOT RUN
@@ -222,7 +221,7 @@ for (variable in input){
 }
 ```
 
-Our `for` loop will iterate over the two samples (`input`) and execute two commands for each sample - (1) read in the count data and (2) create the Seurat objects:
+The `for` loop we will be using today will iterate over the two sample "files" and execute two commands for each sample - (1) read in the count data (`Read10X()`) and (2) create the Seurat objects from the read in data (`CreateSeuratObject()`):
 
 ```r
 # Create each individual Seurat object for every sample
@@ -239,12 +238,14 @@ Now, let's break down the `for loop` to describe the different steps:
 
 #### Step 1: Specify inputs
 
-For our experiment, we have two samples that we would like to read into R using the `Read10X()` function:
+For this dataset, we have two samples that we would like to create a Seurat object for:
 
 - `ctrl_raw_feature_bc_matrix` 
 - `stim_raw_feature_bc_matrix`
 
-We can specify these samples in the *input* part for our `for loop` as elements of a vector using `c()`. We are assigning these to a *variable* and we can call that variable anything we would like (try to give it a name that makes sense). In this example, we called the *variable* `file`:
+We can specify these samples in the *input* part for our `for loop` as elements of a vector using `c()`. We are assigning these to a *variable* and we can call that variable anything we would like (try to give it a name that makes sense). In this example, we called the *variable* `file`. 
+
+> During the execution of the above loop, `file` will first contain the value *"ctrl_raw_feature_bc_matrix"*, run through the commands all the way through to `assign()`. Next, it will contain the value *"stim_raw_feature_bc_matrix"* and once again run through all the commands. If you had 15 folders as input, instead of 2, the above code will run through 15 times, for each of your data folders.
 
 ```r
 ## DO NOT RUN
@@ -255,15 +256,13 @@ for (file in c("ctrl_raw_feature_bc_matrix", "stim_raw_feature_bc_matrix")){
 
 #### Step 2: Read in data for the input
 
-We can continue our `for loop` by:
+We can continue our `for loop` by adding a line to read in data with `Read10X()`:
 
-- Using the `Read10X()` function. We need to specify the path to the file, so we will prepend the `data/` directory to our sample folder name using the `paste0()` function.
+- Here, we need to specify the path to the file, so we will prepend the `data/` directory to our sample folder name using the `paste0()` function.
 
 ```r
 ## DO NOT RUN
 
-# Create each individual Seurat object
-for (file in c("ctrl_raw_feature_bc_matrix", "stim_raw_feature_bc_matrix")){
         seurat_data <- Read10X(data.dir = paste0("data/", file))
 ```
 
@@ -274,8 +273,6 @@ Now, we can create the Seurat object by using the `CreateSeuratObject()` functio
 ```r
 ## DO NOT RUN
 
-for (file in c("ctrl_raw_feature_bc_matrix", "stim_raw_feature_bc_matrix")){
-        seurat_data <- Read10X(data.dir = paste0("data/", file))
         seurat_obj <- CreateSeuratObject(counts = seurat_data, 
                                          min.features = 100, 
                                          project = file)        
@@ -287,12 +284,7 @@ The last command `assign`s the Seurat object created (`seurat_obj`) to a new var
 
 ```r
 ## DO NOT RUN
-
-for (file in c("ctrl_raw_feature_bc_matrix", "stim_raw_feature_bc_matrix")){
-        seurat_data <- Read10X(data.dir = paste0("data/", file))
-        seurat_obj <- CreateSeuratObject(counts = seurat_data, 
-                                         min.features = 100, 
-                                         project = file)        
+  
         assign(file, seurat_obj)
 }
 ```
@@ -305,7 +297,9 @@ head(ctrl_raw_feature_bc_matrix@meta.data)
 head(stim_raw_feature_bc_matrix@meta.data)
 ```
 
-Now that we have our Seurat objects for each sample, we need to merge them together into a single Seurat object. This will make it easier to run QC on the entire dataset rather than one sample at a time. We can use the `merge()` function to do this:
+Now that we have both Seurat objects for each sample, we need to merge them together into a single Seurat object. This will make it easier to run the QC steps at once, as well as enable us to easily compare the data quality for all the samples.  
+
+We can use the `merge()` function from the Seurat package to do this:
 
 ```r
 # Create a merged Seurat object
@@ -314,7 +308,7 @@ merged_seurat <- merge(x = ctrl_raw_feature_bc_matrix,
                        add.cell.id = c("ctrl", "stim"))
 ```
 
-Because the same cell IDs can be used for different samples, we add a sample-specific prefix to each of our cell IDs using the `add.cell.id` argument. If we look at the metadata of the merged object we should be able to see the prefixes in the rownames:
+Because the same cell IDs can be used for different samples, we add a **sample-specific prefix** to each of our cell IDs using the `add.cell.id` argument. If we look at the metadata of the merged object we should be able to see the prefixes in the rownames:
 
 ```r
 # Check that the merged object has the appropriate sample-specific prefixes
@@ -322,7 +316,7 @@ head(merged_seurat@meta.data)
 tail(merged_seurat@meta.data)
 ```
 
-[Click here for next lesson](03_SC_quality_control.md)
+[Click here for next lesson](04_SC_quality_control.md)
 
 ---
 *This lesson has been developed by members of the teaching team at the [Harvard Chan Bioinformatics Core (HBC)](http://bioinformatics.sph.harvard.edu/). These are open access materials distributed under the terms of the [Creative Commons Attribution license](https://creativecommons.org/licenses/by/4.0/) (CC BY 4.0), which permits unrestricted use, distribution, and reproduction in any medium, provided the original author and source are credited.*
