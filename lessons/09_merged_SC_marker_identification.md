@@ -226,14 +226,12 @@ top10 <- conserved_markers %>%
   mutate(avg_fc = (ctrl_avg_logFC + stim_avg_logFC) /2) %>% 
   group_by(cluster_id) %>% 
   top_n(n = 10, 
-        wt = avg_fc) %>% View()
+        wt = avg_fc)
 
 # Visualize top 10 markers per cluster
 View(top10)
-
 ```
 
-**UPDATE THIS IMAGE**
 
 <p align="center">
 <img src="../img/unknown_marker_table.png" width="800">
