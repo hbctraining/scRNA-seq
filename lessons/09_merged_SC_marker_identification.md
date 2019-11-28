@@ -217,20 +217,23 @@ conserved_markers <- map_dfr(c(7,20), get_conserved)
 ```
 ### Evaluating marker genes
 
-We would like to use these gene lists to see of we can **identify which celltypes these clusters identify with.** Let's take a look at the top genes for each of the clusters and see if that gives us any hints. We can view the top 10 markers by meta p-value for each cluster for a quick perusal:
+We would like to use these gene lists to see of we can **identify which celltypes these clusters identify with.** Let's take a look at the top genes for each of the clusters and see if that gives us any hints. We can view the top 10 markers by average fold change across the two groups, for each cluster for a quick perusal:
 
 ```r
 
 # Extract top 10 markers per cluster
 top10 <- conserved_markers %>% 
+  mutate(avg_fc = (ctrl_avg_logFC + stim_avg_logFC) /2) %>% 
   group_by(cluster_id) %>% 
   top_n(n = 10, 
-        wt = max_pval)
+        wt = avg_fc) %>% View()
 
 # Visualize top 10 markers per cluster
 View(top10)
 
 ```
+
+**UPDATE THIS IMAGE**
 
 <p align="center">
 <img src="../img/unknown_marker_table.png" width="800">
