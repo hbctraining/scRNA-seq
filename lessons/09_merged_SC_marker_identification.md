@@ -170,9 +170,8 @@ First, we will turn the row names with gene identifiers into its own columns. Th
 # Combine markers with gene descriptions 
 cluster0_ann_markers <- cluster0_conserved_markers %>% 
                 rownames_to_column(var="gene") %>% 
-                inner_join(y = annotations[, c("gene_name", "gene_biotype", "description")],
-                          by = c("gene" = "gene_name")) %>%
-                unique()
+                left_join(y = unique(annotations[, c("gene_name", "description")]),
+                          by = c("gene" = "gene_name"))
 
 View(cluster0_ann_markers)
 ```
@@ -190,15 +189,16 @@ The function `FindConservedMarkers()` **accepts a single cluster at a time**, an
 ```r
 # Create function to get conserved markers for any given cluster
 get_conserved <- function(cluster){
-        FindConservedMarkers(seurat_integrated,
-                             ident.1 = cluster,
-                             grouping.var = "sample",
-                             only.pos = TRUE) %>%
-                rownames_to_column(var = "gene") %>%
-		inner_join(y = annotations[, c("gene_name", "gene_biotype", "description")],
-                          by = c("gene" = "gene_name")) %>% unique()  %>%
-                cbind(cluster_id = cluster, .)
-}
+  FindConservedMarkers(seurat_integrated,
+                       ident.1 = cluster,
+                       grouping.var = "sample",
+                       only.pos = TRUE) %>%
+    rownames_to_column(var = "gene") %>%
+    left_join(y = unique(annotations[, c("gene_name", "description")]),
+               by = c("gene" = "gene_name")) %>%
+    cbind(cluster_id = cluster, .)
+  }
+
 ```
 
 Now that we have this function created  we can use it as an argument to the appropriate `map` function. We want the output of the `map` family of functions to be a **dataframe with each cluster output bound together by rows**, we will use the `map_dfr()` function.
@@ -257,8 +257,10 @@ To get a better idea of cell type identity we can **explore the expression of di
 # Plot top 5 markers for cluster 20
 FeaturePlot(object = seurat_integrated, 
             features = top10[top10$cluster_id == 20, "gene"] %>%
-              pull(gene) %>% head(n=5))
-
+              pull(gene) %>% head(n=5),
+            sort.cell = TRUE,
+            min.cutoff = 'q10', 
+            label = TRUE)
 ```
 
 <p align="center">
@@ -270,10 +272,10 @@ We can also explore the range in expression of specific markers by using **violi
 > **Violin plots** are similar to box plots, except that they also show the probability density of the data at different values, usually smoothed by a kernel density estimator. A violin plot is more informative than a plain box plot. While a box plot only shows summary statistics such as mean/median and interquartile ranges, the violin plot shows the full distribution of the data. The difference is particularly useful when the data distribution is multimodal (more than one peak). In this case a violin plot shows the presence of different peaks, their position and relative amplitude.
 
 ```r
-# Vln plot - cluster 6
-VlnPlot(object = seurat_control, 
-        features = top5[top5$cluster == 6, "gene"] %>%
-                    pull(gene))
+# Vln plot - cluster 20
+VlnPlot(object = seurat_integrated, 
+        features = top10[top10$cluster_id == 20, "gene"] %>%
+          pull(gene) %>% head(n=5))
 ```        
 
 <p align="center">
