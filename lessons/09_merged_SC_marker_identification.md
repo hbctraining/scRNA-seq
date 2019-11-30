@@ -264,7 +264,7 @@ FeaturePlot(object = seurat_integrated,
 ```
 
 <p align="center">
-<img src="../img/" width="800">
+<img src="../img/conserved_markers_featureplot.png" width="800">
 </p>
 
 We can also explore the range in expression of specific markers by using **violin plots**:
@@ -279,7 +279,7 @@ VlnPlot(object = seurat_integrated,
 ```        
 
 <p align="center">
-<img src="../img/fig_cluster6_loadObj_violin.png" width="800">
+<img src="../img/conserved_markers_vlnplot.png" width="800">
 </p>
 
 These results and plots can help us determine the identity of these clusters or verify what we hypothesize the identity to be after exploring the canonical markers of expected cell types previously.
