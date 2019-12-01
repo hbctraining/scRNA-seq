@@ -287,60 +287,30 @@ These results and plots can help us determine the identity of these clusters or 
 
 ## Identifying gene markers for each cluster (whole section needs an update 
 
-The last set of questions we had regarding the analysis involved whether the clusters corresponding to the same cell types have biologically meaningful differences. Sometimes the list of markers returned don't sufficiently separate some of the clusters. For instance, we had previously identified clusters 1,3, and 14 as CD14+ monocytes, but are there biologically relevant differences between these clusters of cells? We can use the `FindMarkers()` function to determine the genes that are differentially expressed between two specific clusters. 
+The last set of questions we had regarding the analysis involved whether the clusters corresponding to the same cell types have biologically meaningful differences. Sometimes the list of markers returned don't sufficiently separate some of the clusters. For instance, we had previously identified clusters 0, 2, 4, 10, and 18 as CD4+ Tcells, but **are there biologically relevant differences between these clusters of cells?** We can use the `FindMarkers()` function to determine the genes that are differentially expressed between two specific clusters. 
+
+We can try all combinations of comparisons, but we'll start with cluster 2 versus all other CD4+ T cell clusters:
 
 ```r
-# Determine differentiating markers for CD14+ monocytes - clusters 1 versus 14
-cd14_monos <- FindMarkers(seurat_integrated,
-                          ident.1 = 1,
-                          ident.2 = 14)                     
 
-# Add gene symbols to the DE table
-cd14_monos_markers <- cd14_monos %>%
-        rownames_to_column("gene") %>%
-        left_join(y = annotations[, c("gene_name", "description")],
-                   by = c("gene" = "gene_name")) %>%
-        unique()
-
-# Reorder columns and sort by log2 fold change        
-cd14_monos_markers <- cd14_monos_markers[, c(1, 3:5,2,6:7)]
-
-cd14_monos_markers <- cd14_monos_markers %>%
-        dplyr::arrange(avg_logFC)
-        
-# View data
-View(cd14_monos_markers)
-```
-
-<p align="center">
-<img src="../img/sc_mono14_markers.png" width="800">
-</p>
-
-When looking through the results, we see quite a few T cell-specific markers, such as the T cell marker, CD3D, and T cell receptor genes. We also see lower expression of the CD14 and LYZ monocyte cell markers. It's possible that this cluster could represent doublets of CD14+ monocytes and T cells. 
-
-We are not going to explore these genes in more depth, although, you would probably want to explore the expression of these genes in more depth visually using feature plots and violin plots before deciding on a label.
-
-We would also like to determine how the CD4+ T cell clusters are different from each other. We could again explore these differences:
-
-```r
 # Determine differentiating markers for CD4+ T cell
-cd4_tcells <- FindMarkers(seurat_control,
-                          ident.1 = 1,
-                          ident.2 = c(2, 3, 9, 10, 13, 14),
-                          only.pos = TRUE)                     
+cd4_tcells <- FindMarkers(seurat_integrated,
+                          ident.1 = 2,
+                          ident.2 = c(0,4,10,18),
+                          only.pos = TRUE)                  
 
 # Add gene symbols to the DE table
 cd4_tcells <- cd4_tcells %>%
-        rownames_to_column("gene") %>%
-        inner_join(y = annotations[, c("gene_name", "description")],
-                   by = c("gene" = "gene_name")) %>%
-        unique()
+  rownames_to_column("gene") %>%
+  left_join(y = annotations[, c("gene_name", "description")],
+             by = c("gene" = "gene_name")) %>%
+  unique()
 
-# Reorder columns and sort by log2 fold change        
+# Reorder columns and sort by padj      
 cd4_tcells <- cd4_tcells[, c(1, 3:5,2,6:7)]
 
 cd4_tcells <- cd4_tcells %>%
-        dplyr::arrange(dplyr::desc(abs(avg_logFC))) 
+  dplyr::arrange(p_val_adj) 
 
 # View data
 View(cd4_tcells)
@@ -348,10 +318,10 @@ View(cd4_tcells)
 ```
 
 <p align="center">
-<img src="../img/sc_cd4t_markers.png" width="800">
+<img src="../img/cd4t_markers_table.png" width="800">
 </p>
 
-Of these top genes the **CREM gene** stands out as a marker of activation. We know that another marker of activation is CD69, and markers of naive or memory cells include the SELL and CCR7 genes. Let's explore activation status a bit visually using these new cell state markers:
+Of these top genes the **CREM gene** stands out as a marker of activation. We know that another marker of activation is CD69, and markers of naive or memory cells include the SELL and CCR7 genes. Interestingly, the SELL gene is also at the top of the list. Let's **explore activation status a bit visually** using these new cell state markers:
 
 | Cell State | Marker |
 |:---:|:---:|
@@ -360,65 +330,79 @@ Of these top genes the **CREM gene** stands out as a marker of activation. We kn
 
 ```r
 # Plot gene markers of activated and naive/memory T cells
-FeaturePlot(seurat_control, 
+FeaturePlot(seurat_integrated, 
             reduction = "umap", 
-            features = c("CREM", "CD69", "CCR7", "SELL"))
+            features = c("CREM", "CD69", "CCR7", "SELL"),
+            label = TRUE, 
+            sort.cell = TRUE,
+            min.cutoff = 'q10'
+            )
 ```
 
 <p align="center">
-<img src="../img/sc_cd4t_act-mem_markers.png" width="800">
+<img src="../img/cd4t_act-mem_m. arkers.png" width="800">
 </p>
 
-The activated CD4+ T cells correspond to clusters 1 and 9, while the naive or memory CD4+ T cells represent clusters 2, 3, and 14.
+As markers for the naive and activated states bothe showed up in the marker list, it is helpful to visualize expression. Based on these plots it seems as though clusters 0 and 2 are reliably the naive T cells. However, for the activated T cells it is hard to tell. We might say that clusters 4 and 18 are activated T cells, but the CD69 expression is not as apparent as CREM. We will label the naive cells and leave the remaining clusters labeled as CD4+ T cells.
 
 Now taking all of this information, we can surmise the cell types of the different clusters and plot the cells with cell type labels.
 
 
 | Cluster ID	| Cell Type |
 |:-----:|:-----:|
-|0	| CD14+ Monocytes|
-|1	| Activated CD4+ T cells |
+|0	| Naive or memory CD4+ T cells|
+|1	| CD14+ monocytes |
 |2	| Naive or memory CD4+ T cells|
-|3	| Naive or memory CD4+ T cells|
-|4	| B cells |
-|5	| NK cells |
-|6	| CD8+ T cells |
+|3	| CD14+ monocytes|
+|4	| CD4+ T cells |
+|5	| CD8+ T cells |
+|6	| B cells |
 |7	| Stressed / dying cells |
-|8	| FCGR3A+ monocytes |
-|9	| Activated CD4+ T cells |
-|10	| Megakaryocytes |
+|8	| NK cells |
+|9	| FCGR3A+ monocytes |
+|10	| CD4+ T cells |
 |11	| B cells |
-|12	| Dendritic cells |
-|13	| NK cells |
-|14	| Naive or memory CD4+ T cells |
-|15| CD14+ monocytes / T cell doublets |
+|12	| NK cells |
+|13	| CD8+ T cells |
+|14	| CD14+ monocytes |
+|15| Conventional dendritic cells |
+|16| Megakaryocytes |
+|17| B cells |
+|18| CD4+ T cells |
+|19| Plasmacytoid dendritic cells |
+|20| MAST cells? |
 
 
 We can then reassign the identity of the clusters to these cell types:
 
 ```r
 # Rename all identities
-seurat_control <- RenameIdents(object = seurat_control, 
-                               "0" = "CD14+ monocytes",
-                               "1" = "Activated CD4+ T cells",
+seurat_integrated <- RenameIdents(object = seurat_control, 
+                               "0" = "Naive or memory CD4+ T cells",
+                               "1" = "CD14+ monocytes",
                                "2" = "Naive or memory CD4+ T cells",
-                               "3" = "Naive or memory CD4+ T cells",
-                               "4" = "B cells",
-                               "5" = "NK cells",
-                               "6" = "CD8+ T cells",
+                               "3" = "CD14+ monocytes",
+                               "4" = "CD4+ T cells",
+                               "5" = "CD8+ T cells",
+                               "6" = "B cells",
                                "7" = "Stressed / dying cells",
-                               "8" = "FCGR3A+ monocytes",
-                               "9" = "Activated CD4+ T cells",
-                               "10" = "Megakaryocytes",
+                               "8" = "NK cells",
+                               "9" = "FCGR3A+ monocytes",
+                               "10" = "CD4+ T cells",
                                "11" = "B cells",
-                               "12" = "Dendritic cells",
-                               "13" = "NK cells",
-                               "14" = "Naive or memory CD4+ T cells",
-                               "15" = "CD14+ monocytes / T cell doublets")
+                               "12" = "NK cells",
+                               "13" = "CD8+ T cells",
+                               "14" = "CD14+ monocytes",
+                               "15" = "Conventional dendritic cells",
+			       "16" = "Megakaryocytes",
+			       "17" = "B cells", 
+			       "18" = "CD4+ T cells", 
+			       "19" = "Plasmacytoid dendritic cells", 
+			       "20" = "MAST cells")
 
 
 # Plot the UMAP
-DimPlot(object = seurat_control, 
+DimPlot(object = seurat_integrated, 
         reduction = "umap", 
         label = TRUE,
         label.size = 6,
@@ -426,33 +410,33 @@ DimPlot(object = seurat_control,
 ```
 
 <p align="center">
-<img src="../img/umap_labelled_subset_loadObj.png" width="800">
+<img src="../img/" width="800">
 </p>
 
 If we wanted to remove the stressed cells, we could use the `subset()` function:
 
 ```r
 # Remove the stressed or dying cells
-control_labelled <- subset(seurat_control,
+seurat_labelled <- subset(seurat_integrated,
                                idents = "Stressed / dying cells", invert = TRUE)
 
 # Re-visualize the clusters
-DimPlot(object = control_labelled, 
+DimPlot(object = seurat_labelled, 
         reduction = "umap", 
         label = TRUE,
         label.size = 6)
 ```
 
 <p align="center">
-<img src="../img/umap_control_labelled_subset_loadObj.png" width="800">
+<img src="../img/" width="800">
 </p>
 
 Now we would want to save our final labelled Seurat object:
 
 ```r        
 # Save final R object
-write_rds(control_labelled,
-          path = "results/seurat_control_labelled.rds")       
+write_rds(seurat_labelled,
+          path = "results/seurat_labelled.rds")       
 ```
 
 ***
