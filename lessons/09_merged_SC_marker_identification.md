@@ -340,7 +340,7 @@ FeaturePlot(seurat_integrated,
 ```
 
 <p align="center">
-<img src="../img/cd4t_act-mem_m. arkers.png" width="800">
+<img src="../img/cd4t_act-mem_markers.png" width="800">
 </p>
 
 As markers for the naive and activated states bothe showed up in the marker list, it is helpful to visualize expression. Based on these plots it seems as though clusters 0 and 2 are reliably the naive T cells. However, for the activated T cells it is hard to tell. We might say that clusters 4 and 18 are activated T cells, but the CD69 expression is not as apparent as CREM. We will label the naive cells and leave the remaining clusters labeled as CD4+ T cells.
