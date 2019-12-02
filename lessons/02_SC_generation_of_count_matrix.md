@@ -112,7 +112,7 @@ correct for amplification bias. The steps in this process include the following:
 
  1. Formatting reads and filtering noisy cellular barcodes
  2. Demultiplexing the samples
- 3. Mapping/pseudo-mapping to cDNAs
+ 3. Mapping/pseudo-mapping to transcriptome
  4. Collapsing UMIs and quantification of reads
 
 If using 10X Genomics library preparation method, then the [Cell Ranger pipeline](https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/what-is-cell-ranger) would be used for all of the above steps. 
