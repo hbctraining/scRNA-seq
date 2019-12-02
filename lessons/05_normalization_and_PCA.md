@@ -81,7 +81,7 @@ We could also rotate the entire plot and view the lines representing the variati
 
 If we had three samples/cells, then we would have an extra direction in which we could have variation (3D). Therefore, if we have *N* samples/cells we would have *N*-directions of variation or principal components (PC)! Once these PCs have been calculated, the PC that deals with the largest variation in the dataset is designated PC1, and the next one is designated PC2 and so on. 
 
-Once the PCs have been determined for an dataset, we have to figure out how each sample/cell fits back into that context to enable us to visualize the similarities/dissimilaties in an intuitive manner. The question here is "what is sample_X's score for a given PC based on the gene expression in sample_X?". Scores are calculate for all sample-PC pairs as described in the steps below: 
+Once the PCs have been determined for an dataset, we have to figure out how each sample/cell fits back into that context to enable us to visualize the similarities/dissimilarities in an intuitive manner. The question here is "what is sample_X's score for a given PC based on the gene expression in sample_X?". Scores are calculated for all sample-PC pairs as described in the steps below: 
 
 (1) First, each gene is assigned an "influence" score based on how much it influenced each PC. Genes that did not have any influence on a given PC get scores near zero, while genes with more influence receive larger scores. Genes on the ends of a PC line will have a larger influence, so they would receive larger scores but with opposite signs.
 
