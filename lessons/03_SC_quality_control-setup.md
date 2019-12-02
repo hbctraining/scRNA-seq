@@ -41,7 +41,7 @@ This dataset is available on GEO ([GSE96583](https://www.ncbi.nlm.nih.gov/geo/qu
 
 ### Metadata
 
-In addition to the raw data we also need to collect **information about the data**; this is known as **metadata**. There is often a temptation to just start exploring the data, but it is not very meaningful if we know nothing about the samples that this data originated from.
+In addition to the raw data, we also need to collect **information about the data**; this is known as **metadata**. There is often a temptation to just start exploring the data, but it is not very meaningful if we know nothing about the samples that this data originated from.
 
 Some relevant metadata for our dataset is provided below:
 
@@ -50,8 +50,8 @@ Some relevant metadata for our dataset is provided below:
 * PBMC samples from eight individual lupus patients were separated into two aliquots each. 
   * One aliquot of PBMCs was activated by 100 U/mL of recombinant IFN-β for 6 hours. 
   * The second aliquot was left untreated. 
-  * After 6 hours, the eight samples for each condition were pooled together in two final pools (stimulated cells and control cells). 
-  * *In the interest of time, we have selected only two samples - 1 control and 1 treated (stimulated) - to demonstrate the analysis workflow.*
+  * After 6 hours, the eight samples for each condition were pooled together in two final pools (stimulated cells and control cells). We will be working with these two, pooled samples.
+* 12,138 and 12,167 cells were identified (after removing doublets) for control and stimulated pooled samples, respectively.
 
 * Since the samples are PBMCs, we will expect immune cells, such as:
   * B cells
