@@ -41,9 +41,9 @@ _**Recommendations:**_
 
 ## Clustering workflow
 
-For something to be informative, it needs to exhibit variation, but not all variation is informative. The goal of our clustering analysis is to keep the major sources of variation in our dataset that should define our cell types (in addition to batches, cell cycle, etc.), while restricting the variation due to uninteresting sources of variation (noise).
+For something to be informative, it needs to exhibit variation, but not all variation is informative. The goal of our clustering analysis is to keep the major sources of variation in our dataset that should define our cell types, while restricting the variation due to uninteresting sources of variation (sequencing depth, cell cycle differences, mitochondrial expression, batch effects, etc.).
 
-Therefore, to determine the cell types present, we are going to perform a clustering analysis using the most variable genes to define the major sources of variation in the dataset. 
+Then, to determine the cell types present, we will perform a clustering analysis using the most variable genes to define the major sources of variation in the dataset. 
 
 The workflow for this analysis is adapted from the following sources:
 
@@ -55,7 +55,7 @@ To identify clusters, the following steps will be performed:
 1. **Normalization**, **variance stabilization**, and **regression of unwanted variation** (e.g. mitochondrial transcript abundance, cell cycle phase, etc.) for each sample
 2. **Integration** of the samples using shared highly variable genes (optional, but recommended to align cells from different samples/conditions if cell types are separating by sample/condition)
 3. **Clustering cells** based on top PCs (metagenes)
-4. Exploration of **quality control metrics**: determine whether clusters unbalanced wrt UMIs, genes, cell cycle, mitochondrial content, samples, etc.
+4. Exploration of **quality control metrics**: determine whether clusters are unbalanced wrt UMIs, genes, cell cycle, mitochondrial content, samples, etc.
 5. Searching for expected cell types using **known cell type-specific gene markers**
 
 **In this lesson, we will cover the first two steps of the clustering workflow.**
