@@ -234,60 +234,60 @@ for (file in c("ctrl_raw_feature_bc_matrix", "stim_raw_feature_bc_matrix")){
 }
 ```
 
-Now, let's break down the `for loop` to describe the different steps:
-
-#### Step 1: Specify inputs
-
-For this dataset, we have two samples that we would like to create a Seurat object for:
-
-- `ctrl_raw_feature_bc_matrix` 
-- `stim_raw_feature_bc_matrix`
-
-We can specify these samples in the *input* part for our `for loop` as elements of a vector using `c()`. We are assigning these to a *variable* and we can call that variable anything we would like (try to give it a name that makes sense). In this example, we called the *variable* `file`. 
-
-> During the execution of the above loop, `file` will first contain the value *"ctrl_raw_feature_bc_matrix"*, run through the commands all the way through to `assign()`. Next, it will contain the value *"stim_raw_feature_bc_matrix"* and once again run through all the commands. If you had 15 folders as input, instead of 2, the above code will run through 15 times, for each of your data folders.
-
-```r
-## DO NOT RUN
-
-# Create each individual Seurat object
-for (file in c("ctrl_raw_feature_bc_matrix", "stim_raw_feature_bc_matrix")){
-```
-
-#### Step 2: Read in data for the input
-
-We can continue our `for loop` by adding a line to read in data with `Read10X()`:
-
-- Here, we need to specify the path to the file, so we will prepend the `data/` directory to our sample folder name using the `paste0()` function.
-
-```r
-## DO NOT RUN
-
-        seurat_data <- Read10X(data.dir = paste0("data/", file))
-```
-
-#### Step 3: Create Seurat object from the 10X count data
-
-Now, we can create the Seurat object by using the `CreateSeuratObject()` function, adding in the argument `project`, where we can add the sample name.
-
-```r
-## DO NOT RUN
-
-        seurat_obj <- CreateSeuratObject(counts = seurat_data, 
-                                         min.features = 100, 
-                                         project = file)        
-```
-
-#### Step 4: Assign Seurat object to a new variable based on sample
-
-The last command `assign`s the Seurat object created (`seurat_obj`) to a new variable. In this way, when we iterate and move on to the next sample in our `input` we will not overwrite the Seurat object created in the previous iteration:
-
-```r
-## DO NOT RUN
-  
-        assign(file, seurat_obj)
-}
-```
+> We can break down the `for loop` to describe the different lines of code:
+> 
+> #### Step 1: Specify inputs
+> 
+> For this dataset, we have two samples that we would like to create a Seurat object for:
+> 
+> - `ctrl_raw_feature_bc_matrix` 
+> - `stim_raw_feature_bc_matrix`
+> 
+> We can specify these samples in the *input* part for our `for loop` as elements of a vector using `c()`. We are assigning these to a *variable* and we can call that variable anything we would like (try to give it a name that makes sense). In this example, we called the *variable* `file`. 
+> 
+> > During the execution of the above loop, `file` will first contain the value *"ctrl_raw_feature_bc_matrix"*, run through the commands all the way through to `assign()`. Next, it will contain the value *"stim_raw_feature_bc_matrix"* and once again run through all the commands. If you had 15 folders as input, instead of 2, the above code will run through 15 times, for each of your data folders.
+> 
+> ```r
+> ## DO NOT RUN
+> 
+> # Create each individual Seurat object
+> for (file in c("ctrl_raw_feature_bc_matrix", "stim_raw_feature_bc_matrix")){
+> ```
+> 
+> #### Step 2: Read in data for the input
+> 
+> We can continue our `for loop` by adding a line to read in data with `Read10X()`:
+> 
+> - Here, we need to specify the path to the file, so we will prepend the `data/` directory to our sample folder name using the `paste0()` function.
+> 
+> ```r
+> ## DO NOT RUN
+> 
+>         seurat_data <- Read10X(data.dir = paste0("data/", file))
+> ```
+> 
+> #### Step 3: Create Seurat object from the 10X count data
+> 
+> Now, we can create the Seurat object by using the `CreateSeuratObject()` function, adding in the argument `project`, where we can add the sample name.
+> 
+> ```r
+> ## DO NOT RUN
+> 
+>         seurat_obj <- CreateSeuratObject(counts = seurat_data, 
+>                                          min.features = 100, 
+>                                          project = file)        
+> ```
+> 
+> #### Step 4: Assign Seurat object to a new variable based on sample
+> 
+> The last command `assign`s the Seurat object created (`seurat_obj`) to a new variable. In this way, when we iterate and move on to the next sample in our `input` we will not overwrite the Seurat object created in the previous iteration:
+> 
+> ```r
+> ## DO NOT RUN
+>   
+>         assign(file, seurat_obj)
+> }
+> ```
 
 Now that we have created both of these objects, let's take a quick look at the metadata to see how it looks:
 
