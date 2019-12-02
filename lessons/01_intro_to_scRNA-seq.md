@@ -121,7 +121,7 @@ Technical sources of variation can result in gene expression between cells being
 	    
 	  	_**Image credit:** [Hicks SC, et al., bioRxiv (2015)](https://www.biorxiv.org/content/early/2015/08/25/025528)_
 	  
-	  - **DO** split replicates of the different sample groups across batches. The more replicates the better (definitely more than 2).
+	  - **DO** split replicates of the different sample groups across batches. The more replicates the better (definitely more than 2), if doing DE across conditions or making conclusions at the population level.
 	  
 	  	<img src="../img/batch_effect.png" width="300">
 	
