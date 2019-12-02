@@ -297,7 +297,7 @@ head(ctrl_raw_feature_bc_matrix@meta.data)
 head(stim_raw_feature_bc_matrix@meta.data)
 ```
 
-Now that we have both Seurat objects for each sample, we need to merge them together into a single Seurat object. This will make it easier to run the QC steps at once, as well as enable us to easily compare the data quality for all the samples.  
+Next, we need to merge these objects together into a single Seurat object. This will make it easier to run the QC steps for both sample groups together and enable us to easily compare the data quality for all the samples.  
 
 We can use the `merge()` function from the Seurat package to do this:
 
