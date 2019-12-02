@@ -141,13 +141,14 @@ cluster0_conserved_markers <- FindConservedMarkers(seurat_integrated,
 
 **The output from the `FindConservedMarkers()` function**, is a matrix containing a ranked list of putative markers listed by gene ID for the cluster we specified, and associated statistics. Note that the same set of statistics are computed for each group (in our case, Ctrl and Stim) and the last two columns correspond to the combined p-value across the two groups. We describe some of these columns below:
 
-- **p_val:** p-value not adjusted for multiple test correction
-- **avg_logFC:** average log2 fold change. Positive values indicate that the gene is more highly expressed in the cluster.
-- **pct.1**: The percentage of cells where the gene is detected in the cluster
-- **pct.2**: The percentage of cells where the gene is detected on average in the other clusters
-- **p_val_adj:** Adjusted p-value, based on bonferroni correction using all genes in the dataset, used to determine significance
-- **max_pval:**
-- **minimump_p_val:**
+- **gene:** gene symbol
+- **condition_p_val:** p-value not adjusted for multiple test correction for condition
+- **condition_avg_logFC:** average log2 fold change for condition. Positive values indicate that the gene is more highly expressed in the cluster.	
+- **condition_pct.1:** percentage of cells where the gene is detected in the cluster for condition		
+- **condition_pct.2:** percentage of cells where the gene is detected on average in the other clusters for condition
+- **condition_p_val_adj:** adjusted p-value for condition, based on bonferroni correction using all genes in the dataset, used to determine significance
+- **max_pval:**	largest p value of p value calculated by each group/condition
+- **minimump_p_val:** combined p value
 
 >**NOTE:** Since each cell is being treated as a replicate this will result in inflated p-values within each group! A gene may have an incredibly low p-value < 1e-50 but that doesn't translate as a highly reliable marker gene. 
 
