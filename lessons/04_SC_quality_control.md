@@ -151,7 +151,7 @@ The cell counts are determined by the number of unique cellular barcodes detecte
 
 In an ideal world, you would expect the number of unique cellular barcodes to correpsond to the number of cells you loaded. However, this is not the case as capture rates of cells are only a proportion of what is loaded. For example, the inDrops cell **capture efficiency** is higher (70-80%) compared to 10X which can drop is between 50-60%.
 
-The cell numbers can also vary by protocol, **producing cell numbers that are much higher than what we loaded**. For example, during the inDrops protocol, the cellular barcodes are present in the hydrogels, which are encapsulated in the droplets with a single cell and lysis/reaction mixture. While each hydrogel should have a single cellular barcode associated with it, occasionally a hydrogel can have more than one cellular barcode. Similarly, with the 10X protocol there is a chance of obtaining only bardoded beads in the emulsion droplet (GEM) and no actual cell.  Both of these can lead to a higher number of cellular barcodes than cells.
+The cell numbers can also vary by protocol, **producing cell numbers that are much higher than what we loaded**. For example, during the inDrops protocol, the cellular barcodes are present in the hydrogels, which are encapsulated in the droplets with a single cell and lysis/reaction mixture. While each hydrogel should have a single cellular barcode associated with it, occasionally a hydrogel can have more than one cellular barcode. Similarly, with the 10X protocol there is a chance of obtaining only a barcoded bead in the emulsion droplet (GEM) and no actual cell.  Both of these can lead to a higher number of cellular barcodes than cells.
 
 ```r
 # Visualize the number of cell counts per cell
@@ -171,7 +171,7 @@ metadata %>%
 
 ### UMI counts (transcripts) per cell
 
-The UMI counts per cell should generally be above 500, although usable, it's still low if between 500-1000 counts. If UMIs per cell is 500-1000 counts, then the cells probably should have been sequenced more deeply. 
+The UMI counts per cell should generally be above 500, that is the low end of what we expect. If UMI counts are between 500-1000 counts, it is usable but the cells probably should have been sequenced more deeply. We can see that majority of our cells in both samples have 1000 UMIs or greater, which is great.
 
 ```r
 # Visualize the number UMIs/transcripts per cell
@@ -190,7 +190,7 @@ metadata %>%
    
 ### Genes detected per cell
 
-Seeing gene detection in the range of 500-5000 is normal for **inDrop** analysis. Similar expectations for gene detection as for UMI detection, although may be a bit lower than UMIs.
+Seeing gene detection in the range of 500-5000. Similar expectations for gene detection as for UMI detection, although may be a bit lower than UMIs.
 
 ```r
 # Visualize the distribution of genes detected per cell via histogram
