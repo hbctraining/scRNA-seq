@@ -223,7 +223,7 @@ metadata %>%
 
 ### UMIs vs. genes detected
 
-Two metrics that are often evaluated together are the number of UMIs and the number of genes detected per cell. Here, we have plotted the **number of genes versus the numnber of UMIs coloured by the fraction of mitochondrial reads**. Mitochondrial read fractions are only high (light blue color) in particularly low count cells with few detected genes. These cells are filtered out by our count and gene number thresholds. Jointly visualizing the count and gene thresholds shows the joint filtering effect.
+Two metrics that are often evaluated together are the number of UMIs and the number of genes detected per cell. Here, we have plotted the **number of genes versus the numnber of UMIs coloured by the fraction of mitochondrial reads**. Mitochondrial read fractions are only high (light blue color) in particularly low count cells with few detected genes. This could be indicative of damaged/dying cells whose cytoplasmic mRNA has leaked out through a broken membrane, and thus, only mRNA located in the mitochondria is still conserved. These cells are filtered out by our count and gene number thresholds. Jointly visualizing the count and gene thresholds shows the **joint filtering effect**.
 
 Cells that are **poor quality are likely to have low genes and UMIs per cell**, and correspond to the data points in the bottom left quadrant of the plot. Good cells will generally exhibit both higher number of genes per cell and higher numbers of UMIs. In contrast, cells with unexpectedly high counts and a large number of detected genes may represent doublets. Thus, high‐count depth thresholds are commonly used to filter out potential doublets. 
 
@@ -249,7 +249,7 @@ metadata %>%
 
 ### Mitochondrial counts ratio
 
-This metric can identify whether there is a large amount of mitochondrial contamination from dead or dying cells. Poor quality samples for mitochondrial counts would have larger peaks above the 0.1 mitochondrial ratio mark, unless it is expected based on sample type.
+This metric can identify whether there is a large amount of **mitochondrial contamination from dead or dying cells**. We define poor quality samples for mitochondrial counts as cells which surpass the 0.1 mitochondrial ratio mark, unless of course you are expecting this in your sample.
 
 ```r
 # Visualize the distribution of mitochondrial gene expression detected per cell
@@ -267,7 +267,7 @@ metadata %>%
 
 ### Novelty
 
-We can see the samples where we sequenced each cell less have a higher overall novelty, that is because we have not started saturating the sequencing for any given gene for these samples. Outlier cells in these samples might be cells that have a less complex RNA species than other cells. Sometimes we can detect contamination with low complexity cell types like red blood cells via this metric. Generally, we expect the novelty score to be above 0.80.
+We can see the samples where we sequenced each cell less have a higher overall novelty, that is because we have not started saturating the sequencing for any given gene for these samples. Outlier cells in these samples might be cells that have a less complex RNA species than other cells. Sometimes we **can detect contamination with low complexity cell types** like red blood cells via this metric. Generally, we expect the novelty score to be above 0.80.
 
 ```r
 # Visualize the overall novelty of the gene expression by visualizing the genes detected per UMI
@@ -284,7 +284,10 @@ metadata %>%
 
 > **NOTE:** **Reads per cell** is another metric that can be useful to explore; however, the workflow used would need to save this information to assess. Generally, with this metric you hope to see all of the samples with peaks in relatively the same location between 10,000 and 100,000 reads per cell. 
 
+
 ## Filtering
+
+In conclusion, considering any of these QC metrics in isolation can lead to misinterpretation of cellular signals. For example, cells with a comparatively high fraction of mitochondrial counts may be involved in respiratory processes and may be cells that you would like to keep. Likewise, other metrics can have other biological interpretations. Thus, always **consider the joint effects of these metrics when setting thresholds and set them to be as permissive as possible to avoid filtering out viable cell populations unintentionally**. 
 
 Now that we have visualized the various metrics, we can decide on the thresholds to apply which will result in the removal of low quality cells. Often the recommendations mentioned earlier are a rough guideline, and the specific experiment needs to inform the exact thresholds chosen. We will use the following thresholds:
 
