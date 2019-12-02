@@ -234,7 +234,7 @@ View(top10)
 
 
 <p align="center">
-<img src="../img/unknown_marker_table.png" width="800">
+<img src="../img/unknown_marker_table2.png" width="800">
 </p>
 
 **ADD AN EXPLANATION HERE OF WHAT WE THINK CLUSTER 7 AND CLUSTER 20 CORRESPOND TO**
