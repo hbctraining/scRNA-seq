@@ -82,10 +82,10 @@ The first step in the analysis is to normalize the raw counts to account for dif
 The sctransform method models the UMI counts using a **regularized negative binomial model** to remove the variation due to sequencing depth (total nUMIs per cell), while adjusting the variance based on pooling information across genes with similar abundances (similar to some bulk RNA-seq methods). 
 
 <p align="center">
-<img src="../img/sctransform_residuals.png" width="600">
+<img src="../img/sctransform_clusters.png" width="600">
 </p>
 
-_**Image credit:** Hafemeister C and Satija R. Normalization and variance stabilization of single-cell RNA-seq data using regularized negative binomial regression, bioRxiv 2019 (https://doi.org/10.1101/576827)_
+_**Image credit:** sctransform issue (https://github.com/ChristophH/sctransform/issues/14)_
 
 The **output of the model** (residuals) is the normalized expression levels for each transcript tested.
 
