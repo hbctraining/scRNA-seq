@@ -2,7 +2,7 @@
 
 ### Cell counts
 
-After filtering, we should not have more cells than we sequenced. Generally we aim to have about the number we sequenced or a bit less. With 2,700 cells sequenced, we would expect to return around this number of cells. We have about 2,480 returned after filtering, which is pretty good. 
+After filtering, we should not have more cells than we sequenced. Generally we aim to have about the number we sequenced or a bit less. 
 
 ```r
 ## Cell counts
@@ -16,7 +16,7 @@ metadata_clean %>%
 ```
 
 <p align="center">
-<img src="../img/cell_counts_filtered.png" width="600">
+<img src="../img/" width="600">
 </p>
 
 
