@@ -123,7 +123,7 @@ If using 10X Genomics library preparation method, then the [Cell Ranger pipeline
 The FASTQ files can then be used to parse out the cell barcodes, UMIs, and sample barcodes. For droplet-based methods, many of the cellular barcodes will match a low number of reads (< 1000 reads) due to:
 
 - encapsulation of free floating RNA from dying cells
-- uncomplex small cells (RBCs, etc.)
+- simple cells (RBCs, etc.) expressing few genes
 - cells that failed for some reason
 
 These excess barcodes need to be filtered out of the sequence data prior to read alignment. To do this filtering the 'cellular barcode' and the 'molecular barcode' are extracted and saved for each cell. For example, if using 'umis' tools, the information is added to the header line for each read, with the following format:
