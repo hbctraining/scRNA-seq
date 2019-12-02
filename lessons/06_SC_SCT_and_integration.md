@@ -154,9 +154,6 @@ DimPlot(seurat_phase,
 
 We do not see large differences due to cell cycle phase. Based on this plot, we would not regress out the variation due to cell cycle. 
 
-> **NOTE:** Alternatively, we could wait and perform the clustering without regression and see if we have clusters separated by cell cycle phase. If we do, then we could come back and perform the regression.
-
-
 ### SCTransform
 
 Now we can use the sctransform method as a **more accurate method of normalizing, estimating the variance of the raw filtered data, and identifying the most variable genes**. By default, sctransform accounts for cellular sequencing depth, or nUMIs.
