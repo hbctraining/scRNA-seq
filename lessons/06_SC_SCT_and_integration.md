@@ -85,7 +85,7 @@ The sctransform method models the UMI counts using a **regularized negative bino
 <img src="../img/sctransform_clusters2.png" width="600">
 </p>
 
-_**Image credit:** sctransform issue (https://github.com/ChristophH/sctransform/issues/14)_
+_**Image credit:** Hafemeister C and Satija R. Normalization and variance stabilization of single-cell RNA-seq data using regularized negative binomial regression, bioRxiv 2019 (https://doi.org/10.1101/576827)_
 
 The **output of the model** (residuals) is the normalized expression levels for each transcript tested.
 
