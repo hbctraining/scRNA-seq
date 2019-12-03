@@ -333,6 +333,21 @@ Plasmacytoid dendritic cells represent cluster 19. While there are a lot of diff
 
 Hypothesize the clusters corresponding to each of the different clusters in the table:
 
+| Cell Type | Clusters |
+|:---:|:---:|
+| CD14+ monocytes | 1, 3, 14 | 
+| FCGR3A+ monocytes | 9 |
+| Conventional dendritic cells | 15 |
+| Plasmacytoid dendritic cells | 19 |
+| Marcrophages | - |
+| B cells | ? |
+| T cells | ? |
+| CD4+ T cells | ? |
+| CD8+ T cells| ? |
+| NK cells | ? |
+| Megakaryocytes | ? |
+| Erythrocytes | ? |
+| Unknown | ? |
 
 ***
 
