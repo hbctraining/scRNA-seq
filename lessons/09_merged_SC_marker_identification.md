@@ -216,6 +216,10 @@ Now, let's try this function to find the conserved markers for the clusters that
 # Iterate function across desired clusters
 conserved_markers <- map_dfr(c(7,20), get_conserved)
 ```
+
+> #### Finding markers for all clusters
+> For your data, you may want to run this function on all clusters, in which case you could input `0:20` instead of `c(7,20)`; however, it would take quite a while to run. Also, it is possible that when you run this function on all clusters, in **some cases you will have clusters that do not have enough cells for a particular group** - and  your function will fail. For these clusters you will need to use `FindAllMarkers()`.
+
 ### Evaluating marker genes
 
 We would like to use these gene lists to see of we can **identify which celltypes these clusters identify with.** Let's take a look at the top genes for each of the clusters and see if that gives us any hints. We can view the top 10 markers by average fold change across the two groups, for each cluster for a quick perusal:
@@ -233,30 +237,27 @@ top10 <- conserved_markers %>%
 View(top10)
 ```
 
-
 <p align="center">
 <img src="../img/unknown_marker_table2.png" width="800">
 </p>
 
-We see a lot of heat shock and DNA damage genes appear for **cluster 7**. Based on these markers, it is likely that these are **stressed or dying cells**. However, we also a few T cell-associated genes and markers of activation. It is possible that these could be activated (cytotoxic) T cells. We could explore the quality metrics for these cells in more detail before removing the cluster of cells just to support that argument.
+We see a lot of heat shock and DNA damage genes appear for **cluster 7**. Based on these markers, it is likely that these are **stressed or dying cells**. However, if we explore the quality metrics for these cells in more detail (i.e. mitoRatio and nUMI overlayed on the cluster) we don't really see data that support that argument. If we look a but closer at the marker gene list **we also a few T cell-associated genes and markers of activation**. It is possible that these could be activated (cytotoxic) T cells. There is a breadth of research supporting the association of heat shock proteins with reactive T cells in the induction of anti‐inflammatory cytokines in chronic inflammation. This is a cluster in which we we would need a deeper understanding of immune cells to really tease apart the results and make a final conclusion.
 
-For **cluster 20**, the enriched genes appear to be related to immune cells, so this cluster is less likely to be junk. We often look at the genes with larger differences in `pct.1` vs. `pct.2` for good marker genes. For instance, we might be interested in the gene TPSB2, which shows the majority of cells in the cluster expressing this gene, but very few of the cells in the other clusters expressing it. If we 'Google' TPSB2 we find the [GeneCards website](https://www.genecards.org/cgi-bin/carddisp.pl?gene=TPSB2&keywords=TPSB2). Note the description that `Beta tryptases appear to be the main isoenzymes expressed in mast cells, whereas in basophils, alpha-tryptases predominate. Tryptases have been implicated as mediators in the pathogenesis of asthma and other allergic and inflammatory disorders.` This suggests cluster 20 corresponds to mast cells, which would not be unexpected for control/stimulated PBMCs. If we don't know the markers of mast cells, then we could search for markers for this cell type, and determine whether they are enriched for this cluster. For instance, FCER1A is expressed highly in mast cells and is also one of the top DE genes. Based on these sources of evidence, we hypothesize that cluster 20 corresponds to mast cells. KITLG? IL3?
+For **cluster 20**, the enriched genes appear to be related to immune cells, so this cluster is less likely to be junk. We often look at the genes with larger differences in `pct.1` vs. `pct.2` for good marker genes. For instance, we might be **interested in the gene TPSB2**, which shows the majority of cells in the cluster expressing this gene, but very few of the cells in the other clusters expressing it. If we 'Google' TPSB2 we find the [GeneCards website](https://www.genecards.org/cgi-bin/carddisp.pl?gene=TPSB2&keywords=TPSB2).
 
-> #### Finding markers for all clusters
-> For your data, you may want to run this function on all clusters, in which case you could input `0:20` instead of `c(7,20)`; however, it would take quite a while to run. Also, it is possible that when you run this function on all clusters, in **some cases you will have clusters that do not have enough cells for a particular group** - and  your function will fail. For these clusters you will need to use `FindAllMarkers()`.
+> "Beta tryptases appear to be the main isoenzymes expressed in mast cells, whereas in basophils, alpha-tryptases predominate. Tryptases have been implicated as mediators in the pathogenesis of asthma and other allergic and inflammatory disorders."
 
-Based on these marker results and our previous look at known marker genes, we can determine whether the markers make sense for our **hypothesized identities for each cluster**:
+This suggests **cluster 20 corresponds to mast cells**, which would not be unexpected for control/stimulated PBMCs. If we don't know the markers of mast cells, then we could search for markers for this cell type, and determine whether they are enriched for this cluster. For instance, FCER1A is expressed highly in mast cells and is also one of the top DE genes. Based on these sources of evidence, we hypothesize that cluster 20 corresponds to mast cells. KITLG? IL3?
 
 
 ### Visualizing marker genes
 
-To get a better idea of cell type identity we can **explore the expression of different identified markers** by cluster using the `FeaturePlot()` function. For example, we can look at the cluster 20 markers:
+To get a better idea of cell type identity for **cluster 20** we can **explore the expression of different identified markers** by cluster using the `FeaturePlot()` function. 
 
 ```r
 # Plot top 5 markers for cluster 20
 FeaturePlot(object = seurat_integrated, 
-            features = top10[top10$cluster_id == 20, "gene"] %>%
-              pull(gene) %>% head(n=5),
+            features = c("FCER1A", "CD203", "CD117"),
             sort.cell = TRUE,
             min.cutoff = 'q10', 
             label = TRUE)
@@ -356,7 +357,7 @@ Now taking all of this information, we can surmise the cell types of the differe
 |4	| CD4+ T cells |
 |5	| CD8+ T cells |
 |6	| B cells |
-|7	| Stressed / dying cells |
+|7	| Stressed cells / Activated T cells |
 |8	| NK cells |
 |9	| FCGR3A+ monocytes |
 |10	| CD4+ T cells |
@@ -369,7 +370,7 @@ Now taking all of this information, we can surmise the cell types of the differe
 |17| B cells |
 |18| CD4+ T cells |
 |19| Plasmacytoid dendritic cells |
-|20| MAST cells? |
+|20| MAST cells |
 
 
 We can then reassign the identity of the clusters to these cell types:
