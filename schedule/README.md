@@ -21,10 +21,11 @@
 
 | Time |  Topic  | Instructor |
 |:-----------:|:----------:|:--------:|
-| 09:00 - 10:30 | SCTransform and integration | Mary |
+| 09:00 - 10:30 | Normalization and Integration | Mary |
 | 10:30 - 10:45 | Break | |
 | 10:45 - 12:00 | Clustering | Radhika |
 | 12:00 - 13:00 | Lunch | |
 | 13:00 - 14:15 | Clustering quality control | Mary |
 | 14:15 - 14:30 | Break | |
 | 14:30 - 15:45 | Marker identification | Meeta |
+| 15:45 - 16:00 | Wrap up | Radhika |
