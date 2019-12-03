@@ -25,7 +25,7 @@
 | 10:30 - 10:45 | Break | |
 | 10:45 - 12:00 | [Clustering](../lessons/07_SC_clustering_cells_SCT.md) | Radhika |
 | 12:00 - 13:00 | Lunch | |
-| 13:00 - 14:15 | Clustering quality control | Mary |
+| 13:00 - 14:15 | [Clustering quality control](../lessons/08_SC_clustering_quality_control.md) | Mary |
 | 14:15 - 14:30 | Break | |
 | 14:30 - 15:45 | [Marker identification](../lessons/09_merged_SC_marker_identification.md) | Meeta |
 | 15:45 - 16:00 | [Wrap up](../slides/Workshop_wrapup.pdf) | Radhika |
