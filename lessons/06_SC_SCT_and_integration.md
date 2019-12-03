@@ -102,7 +102,7 @@ seurat_phase <- NormalizeData(seurat_raw)
 
 Once the data is normalized for sequencing depth, we can assign each cell a score, based on its expression of G2/M and S phase markers. 
 
-We have provided a list of human cell cycle markers for you to download. Right click on [this link](https://www.dropbox.com/s/hus4mrkueh1tfpr/cycle.rda?dl=1) to "Save link as ..." directly into your `data` directory. However, if you are not working with human data we have [additional materials](../cell_cycle_scoring.md) detailing how to acquire cell cycle markers for other organisms of interest.
+We have provided a list of human cell cycle markers for you to download. Right click on [this link](https://www.dropbox.com/s/hus4mrkueh1tfpr/cycle.rda?dl=1) to "Save link as ..." directly into your `data` directory. However, if you are not working with human data we have [additional materials](../lessons/cell_cycle_scoring.md) detailing how to acquire cell cycle markers for other organisms of interest.
 
 ```r
 # Load cell cycle markers
