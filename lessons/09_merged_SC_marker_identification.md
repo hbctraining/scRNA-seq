@@ -427,7 +427,7 @@ DimPlot(object = seurat_subset_labeled,
 ```
 
 <p align="center">
-<img src="../img/umap_subset_labeled" width="800">
+<img src="../img/umap_subset_labeled.png" width="800">
 </p>
 
 Now we would want to save our final labelled Seurat object:
