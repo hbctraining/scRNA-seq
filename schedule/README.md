@@ -21,7 +21,7 @@
 
 | Time |  Topic  | Instructor |
 |:-----------:|:----------:|:--------:|
-| 09:00 - 10:30 | Normalization and Integration | Mary |
+| 09:00 - 10:30 | [Normalization and Integration](../lessons/06_SC_SCT_and_integration.md) | Mary |
 | 10:30 - 10:45 | Break | |
 | 10:45 - 12:00 | Clustering | Radhika |
 | 12:00 - 13:00 | Lunch | |
