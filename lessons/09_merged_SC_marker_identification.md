@@ -162,7 +162,7 @@ It can be helpful to add columns with gene annotation information. In order to d
 ```r
 annotations <- read.csv("data/annotation.csv")
 ```
->**NOTE:** If you are interested in knowing how we obtained this annotation file, take a look at [the linked materials]().
+>**NOTE:** If you are interested in knowing how we obtained this annotation file, take a look at [the linked materials](fetching_annotations.md).
 
 First, we will turn the row names with gene identifiers into its own columns. Then we will merge this annotation file with our results from the `FindConservedMarkers()`:
 
