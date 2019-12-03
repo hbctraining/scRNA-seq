@@ -243,11 +243,11 @@ View(top10)
 
 We see a lot of heat shock and DNA damage genes appear for **cluster 7**. Based on these markers, it is likely that these are **stressed or dying cells**. However, if we explore the quality metrics for these cells in more detail (i.e. mitoRatio and nUMI overlayed on the cluster) we don't really see data that support that argument. If we look a but closer at the marker gene list **we also a few T cell-associated genes and markers of activation**. It is possible that these could be activated (cytotoxic) T cells. There is a breadth of research supporting the association of heat shock proteins with reactive T cells in the induction of anti‐inflammatory cytokines in chronic inflammation. This is a cluster in which we we would need a deeper understanding of immune cells to really tease apart the results and make a final conclusion.
 
-For **cluster 20**, the enriched genes appear to be related to immune cells, so this cluster is less likely to be junk. We often look at the genes with larger differences in `pct.1` vs. `pct.2` for good marker genes. For instance, we might be **interested in the gene TPSB2**, which shows the majority of cells in the cluster expressing this gene, but very few of the cells in the other clusters expressing it. If we 'Google' TPSB2 we find the [GeneCards website](https://www.genecards.org/cgi-bin/carddisp.pl?gene=TPSB2&keywords=TPSB2).
+For **cluster 20**, the enriched genes don't appear to have a common theme that stands out to us. We often look at the genes with larger differences in `pct.1` vs. `pct.2` for good marker genes. For instance, we might be **interested in the gene TPSB2**, which shows the majority of cells in the cluster expressing this gene, but very few of the cells in the other clusters expressing it. If we 'Google' TPSB2 we find the [GeneCards website](https://www.genecards.org/cgi-bin/carddisp.pl?gene=TPSB2&keywords=TPSB2).
 
 > "Beta tryptases appear to be the main isoenzymes expressed in mast cells, whereas in basophils, alpha-tryptases predominate. Tryptases have been implicated as mediators in the pathogenesis of asthma and other allergic and inflammatory disorders."
 
-This suggests **cluster 20 corresponds to mast cells**, which would not be unexpected for control/stimulated PBMCs. If we don't know the markers of mast cells, then we could search for markers for this cell type, and determine whether they are enriched for this cluster. For instance, FCER1A is expressed highly in mast cells and is also one of the top DE genes. Based on these sources of evidence, we hypothesize that cluster 20 corresponds to mast cells. KITLG? IL3?
+It is therefore possible that cluster 20 represents **mast cells**. Mast cells are important cells of the immune system and are of the hematopoietic lineage. [Studies](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5045264/) have identified the mast cell signature to be **significantly enriched in serine proteases** such as **TPSAB1 and TPSB2**, both of which show up in our conserved markers list. Anotehr gene which is not a serine protease, but is a **known mast-cell specific gene and shows up in our list is FCER1A** (encoding a subunit of the IgE receptor). Additionally, we see GATA1 and GATA2  appear in our lists which are not mast cell marker genes but are abundantly expressed in mast cells and are known transcrtiption factors which [regulate various mast-cell specific genes](https://mcb.asm.org/content/34/10/1812).
 
 
 ### Visualizing marker genes
@@ -255,12 +255,12 @@ This suggests **cluster 20 corresponds to mast cells**, which would not be unexp
 To get a better idea of cell type identity for **cluster 20** we can **explore the expression of different identified markers** by cluster using the `FeaturePlot()` function. 
 
 ```r
-# Plot top 5 markers for cluster 20
+# Plot interesting marker gene expression for cluster 20
 FeaturePlot(object = seurat_integrated, 
-            features = c("FCER1A", "CD203", "CD117"),
-            sort.cell = TRUE,
-            min.cutoff = 'q10', 
-            label = TRUE)
+                        features = c("TPSAB1", "TPSB2", "FCER1A", "GATA1", "GATA2"),
+                         sort.cell = TRUE,
+                         min.cutoff = 'q10', 
+                         label = TRUE)
 ```
 
 <p align="center">
@@ -274,8 +274,7 @@ We can also explore the range in expression of specific markers by using **violi
 ```r
 # Vln plot - cluster 20
 VlnPlot(object = seurat_integrated, 
-        features = top10[top10$cluster_id == 20, "gene"] %>%
-          pull(gene) %>% head(n=5))
+        features = c("TPSAB1", "TPSB2", "FCER1A", "GATA1", "GATA2"))
 ```        
 
 <p align="center">
