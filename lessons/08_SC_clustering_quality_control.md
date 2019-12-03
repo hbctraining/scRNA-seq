@@ -329,7 +329,7 @@ FeaturePlot(seurat_integrated,
 Plasmacytoid dendritic cells represent cluster 19. While there are a lot of differences in the expression of these markers, we see cluster 19 is consistently expressed.
 
 ***
-**Exercise**
+[**Exercise**](clusterQC_exercise.md)
 
 Hypothesize the clusters corresponding to each of the different clusters in the table:
 
