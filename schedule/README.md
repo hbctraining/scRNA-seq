@@ -6,7 +6,7 @@
 |:-----------:|:----------:|:--------:|
 | 09:00 - 09:15 | [Workshop introduction](../slides/Intro_to_workshop.pdf) | Radhika
 | 09:15 - 09:45 | [Introduction to scRNA-seq](../lessons/01_intro_to_scRNA-seq.md) | Mary
-| 09:45 - 10:30 | [Single-cell RNA-seq design and methods](../slides/Single_Cell_Nov_12_02_19_SAB.pdf) | [Dr. Sarah Boswell](https://scholar.harvard.edu/saboswell) |
+| 09:45 - 10:30 | [Single-cell RNA-seq design and methods](../slides/Single_Cell_Nov_12_02_19_SB.pdf) | [Dr. Sarah Boswell](https://scholar.harvard.edu/saboswell) |
 | 10:30 - 10:45 | Break | |
 | 10:45 - 11:30 | [Single-cell RNA-seq design and methods (cont.)](../slides/Single_Cell_Nov_12_02_19_SAB.pdf) | [Dr. Sarah Boswell](https://scholar.harvard.edu/saboswell) |
 | 11:30 - 12:00 | [Raw data to count matrix](../lessons/02_SC_generation_of_count_matrix.md) | Mary |
@@ -28,4 +28,4 @@
 | 13:00 - 14:15 | Clustering quality control | Mary |
 | 14:15 - 14:30 | Break | |
 | 14:30 - 15:45 | [Marker identification](../lessons/09_merged_SC_marker_identification.md) | Meeta |
-| 15:45 - 16:00 | Wrap up | Radhika |
+| 15:45 - 16:00 | [Wrap up](../slides/Workshop_wrapup.pdf) | Radhika |
