@@ -369,14 +369,14 @@ Now taking all of this information, we can surmise the cell types of the differe
 |17| B cells |
 |18| CD4+ T cells |
 |19| Plasmacytoid dendritic cells |
-|20| MAST cells |
+|20| Mast cells |
 
 
 We can then reassign the identity of the clusters to these cell types:
 
 ```r
 # Rename all identities
-seurat_integrated <- RenameIdents(object = seurat_control, 
+seurat_integrated <- RenameIdents(object = seurat_integrated, 
                                "0" = "Naive or memory CD4+ T cells",
                                "1" = "CD14+ monocytes",
                                "2" = "Naive or memory CD4+ T cells",
@@ -384,7 +384,7 @@ seurat_integrated <- RenameIdents(object = seurat_control,
                                "4" = "CD4+ T cells",
                                "5" = "CD8+ T cells",
                                "6" = "B cells",
-                               "7" = "Stressed / dying cells",
+                               "7" = "Stressed cells / Activated T cells",
                                "8" = "NK cells",
                                "9" = "FCGR3A+ monocytes",
                                "10" = "CD4+ T cells",
@@ -397,44 +397,44 @@ seurat_integrated <- RenameIdents(object = seurat_control,
 			       "17" = "B cells", 
 			       "18" = "CD4+ T cells", 
 			       "19" = "Plasmacytoid dendritic cells", 
-			       "20" = "MAST cells")
+			       "20" = "Mast cells")
 
 
 # Plot the UMAP
 DimPlot(object = seurat_integrated, 
         reduction = "umap", 
         label = TRUE,
-        label.size = 6,
+        label.size = 3,
         repel = TRUE)
 ```
 
 <p align="center">
-<img src="../img/" width="800">
+<img src="../img/umap_labeled.png" width="800">
 </p>
 
-If we wanted to remove the stressed cells, we could use the `subset()` function:
+If we wanted to remove the potentially stressed cells, we could use the `subset()` function:
 
 ```r
 # Remove the stressed or dying cells
-seurat_labelled <- subset(seurat_integrated,
-                               idents = "Stressed / dying cells", invert = TRUE)
+seurat_subset_labeled <- subset(seurat_integrated,
+                               idents = "Stressed cells / Activated T cells", invert = TRUE)
 
 # Re-visualize the clusters
-DimPlot(object = seurat_labelled, 
+DimPlot(object = seurat_subset_labeled, 
         reduction = "umap", 
         label = TRUE,
-        label.size = 6)
+        label.size = 3)
 ```
 
 <p align="center">
-<img src="../img/" width="800">
+<img src="../img/umap_subset_labeled" width="800">
 </p>
 
 Now we would want to save our final labelled Seurat object:
 
 ```r        
 # Save final R object
-write_rds(seurat_labelled,
+write_rds(seurat_integrated,
           path = "results/seurat_labelled.rds")       
 ```
 
