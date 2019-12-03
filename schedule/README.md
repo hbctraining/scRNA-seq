@@ -23,9 +23,9 @@
 |:-----------:|:----------:|:--------:|
 | 09:00 - 10:30 | [Normalization and Integration](../lessons/06_SC_SCT_and_integration.md) | Mary |
 | 10:30 - 10:45 | Break | |
-| 10:45 - 12:00 | Clustering | Radhika |
+| 10:45 - 12:00 | [Clustering](../lessons/07_SC_clustering_cells_SCT.md) | Radhika |
 | 12:00 - 13:00 | Lunch | |
 | 13:00 - 14:15 | Clustering quality control | Mary |
 | 14:15 - 14:30 | Break | |
-| 14:30 - 15:45 | Marker identification | Meeta |
+| 14:30 - 15:45 | [Marker identification](../lessons/09_merged_SC_marker_identification.md) | Meeta |
 | 15:45 - 16:00 | Wrap up | Radhika |
