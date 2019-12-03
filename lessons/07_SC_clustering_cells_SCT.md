@@ -44,9 +44,13 @@ _**Recommendations:**_
 
 ### Identify significant PCs
 
-To overcome the extensive technical noise in the expression of any single gene for scRNA-seq data, Seurat assigns cells to clusters based on their PCA scores derived from the expression of the integrated most variable genes, with each PC essentially representing a "metagene" that combines information across a correlated gene set. Determining how many PCs to include downstream is therefore an important step to ensure that we are capturing the majority of the variation, or cell types, present in our dataset. Often it is useful to explore the PCs prior to deciding which PCs to include for the downstream clustering analysis.
+To overcome the extensive technical noise in the expression of any single gene for scRNA-seq data, **Seurat assigns cells to clusters based on their PCA scores derived from the expression of the integrated most variable genes**, with each PC essentially representing a "metagene" that combines information across a correlated gene set. **Determining how many PCs to include in the clustering step is therefore important to ensure that we are capturing the majority of the variation**, or cell types, present in our dataset. 
 
-One way of exploring the PCs is using a heatmap to visualize the most variant genes for select PCs with the **genes and cells ordered by PCA scores**. The `cells` argument specifies the number of cells with the most negative or postive PCA scores to use for the plotting.
+It is useful to explore the PCs prior to deciding which PCs to include for the downstream clustering analysis.
+
+(a) One way of exploring the PCs is using a heatmap to visualize the most variant genes for select PCs with the **genes and cells ordered by PCA scores**. The idea here is to look at the PCs and determine whether the genes driving them make sense for differentiating the different cell types. 
+
+The `cells` argument specifies the number of cells with the most negative or postive PCA scores to use for the plotting. The idea is that we are looking for a PC where the heatmap starts to look more "fuzzy", i.e. where the distinctions between the groups of genes is not so distinct.
 
 ```r
 # Explore heatmap of PCs
@@ -59,9 +63,7 @@ DimHeatmap(seurat_integrated,
 <img src="../img/heatmap_PCs_16.png" width="800">
 </p>
 
-We can see which genes appear to be driving the PCs, but this method can be slow and hard to visualize individual genes if we would like to explore a large number of PCs.
-
-For exploring a large number of PCs, we could print out the top 5 positive and negative genes by PCA scores driving the PCs.
+This method can be slow and hard to visualize individual genes if we would like to explore a large number of PCs. In the same vein and to explore a large number of PCs, we could print out the top 10 (or more) positive and negative genes by PCA scores driving the PCs.
 
 ```r
 # Printing out the most variable genes driving PCs
@@ -70,15 +72,13 @@ print(x = seurat_integrated[["pca"]],
       nfeatures = 5)
 ```
 
-We only specified 10 dimensions, but we could easily include as many as we wish to explore. It is often useful to look at the PCs and determine whether the genes driving them make sense for differentiating the different cell types. However, we won't use this method alone to choose the PCs to use for the clustering analysis.
-
 <p align="center">
 <img src="../img/PC_print.png" width="400">
 </p>
 
-The **elbow plot** is helpful when determining how many PCs we need to capture the majority of the variation in the data. The elbow plot visualizes the standard deviation of each PC. **Where the elbow appears is usually the threshold for identifying the majority of the variation**. However, this method can be a bit subjective about where the elbow is located. 
+(b) The **elbow plot** is another helpful way to determine how many PCs to use for clustering so that we are capturing majority of the variation in the data. The elbow plot visualizes the standard deviation of each PC, and we are looking for where the standard deviations begins to plateau. Essentially, **where the elbow appears is usually the threshold for identifying the majority of the variation**. However, this method can be quite subjective. 
 
-We will try the elbow plot using the top 40 dimensions:
+Let's draw an elbow plot using the top 40 PCs:
 
 ```r
 # Plot the elbow plot
@@ -90,22 +90,22 @@ ElbowPlot(object = seurat_integrated,
 <img src="../img/SC_elbowplot.png" width="500">
 </p>
 
+Based on this plot, we could roughly determine the majority of the variation by where the elbow occurs around PC8 - PC10, or one could argue that it should be when the data points start to get close to the X-axis, PC30 or so. This gives us a very rough idea of the number of PCs needed to be included, we can extract the information visualized here in a [**more quantitative manner**](elbow_plot_metric.md), which may be a bit more reliable.  
 
-Based on this plot, we could roughly determine the majority of the variation by where the elbow occurs (touches the ground) to be somewhere between PC12-PC16. While this gives us a good rough idea of the number of PCs needed to be included, you can also use a [**more quantitative approach**](elbow_plot_metric.md) which may be a bit more reliable.  
-
-Since the SCTransform method is more accurate than some of the older Seurat methods of normalization and identification of variable genes, it is not as imperative to determine a specific PC value. As long as we choose a PC that is large enough to capture the majority of the variation, we can choose that value and move forward with it. The more PCs we choose, the more variation is accounted for when performing the clustering, but also, the longer it will take to perform the clustering. For our analysis, we will use the first **40 PCs** to generate the clusters. 
+While the above 2 methods were used a lot more with older methods from Seurat for normalization and identification of variable genes, they are no longer as important as they used to be. This is because the **SCTransform method is more accurate than older methods**.
 
 > #### Why is selection of PCs more important for older methods?
-> The older methods incorporated some technical sources of variation into some of the higher PCs, so selection of PCs was more important. SCTransform better estimates the variance and adjusts does not frequently identify these sources of technical variation in the higher PCs. We could in theory use all of the PCs for clustering, but the main reason not to use them is the computational resources and time that would require. 
+> The older methods incorporated some technical sources of variation into some of the higher PCs, so selection of PCs was more important. SCTransform estimates the variance better and does not frequently include these sources of technical variation in the higher PCs. In theory we could use all of the PCs for clustering, but the main reason not to use them is the computational resources and time that would require. 
+
+The more PCs we choose, the more variation is accounted for when performing the clustering, but also, the longer it will take to perform the clustering, therefore for this analysis, we will use the **first 40 PCs** to generate the clusters. 
 
 ### Cluster the cells
 
 We can now use these chosen PCs to determine which cells exhibit similar expression patterns for clustering. To do this, Seurat uses a graph-based clustering approach, which embeds cells in a graph structure, using a K-nearest neighbor (KNN) graph (by default), with edges drawn between cells with similar gene expression patterns. Then, it attempts to partition this graph into highly interconnected ‘quasi-cliques’ or ‘communities’ [[Seurat - Guided Clustering Tutorial](https://satijalab.org/seurat/v3.1/pbmc3k_tutorial.html)].
 
-We will use the `FindClusters()` function to perform the graph-based clustering. The `resolution` is an important argument that sets the "granularity" of the downstream clustering and will need to be optimized to the experiment.  For datasets of 3,000 - 5,000 cells, the `resolution` set between `0.4`-`1.4` generally yields good clustering. Increased resolution values lead to a greater number of clusters, which is often required for larger datasets. 
+We will use the `FindClusters()` function to perform the graph-based clustering. The `resolution` is an important argument that sets the "granularity" of the downstream clustering and will need to be optimized for every individual experiment.  For datasets of 3,000 - 5,000 cells, the `resolution` set between `0.4`-`1.4` generally yields good clustering. Increased resolution values lead to a greater number of clusters, which is often required for larger datasets. 
 
-We often provide a series of resolution options during clustering, which can be used downstream to choose the best resolution for the data.
-
+The `FindClusters()` function allows us to enter a series of resolutions and will calculate the "granularity" of the clustering. This is very helpful for testing which resolution works for moving forward without having to run the function for each resolution.
 
 ```r
 # Determine the K-nearest neighbor graph
@@ -134,7 +134,7 @@ Idents(object = seurat_integrated) <- "integrated_snn_res.0.8"
 
 To visualize the cell clusters, there are a few different dimensionality reduction techniques that can be helpful. The most popular methods include t-distributed stochastic neighbor embedding (t-SNE) and Uniform Manifold Approximation and Projection (UMAP) techniques. 
 
-Both methods aim to place cells with similar local neighborhoods in high-dimensional space together in low-dimensional space. As input, we suggest using the same PCs as input to the clustering analysis. **Note that distance between clusters in the t-SNE plot does not represent degree of similarity between clusters, whereas in the UMAP plot it does**. Therefore, we will proceed with the UMAP method for visualizations, which should separate the clusters more based on similarity.
+Both methods aim to place cells with similar local neighborhoods in high-dimensional space together in low-dimensional space. These methods will require you to input number of PCA dimentions to use for the visualization, we suggest using the same number of PCs as input to the clustering analysis. **Note that distance between clusters in the t-SNE plot does not represent degree of similarity between clusters, whereas in the UMAP plot it does**. Here, we will proceed with the UMAP method for visualizing the clusters.
 
 ```r
 # Calculation of UMAP
@@ -153,9 +153,7 @@ DimPlot(seurat_integrated,
 <img src="../img/SC_umap.png" width="800">
 </p>
 
-The UMAP looks quite a bit nicer, with the clusters more clearly defined. Also, because distance between clusters is meaningful, the UMAP provides more information than t-SNE. 
-
-It can be useful to **explore other resolutions as well**. It will give you a quick idea about how the clusters would change based on the resolution parameter. For example, let's take a look at 0.4 resolution:
+It can be useful to **explore other resolutions as well**. It will give you a quick idea about how the clusters would change based on the resolution parameter. For example, let's switch to a resolution of 0.4:
 
 ```r
 # Assign identity of clusters
@@ -172,10 +170,9 @@ DimPlot(seurat_integrated,
 <img src="../img/SC_umap0.4.png" width="800">
 </p>
 
-
 **How does your UMAP plot compare to the one above?**
 
-It is possible that there is some variability in the way your clusters look compared to those in the lesson. In particular **you may see a difference in the labeling of clusters**. This is an unfortunate consequence of slight variations in the versions of packages (mostly Seurat dependencies).
+It is possible that there is some variability in the way your clusters look compared to the image in this lesson. In particular **you may see a difference in the labeling of clusters**. This is an unfortunate consequence of slight variations in the versions of packages (mostly Seurat dependencies).
 
 **If your clusters look identical to what's in the lesson, please go ahead to the next section without any downloads.**
 
@@ -194,7 +191,7 @@ load("data/seurat_integrated.RData")
 
 ***
 
-We will now continue with the UMAP method and the 0.8 resolution to check the quality control metrics and known markers for anticipated cell types. Plot the UMAP again to make sure your image now matches what you see in the lesson:
+We will now continue with the 0.8 resolution to check the quality control metrics and known markers for the anticipated cell types. Plot the UMAP again to make sure your image now (or still) matches what you see in the lesson:
 
 ```r
 # Assign identity of clusters
