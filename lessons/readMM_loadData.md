@@ -15,7 +15,7 @@ We can explore these files by clicking on the `data/ctrl_raw_feature_bc_matrix` 
   <img src="../img/cell_ids_new.png" width="180">
   </p>
   
-- **`genes.tsv`:** IDs of quantified genes
+- **`features.tsv`:** IDs of quantified genes
 
   <p align="center">
   <img src="../img/genes.png" width="300">
@@ -33,14 +33,14 @@ We will use `readMM()` function from the **Matrix** package to turn our standard
 
 ```r
 # Read in `matrix.mtx`
-counts <- readMM("data/ctrl_raw_feature_bc_matrix/matrix.mtx")
+counts <- readMM("data/ctrl_raw_feature_bc_matrix/matrix.mtx.gz")
 
 # Read in `genes.tsv`
-genes <- read_tsv("data/ctrl_raw_feature_bc_matrix/genes.tsv", col_names = FALSE)
+genes <- read_tsv("data/ctrl_raw_feature_bc_matrix/genes.tsv.gz", col_names = FALSE)
 gene_ids <- genes$X1
 
 # Read in `barcodes.tsv`
-cell_ids <- read_tsv("data/ctrl_raw_feature_bc_matrix/barcodes.tsv", col_names = FALSE)$X1
+cell_ids <- read_tsv("data/ctrl_raw_feature_bc_matrix/barcodes.tsv.gz", col_names = FALSE)$X1
 ```
 
 Then we can add row names to the count matrix to be the gene IDs and the column names of the count matrix to be the cell IDs.
