@@ -141,7 +141,7 @@ This is a text file which contains all cellular barcodes present for that sample
   </p>
   
 
-### 2. `genes.tsv`
+### 2. `features.tsv`
 This is a text file which contains the identifiers of the quantified genes. The source of the identifier can vary depending on what reference (i.e. Ensembl, NCBI, UCSC) you use in the quantification methods, but most often these are official gene symbols. The order of these genes corresponds to the order of the rows in the matrix file (i.e. these are the row names).
 
   <p align="center">
