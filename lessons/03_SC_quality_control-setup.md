@@ -10,7 +10,7 @@ Approximate time: 90 minutes
 
 * Understand how to bring in data from single-cell RNA-seq experiments
 
-# Single-cell RNA-seq: Quality control set up
+# Single-cell RNA-seq: Quality control set-up
 
 <p align="center">
 <img src="../img/sc_workflow_integration.png" width="800">
