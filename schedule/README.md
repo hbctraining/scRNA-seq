@@ -15,7 +15,7 @@
 | 13:45 - 14:30 | [Quality control set-up](../lessons/03_SC_quality_control-setup.md) | Jihe |
 | 14:30 - 14:45 | Break | |
 | 14:45 - 15:30 | [Quality control](../lessons/04_SC_quality_control.md) | Mary |
-| 15:30 - 16:15 | [Normalization and PCA](../lessons/05_normalization_and_PCA.md) | Radhika |
+| 15:30 - 16:15 | [Theory of Normalization and PCA](../lessons/05_normalization_and_PCA.md) | Radhika |
 
 ## Day 2
 
