@@ -154,7 +154,7 @@ In an ideal world, you would expect the number of unique cellular barcodes to co
 The cell numbers can also vary by protocol, **producing cell numbers that are much higher than what we loaded**.For example, during the inDrops protocol, the cellular barcodes are present in the hydrogels, which are encapsulated in the droplets with a single cell and lysis/reaction mixture. While each hydrogel should have a single cellular barcode associated with it, occasionally a hydrogel can have more than one cellular barcode. Similarly, with the 10X protocol there is a chance of obtaining only a barcoded bead in the emulsion droplet (GEM) and no actual cell.  Both of these, in addition to the presence of dying cells can lead to a higher number of cellular barcodes than cells.
 
 ```r
-# Visualize the number of cell counts per cell
+# Visualize the number of cell counts per sample
 metadata %>% 
   	ggplot(aes(x=sample, fill=sample)) + 
   	geom_bar() +
