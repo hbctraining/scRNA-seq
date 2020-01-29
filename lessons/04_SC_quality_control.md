@@ -322,7 +322,7 @@ Within our data we will have many genes with zero counts. These genes can dramat
 counts <- GetAssayData(object = filtered_seurat, slot = "counts")
 
 # Output a logical vector for every gene on whether the more than zero counts per cell
-nonzero <- counts > 0L
+nonzero <- counts > 0
 
 # Sums all TRUE values and returns TRUE if more than 10 TRUE values per gene
 keep_genes <- rowSums(as.matrix(nonzero)) >= 10
