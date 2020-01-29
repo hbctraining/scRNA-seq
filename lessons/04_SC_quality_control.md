@@ -234,6 +234,7 @@ With this plot we also evaluate the **slope of the line**, and any scatter of da
 metadata %>% 
   	ggplot(aes(x=nUMI, y=nGene, color=mitoRatio)) + 
   	geom_point() + 
+	scale_colour_gradient(low = "gray90", high = "black") +
   	stat_smooth(method=lm) +
   	scale_x_log10() + 
   	scale_y_log10() + 
@@ -244,7 +245,7 @@ metadata %>%
 ```
 
 <p align="center">
-<img src="../img/UMIs_vs_genes.png" width="600">
+<img src="../img/UMIs_vs_genes_updated.png" width="600">
 </p>
 
 ### Mitochondrial counts ratio
