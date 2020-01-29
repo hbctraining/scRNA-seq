@@ -245,7 +245,7 @@ metadata %>%
 ```
 
 <p align="center">
-<img src="../img/UMIs_vs_genes_updated.png" width="600">
+<img src="../img/UMI_vs_genes_updated.png" width="600">
 </p>
 
 ### Mitochondrial counts ratio
