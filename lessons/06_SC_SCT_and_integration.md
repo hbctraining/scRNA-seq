@@ -74,7 +74,7 @@ library(RCurl)
 library(cowplot)
 ```
 
-To perform the analysis, Seurat requires the data to be present as a `seurat` object. We have created this object in the QC lesson (`seurat_filtered`), so we can just use that. 
+To perform the analysis, Seurat requires the data to be present as a `seurat` object. We have created this object in the QC lesson (`filtered_seurat`), so we can just use that. 
 
 ## **Normalization**, **variance stabilization**, and **regression of unwanted variation** for each sample
 
@@ -98,7 +98,7 @@ It is **recommended to check the cell cycle phase before performing the sctransf
 
 ```r
 # Normalize the counts
-seurat_phase <- NormalizeData(seurat_filtered)
+seurat_phase <- NormalizeData(filtered_seurat)
 ```
 
 Once the data is normalized for sequencing depth, we can assign each cell a score, based on its expression of G2/M and S phase markers. 
@@ -173,7 +173,7 @@ Now, to **perform the cell cycle scoring and sctransform on all samples**. This 
 
 ```r
 # Split seurat object by condition to perform cell cycle scoring and SCT on all samples
-split_seurat <- SplitObject(seurat_filtered, split.by = "sample")
+split_seurat <- SplitObject(filtered_seurat, split.by = "sample")
 
 split_seurat <- split_seurat[c("ctrl", "stim")]
 
