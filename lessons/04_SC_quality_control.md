@@ -127,7 +127,7 @@ Before we assess our metrics we are going to save all of the work we have done t
 merged_seurat@meta.data <- metadata
                            
 # Create .RData object to load at any time
-save(merged_seurat, file="data/raw_seurat.RData")
+save(merged_seurat, file="data/merged_filtered_seurat.RData")
 ```
 
 ## Assessing the quality metrics
