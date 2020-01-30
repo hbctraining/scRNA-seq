@@ -47,7 +47,7 @@ All of the samples look fine for complexity, except for the Unsorted sample, so 
 <img src="../img/sc_qc_novelty.png" width="500">
 	
 
-##### Filtered results
+## Filtered results
 
 One main plot to look at to determine the success of the filtering criteria is the number of cell counts. The number of cells to expect depends on the library preparation method, but for inDrops we see ~80% or less of the total sequenced cells per sample and for 10X it is often ~50% or less. 
 	
