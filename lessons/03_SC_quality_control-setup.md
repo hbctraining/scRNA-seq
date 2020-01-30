@@ -161,7 +161,7 @@ Loading this data into R requires us to **use functions that allow us to efficie
 
 Different methods for reading in data include:
 
-1. **`readMM()`**: This function is from the **Matrix** package and will turn our standard matrix into a sparse matrix. The `features.tsv` file and `barcodes.tsv` must first be individually loaded into R and then they are combined. For specific code and instructions on how to do this please see [our additional material](../lessons/readMM_loadData).
+1. **`readMM()`**: This function is from the **Matrix** package and will turn our standard matrix into a sparse matrix. The `features.tsv` file and `barcodes.tsv` must first be individually loaded into R and then they are combined. For specific code and instructions on how to do this please see [our additional material](../readMM_loadData.md).
 2. **`Read10X()`**: This function is from the **Seurat** package and will use the Cell Ranger output directory as input. In this way individual files do not need to be loaded in, instead the function will load and combine them into a sparse matrix for you. *We will be using this function to load in our data!*
 
 
