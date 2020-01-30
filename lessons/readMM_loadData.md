@@ -36,7 +36,7 @@ We will use `readMM()` function from the **Matrix** package to turn our standard
 counts <- readMM("data/ctrl_raw_feature_bc_matrix/matrix.mtx.gz")
 
 # Read in `genes.tsv`
-genes <- read_tsv("data/ctrl_raw_feature_bc_matrix/genes.tsv.gz", col_names = FALSE)
+genes <- read_tsv("data/ctrl_raw_feature_bc_matrix/features.tsv.gz", col_names = FALSE)
 gene_ids <- genes$X1
 
 # Read in `barcodes.tsv`
