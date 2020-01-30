@@ -1,7 +1,7 @@
 ---
 title: "Single-cell RNA-seq: Quality Control Analysis"
 author: "Mary Piper, Lorena Pantano, Meeta Mistry, Radhika Khetani"
-date: Tuesday, April 9, 2019
+date: Thursday, January 30th, 2020
 ---
 
 Approximate time: 90 minutes
@@ -104,7 +104,7 @@ Next, open a new Rscript file, and start with some comments to indicate what thi
 Save the Rscript as `scRNA-seq.R`. Your working directory should look something like this:
 
 <p align="center">
-<img src="../img/Rstudio_singlecell.png" width="500">
+<img src="../img/Rstudio_files_tab.png" width="500">
 </p>
 
 ### Loading libraries 
