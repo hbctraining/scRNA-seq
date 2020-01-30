@@ -1,7 +1,7 @@
 ---
 title: "Single-cell RNA-seq: Quality Control Analysis"
 author: "Mary Piper, Lorena Pantano, Meeta Mistry, Radhika Khetani"
-date: Tuesday, April 9, 2019
+date: Thursday, January 30, 2020
 ---
 
 Approximate time: 90 minutes
@@ -340,13 +340,13 @@ After performing the filtering, it's recommended to look back over the metrics t
 
 ***
 
-**[Exercises](https://hbctraining.github.io/scRNA-seq/lessons/sc_exercises_qc_analysis.html)**
+**[Exercises](../lessons/sc_exercises_qc_analysis.md)**
 
 1. Extract the new metadata from the filtered Seurat object to go through the same plots as with the unfiltered data
 
 	```r
 	# Save filtered subset to new metadata
-	metadata_clean <- seurat_raw@meta.data
+	metadata_clean <- filtered_seurat@meta.data
 	```
 
 2. Perform all of the same plots as with the unfiltered data and determine whether the thresholds used were appropriate.
