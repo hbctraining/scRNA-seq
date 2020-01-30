@@ -10,8 +10,6 @@ You expect the number of unique cellular barcodes to be often greater than the n
 
 ## UMI counts per cell
 
-The UMI counts per cell should be generally above 500, although usable, it's still low if between 500-1000 counts. If UMIs per cell is 500-1000 counts, then the cells probably should have been sequenced more deeply. The threshold of 500 was given in the `params`, and this is represented by the vertical dashed line in the plots.
-	
 The number of UMIs per cell tends to be very low for the Unsorted sample (yellow). The other samples have good numbers of UMIs per cell, indicating a problem only with the Unsorted sample. Using this cutoff, we will lose the majority of the Unsorted cells.
 	
 <img src="../img/sc_qc_umisPerCell.png" width="500">
