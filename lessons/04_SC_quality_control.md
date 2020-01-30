@@ -363,6 +363,8 @@ save(filtered_seurat, file="data/seurat_filtered.RData")
 
 ```
 
+**_NOTE:** We have [additional materials](../lessons/QC_bad_data.md) available for exploring the metrics for a poor quality sample. 
+
 ***
 
 [Click here for next lesson](05_normalization_and_PCA.md)
