@@ -16,7 +16,7 @@ metadata_clean %>%
 ```
 
 <p align="center">
-<img src="../img/" width="600">
+<img src="../img/metadata_clean_ncells.png" width="600">
 </p>
 
 
@@ -60,18 +60,20 @@ metadata_clean %>%
 ```r
 # UMIs vs genes
 metadata_clean %>% 
-  	ggplot(aes(x=nUMI, y=nGene, color=mitoRatio)) + 
-  	geom_point() + 
-  	stat_smooth(method=lm) +
-  	scale_x_log10() + 
-  	scale_y_log10() + 
-  	theme_classic() +
-  	geom_vline(xintercept = 500) +
-  	facet_wrap(~sample)
+  ggplot(aes(x=nUMI, y=nGene, color=mitoRatio)) + 
+  geom_point() + 
+  scale_colour_gradient(low = "gray90", high = "black") +
+  stat_smooth(method=lm) +
+  scale_x_log10() + 
+  scale_y_log10() + 
+  theme_classic() +
+  geom_vline(xintercept = 500) +
+  geom_hline(yintercept = 250) +
+  facet_wrap(~sample)
 ```
 
 <p align="center">
-<img src="../img/UMIs_vs_genes_filtered.png" width="600">
+<img src="../img/metadata_clean_numi_vs_ngene.png" width="600">
 </p>
 
 ### Mitochondrial counts ratio
