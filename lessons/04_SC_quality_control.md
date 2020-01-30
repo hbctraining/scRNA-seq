@@ -325,7 +325,7 @@ counts <- GetAssayData(object = filtered_seurat, slot = "counts")
 nonzero <- counts > 0
 
 # Sums all TRUE values and returns TRUE if more than 10 TRUE values per gene
-keep_genes <- rowSums(as.matrix(nonzero)) >= 10
+keep_genes <- Matrix::rowSums(nonzero)) >= 10
 
 # Only keeping those genes expressed in more than 10 cells
 filtered_counts <- counts[keep_genes, ]
