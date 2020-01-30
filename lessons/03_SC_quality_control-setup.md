@@ -101,7 +101,7 @@ Next, open a new Rscript file, and start with some comments to indicate what thi
 # Single-cell RNA-seq analysis - QC
 ```
 
-Save the Rscript as `scRNA-seq.R`. Your working directory should look something like this:
+Save the Rscript as `quality_control.R`. Your working directory should look something like this:
 
 <p align="center">
 <img src="../img/Rstudio_files_tab.png" width="400">
