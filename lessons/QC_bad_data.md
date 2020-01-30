@@ -1,4 +1,4 @@
-# Quality Control Metrics
+# Exploring a Poor Quality Sample
 	
 ## Cell counts
 
