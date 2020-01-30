@@ -34,7 +34,7 @@ The Unsorted sample has many cells with few UMIs and low number of genes per cel
 	
 Poor quality samples for mitochondrial counts would have larger peaks above the 0.1 mitochondrial ratio mark, unless it is expected based on sample type. 
 	
-There was just a very low number of genes detected for the Unsorted sample, so mitochondrial expression appears higher mainly due to this fact. The poor quality of the Unsorted sample does not appear to be due to dead or dying cells. The other samples have little mitochondrial expression, although hPSC sample has a bit more than the Sorted samples, and these cells will likely be removed using the threshold of 0.1. The hPSC sample was expected to have cell types with higher levels of mitochondrial expression, so it may have been advisable to not to use this threshold initially.
+There was just a very low number of genes detected for the Unsorted sample, so mitochondrial expression appears higher mainly due to this fact. The poor quality of the Unsorted sample does not appear to be due to dead or dying cells. The other samples have little mitochondrial expression, although hPSC sample has a bit more than the Sorted samples. Since the hPSC sample was expected to have cell types with higher levels of mitochondrial expression, it may have been advisable to not to use a threshold for this metric.
 
 <img src="../img/sc_qc_mitoRatio.png" width="500">
 	
