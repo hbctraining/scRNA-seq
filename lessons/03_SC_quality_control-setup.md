@@ -95,13 +95,13 @@ Now, let's unzip the two zipped folders that we just downloaded by double-clicki
 Next, open a new Rscript file, and start with some comments to indicate what this file is going to contain:
 
 ```r
-# December 2019
+# February 2020
 # HBC single-cell RNA-seq workshop
 
 # Single-cell RNA-seq analysis - QC
 ```
 
-Save the Rscript as `quality_control.R`. Your working directory should look something like this:
+Save the Rscript as `scRNA-seq.R`. Your working directory should look something like this:
 
 <p align="center">
 <img src="../img/Rstudio_singlecell.png" width="500">
