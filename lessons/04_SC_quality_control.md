@@ -363,7 +363,7 @@ save(filtered_seurat, file="data/seurat_filtered.RData")
 
 ```
 
-**_NOTE:** We have [additional materials](../lessons/QC_bad_data.md) available for exploring the metrics for a poor quality sample._
+_**NOTE:** We have [additional materials](../lessons/QC_bad_data.md) available for exploring the metrics for a poor quality sample._
 
 ***
 
