@@ -74,8 +74,7 @@ library(RCurl)
 library(cowplot)
 ```
 
-To perform the analysis, Seurat requires the data to be present as a `seurat` object. We have created this object in the QC lesson (`
-seurat_filtered`), so we can just use that. 
+To perform the analysis, Seurat requires the data to be present as a `seurat` object. We have created this object in the QC lesson (`seurat_filtered`), so we can just use that. 
 
 ## **Normalization**, **variance stabilization**, and **regression of unwanted variation** for each sample
 
