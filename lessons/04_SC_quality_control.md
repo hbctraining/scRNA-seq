@@ -250,7 +250,7 @@ metadata %>%
 
 ### Mitochondrial counts ratio
 
-This metric can identify whether there is a large amount of **mitochondrial contamination from dead or dying cells**. We define poor quality samples for mitochondrial counts as cells which surpass the 0.1 mitochondrial ratio mark, unless of course you are expecting this in your sample.
+This metric can identify whether there is a large amount of **mitochondrial contamination from dead or dying cells**. We define poor quality samples for mitochondrial counts as cells which surpass the 0.2 mitochondrial ratio mark, unless of course you are expecting this in your sample.
 
 ```r
 # Visualize the distribution of mitochondrial gene expression detected per cell
