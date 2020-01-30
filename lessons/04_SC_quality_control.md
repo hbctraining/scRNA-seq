@@ -331,7 +331,7 @@ keep_genes <- rowSums(as.matrix(nonzero)) >= 10
 filtered_counts <- counts[keep_genes, ]
 
 # Create a new Seurat object
-seurat_raw <- CreateSeuratObject(filtered_counts, meta.data = filtered_seurat@meta.data)
+seurat <- CreateSeuratObject(filtered_counts, meta.data = filtered_seurat@meta.data)
 ```
 
 ## Re-assess QC metrics
@@ -359,7 +359,7 @@ Based on these QC metrics we would identify any failed samples and move forward 
 
 ```r
 # Create .RData object to load at any time
-save(seurat_raw, file="data/seurat_raw.RData")
+save(seurat_raw, file="data/seurat_filtered.RData")
 
 ```
 
