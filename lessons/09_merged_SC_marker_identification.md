@@ -300,10 +300,9 @@ cd4_tcells <- FindMarkers(seurat_integrated,
 
 # Add gene symbols to the DE table
 cd4_tcells <- cd4_tcells %>%
-  rownames_to_column("gene") %>%
-  left_join(y = annotations[, c("gene_name", "description")],
-             by = c("gene" = "gene_name")) %>%
-  unique()
+  rownames_to_column(var = "gene") %>%
+  left_join(y = unique(annotations[, c("gene_name", "description")]),
+             by = c("gene" = "gene_name"))
 
 # Reorder columns and sort by padj      
 cd4_tcells <- cd4_tcells[, c(1, 3:5,2,6:7)]
