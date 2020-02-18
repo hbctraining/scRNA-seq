@@ -66,6 +66,7 @@ install.packages("Matrix")
 > ** If you have trouble installing `Seurat`, please install `multtest` using the following lines of code, then try installing `Seurat` again:
 >
 > `install.packages("BiocManager")`
+>
 > `BiocManager::install("multtest")`
 
 **(2)** Install the 4 packages listed below from **Bioconductor** using the the `BiocManager::install()` function.
