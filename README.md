@@ -44,8 +44,7 @@ Download the most recent versions of R and RStudio for your laptop:
 
 **(1)** Install the 10 packages listed below from **CRAN** using the `install.packages()` function. 
 
-1. `Matrix.utils`
-1. `Seurat`
+1. `Seurat`**
 1. `tidyverse`
 1. `Matrix`
 1. `RCurl`
@@ -53,25 +52,29 @@ Download the most recent versions of R and RStudio for your laptop:
 1. `cowplot`
 1. `devtools`
 1. `BiocManager`
+1. `Seurat`
 
-Please install them one-by-one -
+**Please install them one-by-one as follows:**
 
 ```r
-install.packages("Matrix.utils")
 install.packages("Seurat")
 install.packages("tidyverse")
+install.packages("Matrix")
 & so on ...
 ```
 
+> ** If you have trouble installing `Seurat`, please install `multtest` using the following lines of code, then try installing `Seurat` again:
+>
+> `install.packages("BiocManager")`
+> `BiocManager::install("multtest")`
 
-**(2)** Install the 3 packages listed below from **Bioconductor** using the the `BiocManager::install()` function.
+**(2)** Install the 4 packages listed below from **Bioconductor** using the the `BiocManager::install()` function.
 
 1. `SingleCellExperiment`
 1. `AnnotationHub`
 1. `ensembldb`
 
-
-Please install them one-by-one -
+**Please install them one-by-one as follows:**
 
 ```r
 BiocManager::install("SingleCellExperiment")
@@ -82,7 +85,6 @@ BiocManager::install("AnnotationHub")
 **(3)** Finally, please check that all the packages were installed successfully by loading them **one at a time** using the `library()` function.  
 
 ```r
-library(Matrix.utils)
 library(Seurat)
 library(tidyverse)
 library(Matrix)
