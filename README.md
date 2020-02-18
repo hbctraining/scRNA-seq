@@ -44,7 +44,6 @@ Download the most recent versions of R and RStudio for your laptop:
 
 **(1)** Install the 10 packages listed below from **CRAN** using the `install.packages()` function. 
 
-1. `Seurat`**
 1. `tidyverse`
 1. `Matrix`
 1. `RCurl`
@@ -52,14 +51,14 @@ Download the most recent versions of R and RStudio for your laptop:
 1. `cowplot`
 1. `devtools`
 1. `BiocManager`
-1. `Seurat`
+1. `Seurat`**
 
 **Please install them one-by-one as follows:**
 
 ```r
-install.packages("Seurat")
 install.packages("tidyverse")
 install.packages("Matrix")
+install.packages("RCurl")
 & so on ...
 ```
 
