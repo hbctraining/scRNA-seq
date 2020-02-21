@@ -260,7 +260,8 @@ FeaturePlot(object = seurat_integrated,
                         features = c("TPSAB1", "TPSB2", "FCER1A", "GATA1", "GATA2"),
                          sort.cell = TRUE,
                          min.cutoff = 'q10', 
-                         label = TRUE)
+                         label = TRUE,
+			 repel = TRUE)
 ```
 
 <p align="center">
@@ -333,7 +334,8 @@ FeaturePlot(seurat_integrated,
             features = c("CREM", "CD69", "CCR7", "SELL"),
             label = TRUE, 
             sort.cell = TRUE,
-            min.cutoff = 'q10'
+            min.cutoff = 'q10',
+	    repel = TRUE
             )
 ```
 
@@ -422,7 +424,8 @@ seurat_subset_labeled <- subset(seurat_integrated,
 DimPlot(object = seurat_subset_labeled, 
         reduction = "umap", 
         label = TRUE,
-        label.size = 3)
+        label.size = 3,
+	repel = TRUE)
 ```
 
 <p align="center">
