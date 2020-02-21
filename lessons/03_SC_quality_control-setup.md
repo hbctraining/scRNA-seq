@@ -113,7 +113,6 @@ Now, we can load the necessary libraries:
 
 ```r
 # Load libraries
-library(Matrix.utils)
 library(SingleCellExperiment)
 library(Seurat)
 library(tidyverse)
