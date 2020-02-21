@@ -4,7 +4,7 @@ author: "Mary Piper, Lorena Pantano, Meeta Mistry, Radhika Khetani"
 date: Wednesday, February 5th, 2020
 ---
 
-Approximate time: 45 minutes
+Approximate time: 75 minutes
 
 ## Learning Objectives:
 
