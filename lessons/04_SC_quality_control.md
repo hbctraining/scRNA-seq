@@ -272,12 +272,12 @@ metadata %>%
 <img src="../img/mitoRatio.png" width="600">
 </p>
 
-### Novelty
+### Complexity
 
-We can see the samples where we sequenced each cell less have a higher overall novelty, that is because we have not started saturating the sequencing for any given gene for these samples. Outlier cells in these samples might be cells that have a less complex RNA species than other cells. Sometimes we **can detect contamination with low complexity cell types** like red blood cells via this metric. Generally, we expect the novelty score to be above 0.80.
+We can see the samples where we sequenced each cell less have a higher overall complexity, that is because we have not started saturating the sequencing for any given gene for these samples. Outlier cells in these samples might be cells that have a less complex RNA species than other cells. Sometimes we **can detect contamination with low complexity cell types** like red blood cells via this metric. Generally, we expect the novelty score to be above 0.80.
 
 ```r
-# Visualize the overall novelty of the gene expression by visualizing the genes detected per UMI
+# Visualize the overall complexity of the gene expression by visualizing the genes detected per UMI
 metadata %>%
   	ggplot(aes(x=log10GenesPerUMI, color = sample, fill=sample)) +
   	geom_density(alpha = 0.2) +
