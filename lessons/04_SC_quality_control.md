@@ -170,6 +170,7 @@ metadata %>%
 <img src="../img/cell_counts.png" width="600">
 </p>
 
+We see over 15,000 cells per sample, which is quite a bit more than the 12-13,000 expected. It is clear that we likely have some junk 'cells' present.
 
 ### UMI counts (transcripts) per cell
 
