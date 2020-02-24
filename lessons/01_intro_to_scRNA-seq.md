@@ -131,7 +131,9 @@ Technical sources of variation can result in gene expression between cells being
 
 ## Conclusions
 
-While scRNA-seq is a powerful and insightful method for the analysis of gene expression with single-cell resolution, there are many challenges and sources of variation that can make the analysis of the data complex or limited. Overall, we recommend the following:
+While scRNA-seq is a **powerful and insightful method** for the analysis of gene expression with single-cell resolution, there are **many challenges and sources of variation** that can make the analysis of the data complex or limited. 
+
+**Overall, we recommend the following:**
 
 - Do not perform single-cell RNA-seq unless it is necessary for the experimental question of interest. Could you answer the question using bulk sequencing, which is simpler and less costly? Perhaps FACS sorting the samples could allow for bulk analysis?
 - Understand the details of the experimental question you wish to address. The recommended library preparation method and analysis workflow can vary depending whether the expreimental goal is marker identification, lineage tracing, or some other custom analysis.
