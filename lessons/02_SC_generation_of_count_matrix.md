@@ -29,7 +29,7 @@ Many of the same analysis steps need to occur for 3'-end sequencing as for full-
 
 ## 3'-end reads (includes all droplet-based methods)
 
-As we are going through the analysis of our data, it is helpful to understand what information is present in each of the reads and how we use it moving forward through the analysis. 
+For the analysis of scRNA-seq data, it is helpful to understand what information is present in each of the reads and how we use it moving forward through the analysis. 
 
 For the 3'-end sequencing methods, reads originating from different molecules of the same transcript would have originated only from the 3' end of the transcripts, so would have a high likelihood of having the same sequence. However, the PCR step during library preparation could also generate read duplicates. To determine whether a read is a biological or technical duplicate, these methods use unique molecular identifiers, or UMIs. 
 
