@@ -14,7 +14,7 @@ _**Image credit:** Papalexi E and Satija R. Single-cell RNA sequencing to explor
 
 The choice of method involves the biological question of interest. The following advantages are listed below for the methods:
 
-- **3' or 5'-end sequencing:** 
+- **3' (or 5')-end sequencing:** 
 	- More accurate quantification through use of unique molecular identifiers distinguishing biological duplicates from amplification (PCR) duplicates
 	- Larger number of cells sequenced allows better identity of cell type populations
 	- Cheaper per cell cost
@@ -27,7 +27,7 @@ The choice of method involves the biological question of interest. The following
 Many of the same analysis steps need to occur for 3'-end sequencing as for full-length, but 3' protocols have been increasing in popularity and consist of a few more steps in the analysis. Therefore, our materials are going to detail the analysis of data from these 3' protocols with a focus on the droplet-based methods (inDrops, Drop-seq, 10X Genomics).
 
 
-## 3' or 5'-end reads (includes all droplet-based methods)
+## 3'-end reads (includes all droplet-based methods)
 
 For the 3'-end sequencing methods, reads originating from different molecules of the same transcript would have originated only from the 3' end of the transcripts, so would have a high likelihood of having the same sequence. However, the PCR step during library preparation could also generate read duplicates. To determine whether a read is a biological or technical duplicate, these methods use unique molecular identifiers, or UMIs. 
 
