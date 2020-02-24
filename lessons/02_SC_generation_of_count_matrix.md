@@ -101,7 +101,7 @@ We are going to start by discussing the first part of this workflow, which is ge
 <img src="../img/sc_gen_matrix_workflow.png" width="300">
 </p>
 
-After sequencing, the sequencing facility will either output the raw sequencing data as **BCL or FASTQ format**. If the reads are in BCL format, then we will need to convert to FASTQ format. There is a useful command-line tool called `bcl2fastq` that can easily perform this conversion. 
+After sequencing, the sequencing facility will either output the raw sequencing data as **BCL or FASTQ format or will generate the count matrix**. If the reads are in BCL format, then we will need to convert to FASTQ format. There is a useful command-line tool called `bcl2fastq` that can easily perform this conversion. 
 
 > **NOTE:** We do not demultiplex at this step in the workflow. You may have sequenced 6 samples, but the reads for all samples may be present all in the same BCL or FASTQ file.
 
