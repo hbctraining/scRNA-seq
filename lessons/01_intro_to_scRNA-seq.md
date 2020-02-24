@@ -1,7 +1,7 @@
 ---
 title: "Introduction to single-cell RNA-seq"
 author: "Mary Piper, Lorena Pantano, Meeta Mistry, Radhika Khetani, Rory Kirchner"
-date: Thursday, October 31st, 2019
+date: Monday, February 24th, 2020
 ---
 
 
@@ -121,15 +121,26 @@ Technical sources of variation can result in gene expression between cells being
 	    
 	  	_**Image credit:** [Hicks SC, et al., bioRxiv (2015)](https://www.biorxiv.org/content/early/2015/08/25/025528)_
 	  
-	  - **DO** split replicates of the different sample groups across batches. The more replicates the better (definitely more than 2), if doing DE across conditions or making conclusions at the population level.
+	  - **DO** split replicates of the different sample groups across batches. The more replicates the better (definitely more than 2), if doing DE across conditions or making conclusions at the population level. If using inDrops, which prepares a single library at a time, alternate the sample groups (e.g. don't prepare all control libraries first, then prepare all treatment libraries).
 	  
 	  	<img src="../img/batch_effect.png" width="300">
 	
 	  	_**Image credit:** [Hicks SC, et al., bioRxiv (2015)](https://www.biorxiv.org/content/early/2015/08/25/025528)_
 	    
-	  - **DO** include batch information in your **experimental metadata**. During the analysis, we can regress out the variation due to batch so it doesn’t affect our results if we have that information.
+	  - **DO** include batch information in your **experimental metadata**. During the analysis, we can regress out variation due to batch or integrate across batches, so it doesn’t affect our results if we have that information.
 
-These characteristics make the **analysis of the data more difficult** than bulk RNA-seq. In addition, the analyses can vary depending whether the goal is marker identification, lineage tracing, or some other custom analysis. Therefore, tools specific for scRNA-seq and the different methods of library preparation are needed. 
+## Conclusions
+
+While scRNA-seq is a powerful and insightful method for the analysis of gene expression with single-cell resolution, there are many challenges and sources of variation that can make the analysis of the data complex or limited. Overall, we recommend the following:
+
+- Do not perform single-cell RNA-seq unless it is necessary for the experimental question of interest. Could you answer the question using bulk sequencing, which is simpler and less costly? Perhaps FACS sorting the samples could allow for bulk analysis?
+- Understand the details of the experimental question you wish to address. The recommended library preparation method and analysis workflow can vary depending whether the expreimental goal is marker identification, lineage tracing, or some other custom analysis.
+- Avoid technical sources of variability, if possible:
+	- Discuss experimental design with experts prior to the initiation of the experiment
+	- Practice the RNA isolation and library preparation steps to ensure the highest quality libraries and follow library preparation suggestions
+	- Isolate RNA from samples at same time 
+	- Prepare libraries at same time or alternate sample groups to avoid batch confounding
+	- Do not confound sample groups by sex, age, or batch
 
 ***
 
