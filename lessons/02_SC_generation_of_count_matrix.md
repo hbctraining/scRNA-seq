@@ -128,7 +128,7 @@ The FASTQ files can then be used to parse out the cell barcodes, UMIs, and sampl
 - simple cells (RBCs, etc.) expressing few genes
 - cells that failed for some reason
 
-These excess barcodes need to be filtered out of the sequence data prior to read alignment. To do this filtering the 'cellular barcode' and the 'molecular barcode' are extracted and saved for each cell. For example, if using 'umis' tools, the information is added to the header line for each read, with the following format:
+These excess barcodes need to be filtered out of the sequence data prior to read alignment. To do this filtering, the 'cellular barcode' and the 'molecular barcode' are extracted and saved for each cell. For example, if using 'umis' tools, the information is added to the header line for each read, with the following format:
 
     @HWI-ST808:130:H0B8YADXX:1:1101:2088:2222:CELL_GGTCCA:UMI_CCCT
     AGGAAGATGGAGGAGAGAAGGCGGTGAAAGAGACCTGTAAAAAGCCACCGN
