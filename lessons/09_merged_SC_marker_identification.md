@@ -296,8 +296,7 @@ We can try all combinations of comparisons, but we'll start with cluster 2 versu
 # Determine differentiating markers for CD4+ T cell
 cd4_tcells <- FindMarkers(seurat_integrated,
                           ident.1 = 2,
-                          ident.2 = c(0,4,10,18),
-                          only.pos = TRUE)                  
+                          ident.2 = c(0,4,10,18))                  
 
 # Add gene symbols to the DE table
 cd4_tcells <- cd4_tcells %>%
