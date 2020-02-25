@@ -6,9 +6,9 @@
 |:-----------:|:----------:|:--------:|
 | 09:00 - 09:15 | [Workshop introduction](../slides/Intro_to_workshop.pdf) | Radhika
 | 09:15 - 09:45 | [Introduction to scRNA-seq](../lessons/01_intro_to_scRNA-seq.md) | Mary
-| 09:45 - 10:30 | [Single-cell RNA-seq design and methods](../slides/Single_Cell_Nov_12_02_19_SB.pdf) | [Dr. Sarah Boswell](https://scholar.harvard.edu/saboswell) |
+| 09:45 - 10:30 | Single-cell RNA-seq design and methods | [Dr. Sarah Boswell](https://scholar.harvard.edu/saboswell) |
 | 10:30 - 10:45 | Break | |
-| 10:45 - 11:30 | [Single-cell RNA-seq design and methods (cont.)](../slides/Single_Cell_Nov_12_02_19_SAB.pdf) | [Dr. Sarah Boswell](https://scholar.harvard.edu/saboswell) |
+| 10:45 - 11:30 | Single-cell RNA-seq design and methods (cont.) | [Dr. Sarah Boswell](https://scholar.harvard.edu/saboswell) |
 | 11:30 - 12:00 | [Raw data to count matrix](../lessons/02_SC_generation_of_count_matrix.md) | Mary |
 | 12:00 - 13:00 | Lunch | |
 | 13:00 - 13:45 | [R Refresher](https://hbctraining.github.io/DGE_workshop_salmon/lessons/R_refresher.html) | Radhika |
