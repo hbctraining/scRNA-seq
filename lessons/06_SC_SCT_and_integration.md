@@ -134,7 +134,7 @@ seurat_phase <- FindVariableFeatures(seurat_phase,
 seurat_phase <- ScaleData(seurat_phase)
 ```
 
-> **NOTE:** For the `selection.method` and `nfeatures` arguments the values specified are the default settings. Therefore, you do not necessarily need to include these in your code. We have included it here for transparency and inform you what you are using.	
+> _**NOTE:** For the `selection.method` and `nfeatures` arguments the values specified are the default settings. Therefore, you do not necessarily need to include these in your code. We have included it here for transparency and inform you what you are using._	
 
 Now, we can perform the PCA analysis and plot the top PCs:
 
@@ -203,7 +203,7 @@ Generally, we always look at our cells before deciding whether we need to perfor
 
 We can see condition-specific clustering of the cells, which indicates that we need to integrate the cells across conditions. 
 
-> _**NOTE:** Seurat has a [vignette](https://satijalab.org/seurat/v3.1/sctransform_vignette.html) for how to run through the workflow without integration. The workflow is fairly similar to this workflow, but the samples would not be split in the beginning and integration would not be performed.
+> _**NOTE:** Seurat has a [vignette](https://satijalab.org/seurat/v3.1/sctransform_vignette.html) for how to run through the workflow without integration. The workflow is fairly similar to this workflow, but the samples would not be split in the beginning and integration would not be performed._
 
 ## **Integrate** samples using shared highly variable genes
 
