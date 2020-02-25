@@ -27,19 +27,14 @@ _**Goals:**_
  - _To **determine whether clusters represent true cell types or cluster due to biological or technical variation**, such as clusters of cells in the S phase of the cell cycle, clusters of specific batches, or cells with high mitochondrial content._
 
 _**Challenges:**_
- 
- - _Clustering so that **cells of the same cell type from different conditions cluster together**_
- - _**Removing unwanted variation** so that we do not have cells clustering by artifacts_
  - _**Identifying the cell types** of each cluster_
- - _Maintaining patience as this can be a highly iterative process between clustering and marker identification (sometimes even going back to the QC filtering)_
+ - _Maintaining patience as this can be a highly iterative process between clustering and marker identification (sometimes even going back to the QC filtering or normalization)_
 
 _**Recommendations:**_
  
- - _Have a good idea of your expectations for the **cell types to be present** prior to performing the clustering. Know whether you expect cell types of low complexity or higher mitochondrial content AND whether the cells are differentiating_
- - _If you have **more than one condition**, it's often helpful to perform integration to align the cells_
- - _**Regress out** number of UMIs, mitochondrial content, and cell cycle, if needed and appropriate for experiment, so not to drive clustering_
+ - _Have a good idea of your expectations for the **cell types to be present** and a handful of marker genes for these cell types. Know whether you expect cell types of low complexity or higher mitochondrial content AND whether the cells are differentiating_
  - _Identify any junk clusters for removal. Possible junk clusters could include those with high **mitochondrial content** and low UMIs/genes_
- - _If **not detecting all cell types as separate clusters**, try changing the resolution or the number of PCs used for clustering_
+ - _If **not detecting all cell types as separate clusters**, try changing the UMAP resolution, the number of PCs used for clustering, or the number of variable genes used_
 
 ***
 
