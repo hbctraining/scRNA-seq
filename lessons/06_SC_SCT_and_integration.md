@@ -195,13 +195,13 @@ split_seurat$ctrl@assays
 
 Now we can see that in addition to the raw RNA counts, we now have a SCT component in our `assays` slot. The most variable features will be the only genes stored inside the SCT assay. As we move through the scRNA-seq analysis, we will choose the most appropriate assay to use for the different steps in the analysis. 
 
-Generally, we always look at our cells before deciding whether we need to perform integration. If we clustered the cells following normalization, we would have generated the following clusters:
+Generally, we always look at our cells before deciding whether we need to perform integration. If we had performed the normalization on both conditions together in a Seurat object, we would have seen condition-specific clustering:
 
 <p align="center">
 <img src="../img/unintegrated_umap.png" width="600">
 </p>
 
-We can see condition-specific clustering of the cells, which indicates that we need to integrate the cells across conditions. 
+Condition-specific clustering of the cells indicates that we need to integrate the cells across conditions. 
 
 > _**NOTE:** Seurat has a [vignette](https://satijalab.org/seurat/v3.1/sctransform_vignette.html) for how to run through the workflow without integration. The workflow is fairly similar to this workflow, but the samples would not be split in the beginning and integration would not be performed._
 
