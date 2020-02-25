@@ -1,7 +1,7 @@
 ---
 title: "Single-cell RNA-seq: Normalization, identification of most variable genes, and integration"
 author: "Mary Piper, Meeta Mistry, Radhika Khetani"
-date: Thursday, November 21, 2019
+date: Tuesday, February 25th, 2020
 ---
 
 Approximate time: 90 minutes
@@ -203,11 +203,11 @@ Generally, we always look at our cells before deciding whether we need to perfor
 
 Condition-specific clustering of the cells indicates that we need to integrate the cells across conditions. 
 
-> _**NOTE:** Seurat has a [vignette](https://satijalab.org/seurat/v3.1/sctransform_vignette.html) for how to run through the workflow without integration. The workflow is fairly similar to this workflow, but the samples would not be split in the beginning and integration would not be performed._
+> _**NOTE:** Seurat has a [vignette](https://satijalab.org/seurat/v3.1/sctransform_vignette.html) for how to run through the workflow without integration. The workflow is fairly similar to this workflow, but the samples would not necessarily be split in the beginning and integration would not be performed._
 
 ## **Integrate** samples using shared highly variable genes
 
-_**If the cells cluster by sample, condition, dataset, or modality, this step can greatly improve your clustering and your downstream analyses**. It can help to first run conditions individually if unsure what clusters to expect (e.g. tumor and control samples), then run them together to see whether there are condition-specific clusters. Oftentimes, when clustering cells from multiple conditions there are condition-specific clusters and integration can help ensure the same cell types cluster together._
+_**If the cells cluster by sample, condition, dataset, or modality, this step can greatly improve your clustering and your downstream analyses**. It can help to first run conditions individually if unsure what clusters to expect or expecting some different cell types between conditions (e.g. tumor and control samples), then run them together to see whether there are condition-specific clusters for cell types present in both conditions. Oftentimes, when clustering cells from multiple conditions there are condition-specific clusters and integration can help ensure the same cell types cluster together._
 
 To integrate, we will use the shared highly variable genes from each condition identified using SCTransform, then, we will "integrate" or "harmonize" the conditions to overlay cells that are similar or have a "common set of biological features" between groups. These groups can represent:
 
