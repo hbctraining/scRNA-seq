@@ -350,7 +350,7 @@ DimPlot(seurat_integrated,
 <img src="../img/SC_umap_split_int.png" width="600">
 </p>
 
-> In this workshop, we dived into integrating this dataset, and when we compare to the unintegrated dataset, it is clear that this dataset benefitted from the integration!
+> In this workshop, we dove into integrating this dataset, and when we compare to the unintegrated dataset, it is clear that this dataset benefitted from the integration!
 > 
 > <p align="center">
 > <img src="../img/unintegrated_umap.png" width="400">
