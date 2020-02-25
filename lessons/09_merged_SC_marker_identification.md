@@ -89,19 +89,19 @@ markers <- FindAllMarkers(object = seurat_integrated,
                           logfc.threshold = 0.25)                     
 ```
 
-> **NOTE:** This command can quite take long to run, as it is processing each inidividual cluster against all other cells.
+> _**NOTE:** This command can quite take long to run, as it is processing each individual cluster against all other cells._
 
 ## Identification of conserved markers in all conditions
 
 Since we have samples representing different conditions in our dataset, **our best option is to find conserved markers**. This function internally separates out cells by sample group/condition, and then performs differential gene expression testing for a single specified cluster against all other clusters (or a second cluster, if specified). Gene-level p-values are computed for each condition and then combined across groups using meta-analysis methods from the MetaDE R package.
 
-Before we start our marker identification will explicitly set our default assay, we will want to use the **original counts and not the integrated data**.
+Before we start our marker identification we will explicitly set our default assay, we want to use the **original counts and not the integrated data**.
 
 ```r
 DefaultAssay(seurat_integrated) <- "RNA"
 ```
 
-> **NOTE:** Although the default setting for this function is to fetch data from the "RNA" slot, we encourage you to run this line of code above to be absolutely sure in case the active slot was changed somewhere upstream in your analysis.
+> _**NOTE:** Although the default setting for this function is to fetch data from the "RNA" slot, we encourage you to run this line of code above to be absolutely sure in case the active slot was changed somewhere upstream in your analysis. The raw and normalized counts are stored in this slot, and the functions for finding markers will automatically pull the raw counts._
 
 The function `FindConservedMarkers()`, has the following structure:
 
@@ -162,7 +162,7 @@ It can be helpful to add columns with gene annotation information. In order to d
 ```r
 annotations <- read.csv("data/annotation.csv")
 ```
->**NOTE:** If you are interested in knowing how we obtained this annotation file, take a look at [the linked materials](fetching_annotations.md).
+>_**NOTE:** If you are interested in knowing how we obtained this annotation file, take a look at [the linked materials](fetching_annotations.md)._
 
 First, we will turn the row names with gene identifiers into its own columns. Then we will merge this annotation file with our results from the `FindConservedMarkers()`:
 
