@@ -118,7 +118,7 @@ seurat_phase <- CellCycleScoring(seurat_phase,
 View(seurat_phase@meta.data)                                
 ```
 
-After scoring the cells for cell cycle, we would like to perform the PCA to determine whether cell cycle is a major source of variation in our dataset using PCA. To perform the PCA, we need to **first choose the most variable features, then scale the data**. Since highly expressed genes exhibit the highest amount of variation and we don't want our 'highly variable genes' only to reflect high expression, we need to scale the data to scale variation with expression level. The Seurat `ScaleData()` function will scale the data by:
+After scoring the cells for cell cycle, we would like to determine whether cell cycle is a major source of variation in our dataset using PCA. To perform PCA, we need to **first choose the most variable features, then scale the data**. Since highly expressed genes exhibit the highest amount of variation and we don't want our 'highly variable genes' only to reflect high expression, we need to scale the data to scale variation with expression level. The Seurat `ScaleData()` function will scale the data by:
 
 * adjusting the expression of each gene to give a mean expression across cells to be 0
 * scaling expression of each gene to give a variance across cells to be 1
@@ -134,7 +134,7 @@ seurat_phase <- FindVariableFeatures(seurat_phase,
 seurat_phase <- ScaleData(seurat_phase)
 ```
 
-> **NOTE:** For the `selection.method` and `nfeatures` arguments the values specified are the default settings. Therefore, you do not neccessarily need to include these in your code. We have included it here for transparency and inform you what you are using.	
+> **NOTE:** For the `selection.method` and `nfeatures` arguments the values specified are the default settings. Therefore, you do not necessarily need to include these in your code. We have included it here for transparency and inform you what you are using.	
 
 Now, we can perform the PCA analysis and plot the top PCs:
 
@@ -195,13 +195,21 @@ split_seurat$ctrl@assays
 
 Now we can see that in addition to the raw RNA counts, we now have a SCT component in our `assays` slot. The most variable features will be the only genes stored inside the SCT assay. As we move through the scRNA-seq analysis, we will choose the most appropriate assay to use for the different steps in the analysis. 
 
+Generally, we always look at our cells before deciding whether we need to perform integration. If we clustered the cells following normalization, we would have generated the following clusters:
+
+<p align="center">
+<img src="../img/unintegrated_umap.png" width="600">
+</p>
+
+We can see condition-specific clustering of the cells, which indicates that we need to integrate the cells across conditions. 
+
+> _**NOTE:** Seurat has a [vignette](https://satijalab.org/seurat/v3.1/sctransform_vignette.html) for how to run through the workflow without integration. The workflow is fairly similar to this workflow, but the samples would not be split in the beginning and integration would not be performed.
+
 ## **Integrate** samples using shared highly variable genes
 
-_**This step can greatly improve your clustering when you have multiple samples**. It can help to first run samples individually if unsure what clusters to expect, but when clustering the cells from multiple conditions, integration can help ensure the same cell types cluster together._
+_**If the cells cluster by sample, condition, dataset, or modality, this step can greatly improve your clustering and your downstream analyses**. It can help to first run conditions individually if unsure what clusters to expect (e.g. tumor and control samples), then run them together to see whether there are condition-specific clusters. Oftentimes, when clustering cells from multiple conditions there are condition-specific clusters and integration can help ensure the same cell types cluster together._
 
-_Also, it is often a good idea to try to cluster without integration first, and if clusters are sample or condition specific, then that's a good indication that integration should be performed._
-
-Using the shared highly variable genes from each sample identified using SCTransform, we "integrate" or "harmonize" the samples to overlay cells that are similar or have a "common set of biological features" between groups. These groups can represent:
+To integrate, we will use the shared highly variable genes from each condition identified using SCTransform, then, we will "integrate" or "harmonize" the conditions to overlay cells that are similar or have a "common set of biological features" between groups. These groups can represent:
 
 - Different **conditions** (e.g. control and stimulated)
 	<img src="../img/seurat_condition_integ.png" width="800">
@@ -212,10 +220,9 @@ Using the shared highly variable genes from each sample identified using SCTrans
 - Different **modalities** (e.g. scRNA-seq and scATAC-seq)
 	<img src="../img/seurat_modality_integ.png" width="800">
 	
-Integration is a powerful method that uses these shared sources of greatest variation to identify shared subpopulations across conditions or datasets [[Stuart and Bulter et al. (2018)](https://www.biorxiv.org/content/early/2018/11/02/460147)]. The goal of integration is to ensure that the celltypes of one condition/dataset align with the same celltypes of the other conditions/datasets (e.g. control macrophages align with stimulated macrophages).
+Integration is a powerful method that uses these shared sources of greatest variation to identify shared subpopulations across conditions or datasets [[Stuart and Bulter et al. (2018)](https://www.biorxiv.org/content/early/2018/11/02/460147)]. The goal of integration is to ensure that the cell types of one condition/dataset align with the same celltypes of the other conditions/datasets (e.g. control macrophages align with stimulated macrophages).
 
 Specifically, this integration method expects "correspondences" or **shared biological states** among at least a subset of single cells across the groups. The steps in the integration analysis are outlined in the figure below:
-
 
 <p align="center">
 <img src="../img/integration.png" width="600">
@@ -236,18 +243,18 @@ The different steps applied are as follows:
 2. **Identify anchors** or mutual nearest neighbors (MNNs) across datasets (sometimes incorrect anchors are identified):
 	
 	MNNs can be thought of as 'best buddies'. For each cell in one condition:
-	- The cell's closest neighbor in the other condition is identified based on gene expression values - it's best buddy.
-	- The reciprical analysis is performed, and if the two cells are buddies in both directions, then those cells will be marked as **anchors** to 'anchor' the two datasets together.
+	- The cell's closest neighbor in the other condition is identified based on gene expression values - it's 'best buddy'.
+	- The reciprical analysis is performed, and if the two cells are 'best buddies' in both directions, then those cells will be marked as **anchors** to 'anchor' the two datasets together.
 	
 	> "The difference in expression values between cells in an MNN pair provides an estimate of the batch effect, which is made more precise by averaging across many such pairs. A correction vector is obtained and applied to the expression values to perform batch correction." [[Stuart and Bulter et al. (2018)](https://www.biorxiv.org/content/early/2018/11/02/460147)]. 
 
 3. **Filter anchors** to remove incorrect anchors:
 	
-	Assess the similarity between anchor pairs by the overlap in their local neighborhoods (incorrect anchors will have low scores) - do the adjacent cells have best buddies that are adjacent to each other?
+	Assess the similarity between anchor pairs by the overlap in their local neighborhoods (incorrect anchors will have low scores) - do the adjacent cells have 'best buddies' that are adjacent to each other?
 
-4. **Integrate** the condtions/datasets:
+4. **Integrate** the conditions/datasets:
 
-	Use anchors and corresponding scores to transform the cell expression values, allowing for the integration of the datasets (different samples, datasets, modalities)
+	Use anchors and corresponding scores to transform the cell expression values, allowing for the integration of the conditions/datasets (different samples, conditions, datasets, modalities)
 
 	> _**NOTE:** Transformation of each cell uses a weighted average of the two cells of each anchor across anchors of the datasets. Weights determined by cell similarity score (distance between cell and k nearest anchors) and anchor scores, so cells in the same neighborhood should have similar correction values._
 
@@ -272,7 +279,7 @@ split_seurat <- PrepSCTIntegration(object.list = split_seurat,
                                    anchor.features = integ_features)
 ```
 
-Now, we are going to **find the best buddies or anchors and filter incorrect anchors**. For our dataset, this will take up to 15 minutes to run. Also note that the progress bar in your console will stay at 0%, but know that it is actually running.
+Now, we are going to **perform CCA, find the best buddies or anchors and filter incorrect anchors**. For our dataset, this will take up to 15 minutes to run. *Also, note that the progress bar in your console will stay at 0%, but know that it is actually running.*
 
 ```r
 # Find best buddies - can take a while to run
@@ -343,7 +350,7 @@ DimPlot(seurat_integrated,
 <img src="../img/SC_umap_split_int.png" width="600">
 </p>
 
-> In this workshop, we dived into integrating this dataset, but we did run UMAP on the unintegrated version of this dataset, and it is clear that this dataset benefitted from the integration!
+> In this workshop, we dived into integrating this dataset, and when we compare to the unintegrated dataset, it is clear that this dataset benefitted from the integration!
 > 
 > <p align="center">
 > <img src="../img/unintegrated_umap.png" width="600">
