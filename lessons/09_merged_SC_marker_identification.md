@@ -71,7 +71,7 @@ The `FindAllMarkers()` function has **three important arguments** which provide 
 
 - `logfc.threshold`: minimum log2 foldchange for average expression of gene in cluster relative to the average expression in all other clusters combined. Default is 0.25.
 	- **Cons:** 
-		- could miss those cell markers that are expressed in the cluster being compared, but not in the other clusters, if the average log2FC doesn't meet the threshold
+		- could miss those cell markers that are expressed in a small fraction of cells within the cluster of interest, but not in the other clusters, if the average log2FC doesn't meet the threshold
 		- could return a lot of metabolic/ribosomal genes due to slight differences in metabolic output by different cell types, which are not as useful to distinguish cell type identities
 - `min.diff.pct`: minimum percent difference between the percent of cells expressing the gene in the cluster and the percent of cells expressing gene in all other clusters combined.
 	- **Cons:** could miss those cell markers that are expressed in all cells, but are highly up-regulated in this specific cell type
