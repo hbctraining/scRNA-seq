@@ -136,7 +136,7 @@ While scRNA-seq is a **powerful and insightful method** for the analysis of gene
 **Overall, we recommend the following:**
 
 - Do not perform single-cell RNA-seq unless it is necessary for the experimental question of interest. Could you answer the question using bulk sequencing, which is simpler and less costly? Perhaps FACS sorting the samples could allow for bulk analysis?
-- Understand the details of the experimental question you wish to address. The recommended library preparation method and analysis workflow can vary depending on the RNA species interested in.
+- Understand the details of the experimental question you wish to address. The recommended library preparation method and analysis workflow can vary depending on the RNA species of interest.
 - Avoid technical sources of variability, if possible:
 	- Discuss experimental design with experts prior to the initiation of the experiment
 	- Practice the RNA isolation and library preparation steps to ensure the highest quality libraries and follow library preparation suggestions
