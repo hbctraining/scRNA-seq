@@ -139,7 +139,6 @@ While scRNA-seq is a **powerful and insightful method** for the analysis of gene
 - Understand the details of the experimental question you wish to address. The recommended library preparation method and analysis workflow can vary based on the specific experiment.
 - Avoid technical sources of variability, if possible:
 	- Discuss experimental design with experts prior to the initiation of the experiment
-	- Practice the RNA isolation and library preparation steps to ensure the highest quality libraries and follow library preparation suggestions
 	- Isolate RNA from samples at same time 
 	- Prepare libraries at same time or alternate sample groups to avoid batch confounding
 	- Do not confound sample groups by sex, age, or batch
