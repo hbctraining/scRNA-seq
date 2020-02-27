@@ -18,11 +18,13 @@ The choice of method involves the biological question of interest. The following
 	- More accurate quantification through use of unique molecular identifiers distinguishing biological duplicates from amplification (PCR) duplicates
 	- Larger number of cells sequenced allows better identity of cell type populations
 	- Cheaper per cell cost
+	- Best results with > 10,000 cells
 
 - **Full length sequencing:**
 	- Detection of isoform-level differences in expression
 	- Identification of allele-specific differences in expression
-	- Deeper sequencing of a smaller number of cells  
+	- Deeper sequencing of a smaller number of cells 
+	- Best for samples with low number of cells
 
 Many of the same analysis steps need to occur for 3'-end sequencing as for full-length, but 3' protocols have been increasing in popularity and consist of a few more steps in the analysis. Therefore, our materials are going to detail the analysis of data from these 3' protocols with a focus on the droplet-based methods (inDrops, Drop-seq, 10X Genomics).
 
