@@ -329,7 +329,8 @@ Now, we can also visualize with UMAP. Let's run the method and plot.
 ```r
 # Run UMAP
 seurat_integrated <- RunUMAP(seurat_integrated, 
-                             dims = 1:40)
+                             dims = 1:40,
+			     reduction = "pca")
 
 # Plot UMAP                             
 DimPlot(seurat_integrated)                             
