@@ -138,11 +138,15 @@ To visualize the cell clusters, there are a few different dimensionality reducti
 Both methods aim to place cells with similar local neighborhoods in high-dimensional space together in low-dimensional space. These methods will require you to input number of PCA dimentions to use for the visualization, we suggest using the same number of PCs as input to the clustering analysis. Here, we will proceed with the [UMAP method](https://umap-learn.readthedocs.io/en/latest/how_umap_works.html) for visualizing the clusters.
 
 ```r
-# Calculation of UMAP
-seurat_integrated <- RunUMAP(seurat_integrated, 
-                  reduction = "pca", 
-                  dims = 1:40)
+## Calculation of UMAP
+## DO NOT RUN (calculated in the last lesson)
 
+# seurat_integrated <- RunUMAP(seurat_integrated, 
+#                  reduction = "pca", 
+#                  dims = 1:40)
+```
+
+```r
 # Plot the UMAP
 DimPlot(seurat_integrated,
         reduction = "umap",
