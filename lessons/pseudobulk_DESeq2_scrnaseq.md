@@ -45,7 +45,7 @@ We will be using a the same dataset as what we had used for the rest of the work
 >
 ># Create single cell experiment object
 >sce <- SingleCellExperiment(assays = list(counts = counts), 
-                            colData = metadata)
+>                            colData = metadata)
 >
 ># Identify groups for aggregation of counts
 >groups <- colData(sce)[, c("cluster_id", "sample_id")]
