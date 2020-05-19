@@ -49,8 +49,7 @@ We will be using a the same dataset as what we had used for the rest of the work
 >
 ># Identify groups for aggregation of counts
 >groups <- colData(sce)[, c("cluster_id", "sample_id")]
-```
-
+>```
 
 ## Exploring the dataset
 
