@@ -220,7 +220,7 @@ ns <- length(sids)
 ns
 ```
 
-To perform sample-level differential expression analysis, we need to generate sample-level metadata. To do this, we will reorder samples in the single cell metadata to match the
+To perform sample-level differential expression analysis, we need to generate sample-level metadata. To do this, we will reorder samples in the single-cell metadata to match the order of the factor levels of the sample ID.
 
 ```r
 # Generate sample level metadata
