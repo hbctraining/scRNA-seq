@@ -184,6 +184,10 @@ dim(counts(sce))
 counts(sce)[1:6, 1:6]
 ```
 
+<p align="center">
+<img src="../img/sc_DE_countdata.png" width="800">
+</p>
+
 We see the raw counts data is a cell by gene sparse matrix with over 35,000 rows (genes) and nearly 30,000 columns (cells). 
 
 >_**NOTE:** We don't want to run `head()` on this dataset, since it will still show the thousands of columns, so we just looked at the first six rows and columns._
@@ -196,6 +200,10 @@ dim(colData(sce))
 
 head(colData(sce))
 ```
+
+<p align="center">
+<img src="../img/sc_DE_coldata.png" width="800">
+</p>
 
 For every cell, we have information about the associated condition (ctrl or stim), sample ID, and cell type. We will use this information to perform the differential expression analysis between conditions for any particular cell type of interest.
 
@@ -220,7 +228,7 @@ ns <- length(sids)
 ns
 ```
 
-To perform sample-level differential expression analysis, we need to generate sample-level metadata. To do this, we will reorder samples in the single-cell metadata to match the order of the factor levels of the sample ID.
+To perform sample-level differential expression analysis, we need to generate sample-level metadata. To do this, we will reorder samples in the single-cell metadata to match the order of the factor levels of the sample ID, then extract only the sample-level information from the first cell corresponding to that sample.
 
 ```r
 # Generate sample level metadata
@@ -240,6 +248,10 @@ ei <- data.frame(colData(sce)[m, ],
                 select(-"cluster_id")
 ei
 ```
+
+<p align="center">
+<img src="../img/sc_DE_ei_metadata.png" width="800">
+</p>
 
 Prior to performing the aggregation of cells to the sample level, we want to make sure that the poor quality cells are removed if this step hasn't already been performed. Generally, we would recommend a more stringent and hands-on exploration of the quality control metrics and more nuanced picking of filtering thresholds, as detailed [here](https://hbctraining.github.io/scRNA-seq/lessons/04_SC_quality_control.html); however, to proceed more quickly to the differential expression analysis, we are only going to remove count outliers and low count genes using functions from the `scater` package.
 
