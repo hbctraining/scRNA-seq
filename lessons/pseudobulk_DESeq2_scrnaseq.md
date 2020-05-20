@@ -151,6 +151,7 @@ library(pheatmap)
 library(apeglm)
 library(png)
 library(DESeq2)
+library(RColorBrewer)
 ```
 
 ### Load the RData (RDS) object
@@ -571,6 +572,10 @@ res_tbl <- res %>%
         rownames_to_column(var="gene") %>%
         as_tibble()
 
+# Check results output
+res_tbl
+
+# Write all results to file
 write.csv(res_tbl,
           paste0("results/", clusters[1], "_", levels(cluster_metadata$sample)[2], "_vs_", levels(cluster_metadata$sample)[1], "_all_genes.csv"),
           quote = FALSE, 
@@ -580,17 +585,21 @@ write.csv(res_tbl,
 ### Table of results for significant genes
 
 Next, we can filter our table for only the significant genes using a p-adjusted threshold of 0.05
- 
- ```r
- # Set thresholds
+
+```r
+# Set thresholds
 padj_cutoff <- 0.05
 
- # Subset the significant results
- sig_res <- dplyr::filter(res_tbl, padj < padj_cutoff) %>%
-         dplyr::arrange(padj)
- 
- write.csv(sig_res,
-           paste0("results", clusters[1], "_", levels(cluster_metadata$sample)[2], "_vs_", levels(cluster_metadata$sample)[1], "_sig_genes.csv"),
+# Subset the significant results
+sig_res <- dplyr::filter(res_tbl, padj < padj_cutoff) %>%
+        dplyr::arrange(padj)
+
+# Check significant genes output
+sig_res
+
+# Write significant results to file
+write.csv(sig_res,
+          paste0("results", clusters[1], "_", levels(cluster_metadata$sample)[2], "_vs_", levels(cluster_metadata$sample)[1], "_sig_genes.csv"),
           quote = FALSE, 
           row.names = FALSE)
 ```
@@ -655,7 +664,7 @@ pheatmap(sig_norm[ , 2:length(colnames(sig_norm))],
     color = heat_colors, 
     cluster_rows = T, 
     show_rownames = F,
-    annotation = cluster_metadata, 
+    annotation = cluster_metadata[, c("group_id", "cluster_id")], 
     border_color = NA, 
     fontsize = 10, 
     scale = "row", 
@@ -672,11 +681,11 @@ res_table_thres <- res_tbl %>%
                   
 ## Volcano plot
 ggplot(res_table_thres) +
-    geom_point(aes(x = log2FoldChange, y = -log10(padj), colour = threshold_OE)) +
+    geom_point(aes(x = log2FoldChange, y = -log10(padj), colour = threshold)) +
     ggtitle("Volcano plot of stimulated B cells relative to control") +
     xlab("log2 fold change") + 
     ylab("-log10 adjusted p-value") +
-    #scale_y_continuous(limits = c(0,50)) +
+    scale_y_continuous(limits = c(0,50)) +
     theme(legend.position = "none",
           plot.title = element_text(size = rel(1.5), hjust = 0.5),
           axis.title = element_text(size = rel(1.25)))                    
@@ -714,7 +723,7 @@ get_dds_resultsAvsB <- function(x, A, B){
         
         # Plot PCA
         
-        DESeq2::plotPCA(rld, intgroup = "sample")
+        DESeq2::plotPCA(rld, intgroup = "group_id")
         ggsave(paste0("results/", clusters[x], "_specific_PCAplot.png"))
         
         
@@ -724,7 +733,7 @@ get_dds_resultsAvsB <- function(x, A, B){
         
         # Plot heatmap
         png(paste0("results/", clusters[x], "_specific_heatmap.png"))
-        pheatmap(rld_cor, annotation = cluster_metadata[, c("sample"), drop=F])
+        pheatmap(rld_cor, annotation = cluster_metadata[, c("group_id"), drop=F])
         dev.off()
         
         # Run DESeq2 differential expression analysis
@@ -736,7 +745,7 @@ get_dds_resultsAvsB <- function(x, A, B){
         dev.off()
 
         # Output results of Wald test for contrast for A vs B
-        contrast <- c("sample", levels(cluster_metadata$sample)[A], levels(cluster_metadata$sample)[B])
+        contrast <- c("group_id", levels(cluster_metadata$group_id)[A], levels(cluster_metadata$group_id)[B])
         
         # resultsNames(dds)
         res <- results(dds, 
@@ -756,7 +765,7 @@ get_dds_resultsAvsB <- function(x, A, B){
                 as_tibble()
         
         write.csv(res_tbl,
-                  paste0("DESeq2/pairwise/", clusters[x], "_", levels(cluster_metadata$sample)[A], "_vs_", levels(cluster_metadata$sample)[B], "_all_genes.csv"),
+                  paste0("DESeq2/pairwise/", clusters[x], "_", levels(cluster_metadata$group_id)[A], "_vs_", levels(cluster_metadata$group_id)[B], "_all_genes.csv"),
                   quote = FALSE, 
                   row.names = FALSE)
         
@@ -765,7 +774,7 @@ get_dds_resultsAvsB <- function(x, A, B){
                 dplyr::arrange(padj)
         
         write.csv(sig_res,
-                  paste0("DESeq2/pairwise/", clusters[x], "_", levels(cluster_metadata$sample)[A], "_vs_", levels(cluster_metadata$sample)[B], "_sig_genes.csv"),
+                  paste0("DESeq2/pairwise/", clusters[x], "_", levels(cluster_metadata$group_id)[A], "_vs_", levels(cluster_metadata$group_id)[B], "_sig_genes.csv"),
                   quote = FALSE, 
                   row.names = FALSE)
         
@@ -787,13 +796,13 @@ get_dds_resultsAvsB <- function(x, A, B){
         gathered_top20_sig <- top20_sig_norm %>%
                 gather(colnames(top20_sig_norm)[2:length(colnames(top20_sig_norm))], key = "samplename", value = "normalized_counts")
         
-        gathered_top20_sig <- inner_join(ei[, c("sample_id", "sample" )], gathered_top20_sig, by = c("sample_id" = "samplename"))
+        gathered_top20_sig <- inner_join(ei[, c("sample_id", "group_id" )], gathered_top20_sig, by = c("sample_id" = "samplename"))
         
         ## plot using ggplot2
         ggplot(gathered_top20_sig) +
                 geom_point(aes(x = gene, 
                                y = normalized_counts, 
-                               color = sample), 
+                               color = group_id), 
                            position=position_jitter(w=0.1,h=0)) +
                 scale_y_log10() +
                 xlab("Genes") +
@@ -802,17 +811,12 @@ get_dds_resultsAvsB <- function(x, A, B){
                 theme_bw() +
                 theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
                 theme(plot.title = element_text(hjust = 0.5))
-        ggsave(paste0("DESeq2/pairwise/", clusters[x], "_", levels(cluster_metadata$sample)[A], "_vs_", levels(cluster_metadata$sample)[B], "_top20_DE_genes.png"))
+        ggsave(paste0("DESeq2/pairwise/", clusters[x], "_", levels(cluster_metadata$group_id)[A], "_vs_", levels(cluster_metadata$group_id)[B], "_top20_DE_genes.png"))
         
 }
-#map(1:1, get_dds_resultsAvsB, A = 4, B = 3)
 
-map(1:length(clusters), get_dds_resultsAvsB, A = 4, B = 3)
-map(1:length(clusters), get_dds_resultsAvsB, A = 4, B = 2)
-map(1:length(clusters), get_dds_resultsAvsB, A = 4, B = 1)
-map(1:length(clusters), get_dds_resultsAvsB, A = 3, B = 2)
-map(1:length(clusters), get_dds_resultsAvsB, A = 3, B = 1)
-map(1:length(clusters), get_dds_resultsAvsB, A = 2, B = 1)
+# Run the script on all clusters comparing stim condition relative to control condition
+#map(1:length(clusters), get_dds_resultsAvsB, A = 2, B = 1)
 ```
 
 ## Script to run DESeq2 on all cell type clusters - Likelihood Ratio Test
@@ -827,9 +831,9 @@ The following script will run the DESeq2 Likelihood Ratio Test (LRT) on all cell
 clusters <- levels(metadata$cluster_id)
 
 metadata <- gg_df %>%
-        select(cluster_id, sample_id, sample) 
+        select(cluster_id, sample_id, group_id) 
 
-metadata$group <- paste0(metadata$cluster_id, "_", metadata$sample) %>%
+metadata$group <- paste0(metadata$cluster_id, "_", metadata$group_id) %>%
         factor()
 
 
@@ -846,7 +850,7 @@ get_dds_LRTresults <- function(x){
         
         dds <- DESeqDataSetFromMatrix(cluster_counts, 
                                       colData = cluster_metadata, 
-                                      design = ~ sample)
+                                      design = ~ group_id)
         
         dds_lrt <- DESeq(dds, test="LRT", reduced = ~ 1)
         
@@ -894,7 +898,7 @@ get_dds_LRTresults <- function(x){
         
         
         # Use the `degPatterns` function from the 'DEGreport' package to show gene clusters across sample groups
-        cluster_groups <- degPatterns(cluster_rlog, metadata = cluster_meta_sig, time = "sample", col=NULL)
+        cluster_groups <- degPatterns(cluster_rlog, metadata = cluster_meta_sig, time = "group_id", col=NULL)
         ggsave(paste0("DESeq2/lrt/", clusters[x], "_LRT_DEgene_groups.png"))
         
         # Let's see what is stored in the `df` component
