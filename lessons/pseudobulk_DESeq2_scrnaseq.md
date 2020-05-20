@@ -251,7 +251,7 @@ ei
 ```
 
 <p align="center">
-<img src="../img/sc_DE_ei_metadata.png" width="400">
+<img src="../img/sc_DE_ei_metadata.png" width="500">
 </p>
 
 Prior to performing the aggregation of cells to the sample level, we want to make sure that the poor quality cells are removed if this step hasn't already been performed. Generally, we would recommend a more stringent and hands-on exploration of the quality control metrics and more nuanced picking of filtering thresholds, as detailed [here](https://hbctraining.github.io/scRNA-seq/lessons/04_SC_quality_control.html); however, to proceed more quickly to the differential expression analysis, we are only going to remove count outliers and low count genes using functions from the `scater` package as performed in the [Bioconductor tutorial](http://biocworkshops2019.bioconductor.org.s3-website-us-east-1.amazonaws.com/page/muscWorkshop__vignette/).
@@ -300,7 +300,7 @@ pb[1:6, 1:6]
 ```
 
 <p align="center">
-<img src="../img/sc_DE_pb_matrix.png" width="500">
+<img src="../img/sc_DE_pb_matrix.png" width="400">
 </p>
 
 The output of this aggregation is a sparse matrix, and when we take a quick look, we can see that it is a gene by cell type-sample matrix.
