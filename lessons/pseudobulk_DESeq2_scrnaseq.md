@@ -186,7 +186,7 @@ counts(sce)[1:6, 1:6]
 ```
 
 <p align="center">
-<img src="../img/sc_DE_countdata.png" width="800">
+<img src="../img/sc_DE_countdata.png" width="300">
 </p>
 
 We see the raw counts data is a cell by gene sparse matrix with over 35,000 rows (genes) and nearly 30,000 columns (cells). 
@@ -203,7 +203,7 @@ head(colData(sce))
 ```
 
 <p align="center">
-<img src="../img/sc_DE_coldata.png" width="800">
+<img src="../img/sc_DE_coldata.png" width="300">
 </p>
 
 For every cell, we have information about the associated condition (ctrl or stim), sample ID, and cell type. We will use this information to perform the differential expression analysis between conditions for any particular cell type of interest.
@@ -251,7 +251,7 @@ ei
 ```
 
 <p align="center">
-<img src="../img/sc_DE_ei_metadata.png" width="800">
+<img src="../img/sc_DE_ei_metadata.png" width="300">
 </p>
 
 Prior to performing the aggregation of cells to the sample level, we want to make sure that the poor quality cells are removed if this step hasn't already been performed. Generally, we would recommend a more stringent and hands-on exploration of the quality control metrics and more nuanced picking of filtering thresholds, as detailed [here](https://hbctraining.github.io/scRNA-seq/lessons/04_SC_quality_control.html); however, to proceed more quickly to the differential expression analysis, we are only going to remove count outliers and low count genes using functions from the `scater` package as performed in the [Bioconductor tutorial](http://biocworkshops2019.bioconductor.org.s3-website-us-east-1.amazonaws.com/page/muscWorkshop__vignette/).
@@ -299,6 +299,10 @@ dim(pb)
 pb[1:6, 1:6]
 ```
 
+<p align="center">
+<img src="../img/sc_DE_pb_matrix.png" width="300">
+</p>
+
 The output of this aggregation is a sparse matrix, and when we take a quick look, we can see that it is a gene by cell type-sample matrix.
 
 For example, within B cells, sample `ctrl101` has 12 counts associated with gene NOC2L. 
@@ -333,11 +337,23 @@ class(pb)
 
 # Explore the different components of list
 str(pb)
+```
 
+<p align="center">
+<img src="../img/sc_DE_pb_list.png" width="300">
+</p>
+
+The counts per sample for each cluster can be checked:
+
+```r
 # Print out the table of cells in each cluster-sample group
 options(width = 100)
 table(sce$cluster_id, sce$sample_id)
 ```
+
+<p align="center">
+<img src="../img/sc_DE_sample_level_counts.png" width="300">
+</p>
 
 ## Differential gene expression with DESeq2
 
@@ -352,6 +368,8 @@ To perform the DE analysis, we need metadata for all samples, including cluster 
 First, we will create a vector of sample names combined for each of the cell type clusters.
 
 ```r
+# Get sample names for each of the cell type clusters
+
 # prep. data.frame for plotting
 get_sample_ids <- function(x){
         pb[[x]] %>%
@@ -365,6 +383,7 @@ de_samples <- map(1:length(kids), get_sample_ids) %>%
 Then we can get the cluster IDs corresponding to each of the samples in the vector.
 
 ```r
+# Get cluster IDs for each of the samples
 
 samples_list <- map(1:length(kids), get_sample_ids)
 
@@ -380,6 +399,8 @@ de_cluster_ids <- map(1:length(kids), get_cluster_ids) %>%
 Finally, let's create a data frame with the cluster IDs and the corresponding sample IDs. We will merge together the condition information.
 
 ```r
+# Create a data frame with the sample IDs, cluster IDs and condition
+
 gg_df <- data.frame(cluster_id = de_cluster_ids,
                     sample_id = de_samples)
 
@@ -388,7 +409,13 @@ gg_df <- left_join(gg_df, ei[, c("sample_id", "group_id")])
 
 metadata <- gg_df %>%
         dplyr::select(cluster_id, sample_id, group_id) 
+        
+metadata        
 ```
+
+<p align="center">
+<img src="../img/sc_DE_sample_level_metadata.png" width="300">
+</p>
 
 ### Subsetting dataset to cluster(s) of interest
 
@@ -484,8 +511,11 @@ rld <- rlog(dds, blind=TRUE)
 # Plot PCA
 
 DESeq2::plotPCA(rld, intgroup = "group_id")
-ggsave(paste0("results/", clusters[1], "_specific_PCAplot.png"))
 ```
+
+<p align="center">
+<img src="../img/sc_DE_pca.png" width="300">
+</p>
 
 We see a nice separation between our samples on PC1 by our condition of interest, which is great; this suggests that our condition of interest is the largest source of variation in our dataset. We also see some separation of the samples by PC2; however, it is uncertain what this might be due to since we lack additional metadata to explore.
 
@@ -504,6 +534,10 @@ rld_cor <- cor(rld_mat)
 # Plot heatmap
 pheatmap(rld_cor, annotation = cluster_metadata[, c("group_id"), drop=F])
 ```
+
+<p align="center">
+<img src="../img/sc_DE_heatmap.png" width="300">
+</p>
 
 Now we determine whether we have any outliers that need removing or additional sources of variation that we might want to regress out in our design formula. Since we detected no outliers by PCA or hierarchical clustering, nor do we have any additional sources of variation to regress, we can proceed with running the differential expression analysis.
 
@@ -527,6 +561,10 @@ We can check the fit of the model to our data by looking at the plot of dispersi
 # Plot dispersion estimates
 plotDispEsts(dds)
 ```
+
+<p align="center">
+<img src="../img/sc_DE_dispersion.png" width="300">
+</p>
 
 The plot is encouraging, since we expect our dispersions to decrease with increasing mean and follow the line of best fit.
 
@@ -581,7 +619,11 @@ write.csv(res_tbl,
           quote = FALSE, 
           row.names = FALSE)
 ```
- 
+
+<p align="center">
+<img src="../img/sc_DE_res_tbl.png" width="300">
+</p>
+
 ### Table of results for significant genes
 
 Next, we can filter our table for only the significant genes using a p-adjusted threshold of 0.05
@@ -603,6 +645,10 @@ write.csv(sig_res,
           quote = FALSE, 
           row.names = FALSE)
 ```
+
+<p align="center">
+<img src="../img/sc_DE_sig_res.png" width="300">
+</p>
 
 ### Scatterplot of normalized expression of top 20 most significant genes
 
@@ -642,9 +688,11 @@ ggplot(gathered_top20_sig) +
         theme_bw() +
         theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
         theme(plot.title = element_text(hjust = 0.5))
-
-
 ```
+
+<p align="center">
+<img src="../img/sc_DE_top20.png" width="300">
+</p>
 
 ### Heatmap of all significant genes
 
@@ -672,6 +720,10 @@ pheatmap(sig_norm[ , 2:length(colnames(sig_norm))],
     height = 20)        
 ```
 
+<p align="center">
+<img src="../img/sc_DE_sig_genes_heatmap.png" width="300">
+</p>
+
 ### Volcano plot of results
 
 ```r
@@ -690,6 +742,10 @@ ggplot(res_table_thres) +
           plot.title = element_text(size = rel(1.5), hjust = 0.5),
           axis.title = element_text(size = rel(1.25)))                    
 ```
+
+<p align="center">
+<img src="../img/sc_DE_volcano.png" width="300">
+</p>
 
 ***
 
