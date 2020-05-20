@@ -501,11 +501,7 @@ rld_mat <- assay(rld)
 rld_cor <- cor(rld_mat)
 
 # Plot heatmap
-png(paste0("results/", clusters[1], "_specific_heatmap.png"))
-
 pheatmap(rld_cor, annotation = cluster_metadata[, c("group_id"), drop=F])
-
-dev.off()
 ```
 
 Now we determine whether we have any outliers that need removing or additional sources of variation that we might want to regress out in our design formula. Since we detected no outliers by PCA or hierarchical clustering, nor do we have any additional sources of variation to regress, we can proceed with running the differential expression analysis.
@@ -541,11 +537,10 @@ Let's compare the stimulated group relative to the control:
 
 ```r
 # Output results of Wald test for contrast for stim vs ctrl
+levels(cluster_metadata$group_id)[2]
+levels(cluster_metadata$group_id)[1]
 
-stim <- levels(cluster_metadata$group_id)[2]
-ctrl <- levels(cluster_metadata$group_id)[1]
-
-contrast <- c("group_id", stim, ctrl)
+contrast <- c("group_id", levels(cluster_metadata$group_id)[2], levels(cluster_metadata$group_id)[1])
 
 # resultsNames(dds)
 res <- results(dds, 
