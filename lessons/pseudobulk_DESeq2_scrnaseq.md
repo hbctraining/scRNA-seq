@@ -1,7 +1,7 @@
 ---
 title: "Single-cell RNA-seq: Pseudobulk differential expression analysis"
 author: "Mary Piper, Lorena Pantano, Meeta Mistry, Radhika Khetani"
-date: Tuesday, May 22nd, 2020
+date: Tuesday, May 19th, 2020
 ---
 
 Approximate time: 90 minutes
@@ -166,7 +166,7 @@ sce <- readRDS("data/scRNA-seq_input_data_for_DE.rds")
 The RData object is a single-cell experiment object, which is a type of specialized list, generated using the SingleCellExperiment package. These objects have the following structure:
 
 <p align="center">
-<img src="../img/sce_description.png" width="400">
+<img src="../img/sce_description.png" width="600">
 </p>
 
 _**Image credit:** [Amezquita, R.A., Lun, A.T.L., Becht, E. et al. Orchestrating single-cell analysis with Bioconductor. Nat Methods 17, 137–145 (2020). https://doi-org.ezp-prod1.hul.harvard.edu/10.1038/s41592-019-0654-x](https://www.nature.com/articles/s41592-019-0654-x?draft=collection)_
@@ -186,7 +186,7 @@ counts(sce)[1:6, 1:6]
 ```
 
 <p align="center">
-<img src="../img/sc_DE_countdata.png" width="300">
+<img src="../img/sc_DE_countdata.png" width="500">
 </p>
 
 We see the raw counts data is a cell by gene sparse matrix with over 35,000 rows (genes) and nearly 30,000 columns (cells). 
@@ -203,7 +203,7 @@ head(colData(sce))
 ```
 
 <p align="center">
-<img src="../img/sc_DE_coldata.png" width="300">
+<img src="../img/sc_DE_coldata.png" width="500">
 </p>
 
 For every cell, we have information about the associated condition (ctrl or stim), sample ID, and cell type. We will use this information to perform the differential expression analysis between conditions for any particular cell type of interest.
@@ -300,7 +300,7 @@ pb[1:6, 1:6]
 ```
 
 <p align="center">
-<img src="../img/sc_DE_pb_matrix.png" width="300">
+<img src="../img/sc_DE_pb_matrix.png" width="500">
 </p>
 
 The output of this aggregation is a sparse matrix, and when we take a quick look, we can see that it is a gene by cell type-sample matrix.
@@ -340,7 +340,7 @@ str(pb)
 ```
 
 <p align="center">
-<img src="../img/sc_DE_pb_list.png" width="300">
+<img src="../img/sc_DE_pb_list.png" width="500">
 </p>
 
 The counts per sample for each cluster can be checked:
@@ -352,7 +352,7 @@ table(sce$cluster_id, sce$sample_id)
 ```
 
 <p align="center">
-<img src="../img/sc_DE_sample_level_counts.png" width="300">
+<img src="../img/sc_DE_sample_level_counts.png" width="500">
 </p>
 
 ## Differential gene expression with DESeq2
@@ -414,7 +414,7 @@ metadata
 ```
 
 <p align="center">
-<img src="../img/sc_DE_sample_level_metadata.png" width="300">
+<img src="../img/sc_DE_sample_level_metadata.png" width="500">
 </p>
 
 ### Subsetting dataset to cluster(s) of interest
@@ -514,7 +514,7 @@ DESeq2::plotPCA(rld, intgroup = "group_id")
 ```
 
 <p align="center">
-<img src="../img/sc_DE_pca.png" width="300">
+<img src="../img/sc_DE_pca.png" width="600">
 </p>
 
 We see a nice separation between our samples on PC1 by our condition of interest, which is great; this suggests that our condition of interest is the largest source of variation in our dataset. We also see some separation of the samples by PC2; however, it is uncertain what this might be due to since we lack additional metadata to explore.
@@ -536,7 +536,7 @@ pheatmap(rld_cor, annotation = cluster_metadata[, c("group_id"), drop=F])
 ```
 
 <p align="center">
-<img src="../img/sc_DE_heatmap.png" width="300">
+<img src="../img/sc_DE_heatmap.png" width="600">
 </p>
 
 Now we determine whether we have any outliers that need removing or additional sources of variation that we might want to regress out in our design formula. Since we detected no outliers by PCA or hierarchical clustering, nor do we have any additional sources of variation to regress, we can proceed with running the differential expression analysis.
@@ -563,7 +563,7 @@ plotDispEsts(dds)
 ```
 
 <p align="center">
-<img src="../img/sc_DE_dispersion.png" width="300">
+<img src="../img/sc_DE_dispersion.png" width="500">
 </p>
 
 The plot is encouraging, since we expect our dispersions to decrease with increasing mean and follow the line of best fit.
@@ -621,7 +621,7 @@ write.csv(res_tbl,
 ```
 
 <p align="center">
-<img src="../img/sc_DE_res_tbl.png" width="300">
+<img src="../img/sc_DE_res_tbl.png" width="500">
 </p>
 
 ### Table of results for significant genes
@@ -647,7 +647,7 @@ write.csv(sig_res,
 ```
 
 <p align="center">
-<img src="../img/sc_DE_sig_res.png" width="300">
+<img src="../img/sc_DE_sig_res.png" width="500">
 </p>
 
 ### Scatterplot of normalized expression of top 20 most significant genes
@@ -691,7 +691,7 @@ ggplot(gathered_top20_sig) +
 ```
 
 <p align="center">
-<img src="../img/sc_DE_top20.png" width="300">
+<img src="../img/sc_DE_top20.png" width="600">
 </p>
 
 ### Heatmap of all significant genes
@@ -721,7 +721,7 @@ pheatmap(sig_norm[ , 2:length(colnames(sig_norm))],
 ```
 
 <p align="center">
-<img src="../img/sc_DE_sig_genes_heatmap.png" width="300">
+<img src="../img/sc_DE_sig_genes_heatmap.png" width="600">
 </p>
 
 ### Volcano plot of results
@@ -744,7 +744,7 @@ ggplot(res_table_thres) +
 ```
 
 <p align="center">
-<img src="../img/sc_DE_volcano.png" width="300">
+<img src="../img/sc_DE_volcano.png" width="600">
 </p>
 
 ***
