@@ -1,5 +1,5 @@
 ---
-title: "Single-cell RNA-seq: Quality Control Analysis"
+title: "Single-cell RNA-seq: Pseudobulk differential expression analysis"
 author: "Mary Piper, Lorena Pantano, Meeta Mistry, Radhika Khetani"
 date: Tuesday, May 22nd, 2020
 ---
