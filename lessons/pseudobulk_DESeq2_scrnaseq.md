@@ -118,11 +118,7 @@ Next, open a new Rscript file, and start with some comments to indicate what thi
 # Single-cell RNA-seq analysis - Pseudobulk DE analysis with DESeq2
 ```
 
-Save the Rscript as `DE_analysis_scrnaseq.R`. Your working directory should look something like this:
-
-<p align="center">
-<img src="../img/Rstudio_pseudobulk_DE.png" width="400">
-</p>
+Save the Rscript as `DE_analysis_scrnaseq.R`.
 
 
 ### Load libraries
@@ -359,7 +355,9 @@ table(sce$cluster_id, sce$sample_id)
 
 **We will be using [DESeq2](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-014-0550-8) for the DE analysis, and the analysis steps with DESeq2 are shown in the flowchart below in green**. DESeq2 first normalizes the count data to account for differences in library sizes and RNA composition between samples. Then, we will use the normalized counts to make some plots for QC at the gene and sample level. The final step is to use the appropriate functions from the DESeq2 package to perform the differential expression analysis. We will go in-depth into each of these steps in the following lessons, but additional details and helpful suggestions regarding DESeq2 can be found in our materials detailing the workflow on [bulk RNA-seq data]() and the [DESeq2 vignette](http://bioconductor.org/packages/devel/bioc/vignettes/DESeq2/inst/doc/DESeq2.html).
 
+<p align="center">
 <img src="../img/de_workflow_salmon.png" width="400">
+</p>
 
 ### Sample-level metadata
 
@@ -479,7 +477,9 @@ dds <- DESeqDataSetFromMatrix(cluster_counts,
 
 The next step in the DESeq2 workflow is QC, which includes sample-level and gene-level steps to perform QC checks on the count data to help us ensure that the samples/replicates look good. 
 
+<p align="center">
 <img src="../img/de_workflow_salmon_qc.png" width="400">
+</p>
 
 A useful initial step in an RNA-seq analysis is to assess overall similarity between samples: 
 
@@ -489,7 +489,9 @@ A useful initial step in an RNA-seq analysis is to assess overall similarity bet
 
 To explore the similarity of our samples, we will be performing sample-level QC using Principal Component Analysis (PCA) and hierarchical clustering methods. Sample-level QC allows us to see how well our replicates cluster together, as well as, observe whether our experimental condition represents the major source of variation in the data. Performing sample-level QC can also identify any sample outliers, which may need to be explored further to determine whether they need to be removed prior to DE analysis. 
 
+<p align="center">
 <img src="../img/sample_qc.png" width="700">
+</p>
 
 When using these unsupervised clustering methods, normalization and log2-transformation of the counts improves the distances/clustering for visualization. DESeq2 uses median of ratios method for count normalization and a **regularized log transform** (rlog) of the normalized counts for sample-level QC as it moderates the variance across the mean, improving the clustering.
 
