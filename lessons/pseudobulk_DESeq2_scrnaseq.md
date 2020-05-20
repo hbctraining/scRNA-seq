@@ -24,8 +24,8 @@ After identification of the cell type identities of the scRNA-seq clusters, we o
 
 1. Subsetting to the cells for the cell type(s) of interest to perform the DE analysis.
 2. Extracting the raw counts after QC filtering to be used for the DE analysis
-3. Aggregating the counts and metadata to the sample level. Need at least two biological replicates per condition to perform the analysis.
-4. Performing the DE analysis
+3. Aggregating the counts and metadata to the sample level. 
+4. Performing the DE analysis (Need at least two biological replicates per condition to perform the analysis, but more replicates are recommended).
 
 We will be using a the same dataset as what we had used for the rest of the workflow, but it has now been demultiplexed into the individual samples to use the replicates allowing for differential expression analysis. We will be importing it as a `SingleCellExperiment` object.
 
