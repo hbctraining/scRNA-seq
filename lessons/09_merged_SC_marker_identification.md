@@ -441,6 +441,18 @@ write_rds(seurat_integrated,
 
 ***
 
+Now that we have our clusters defined and the markers for each of our clusters, we have a few different options:
+
+- Experimentally validate intriguing markers for our identified cell types.
+- Perform differential expression analysis between conditions `ctrl` and `stim`
+	- Biological replicates are **necessary** to proceed with this analysis, and we have [additional materials](../pseudobulk_DESeq2_scrnaseq.md) to help walk through this analysis.
+- Trajectory analysis, or lineage tracing, could be performed if trying to determine the progression between cell types or cell states. For example, we could explore any of the following using this type of analysis:
+	- Differentiation processes
+	- Expression changes over time
+	- Cell state changes in expression
+
+***
+
 
 *This lesson has been developed by members of the teaching team at the [Harvard Chan Bioinformatics Core (HBC)](http://bioinformatics.sph.harvard.edu/). These are open access materials distributed under the terms of the [Creative Commons Attribution license](https://creativecommons.org/licenses/by/4.0/) (CC BY 4.0), which permits unrestricted use, distribution, and reproduction in any medium, provided the original author and source are credited.*
 
