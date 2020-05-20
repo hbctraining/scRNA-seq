@@ -701,7 +701,6 @@ The following script will run DESeq2 on all cell type clusters, while contrastin
 
 
 ```r
-setwd("results")
 dir.create("DESeq2")
 dir.create("DESeq2/pairwise")
 
