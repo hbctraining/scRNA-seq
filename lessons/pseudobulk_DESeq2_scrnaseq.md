@@ -85,6 +85,7 @@ Some relevant metadata for our dataset is provided below:
   * Dendritic cells
   * Megakaryocytes
 
+> _**NOTE:** We had identified a few additional cell types during our single-cell workflow, but we will be moving forward with this dataset and the cell types that were identified as part of the analysis._
 
 ## Setting up the R environment
 
@@ -131,6 +132,7 @@ After bringing in the raw counts data for a particular cell type, we will use to
 Let's load the libraries that we will be using for the analysis.
 
 ```r
+# Load libraries
 library(scater)
 library(Seurat)
 library(tidyverse)
@@ -156,6 +158,7 @@ library(DESeq2)
 The dataset that we are working with has been saved as an RData object to an RDS file. We can read it in using the `readRDS()` function.
 
 ```r 
+# Read in the dataset
 sce <- readRDS("data/scRNA-seq_input_data_for_DE.rds")
 ```
 
