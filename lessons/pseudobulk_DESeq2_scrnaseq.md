@@ -701,6 +701,10 @@ The following script will run DESeq2 on all cell type clusters, while contrastin
 
 
 ```r
+setwd("results")
+dir.create("DESeq2")
+dir.create("DESeq2/pairwise")
+
 # Function to run DESeq2 and get results for all clusters
 ## x is index of cluster in clusters vector on which to run function
 ## A is the sample group to compare
@@ -826,6 +830,9 @@ The following script will run the DESeq2 Likelihood Ratio Test (LRT) on all cell
 
 ```r
 # Likelihood ratio test
+setwd("results")
+dir.create("DESeq2")
+dir.create("DESeq2/lrt")
 
 # Create DESeq2Dataset object
 clusters <- levels(metadata$cluster_id)
