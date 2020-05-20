@@ -300,7 +300,7 @@ pb[1:6, 1:6]
 ```
 
 <p align="center">
-<img src="../img/sc_DE_pb_matrix.png" width="500">
+<img src="../img/sc_DE_pb_matrix.png" width="800">
 </p>
 
 The output of this aggregation is a sparse matrix, and when we take a quick look, we can see that it is a gene by cell type-sample matrix.
@@ -352,7 +352,7 @@ table(sce$cluster_id, sce$sample_id)
 ```
 
 <p align="center">
-<img src="../img/sc_DE_sample_level_counts.png" width="500">
+<img src="../img/sc_DE_sample_level_counts.png" width="800">
 </p>
 
 ## Differential gene expression with DESeq2
@@ -414,7 +414,7 @@ metadata
 ```
 
 <p align="center">
-<img src="../img/sc_DE_sample_level_metadata.png" width="500">
+<img src="../img/sc_DE_sample_level_metadata.png" width="300">
 </p>
 
 ### Subsetting dataset to cluster(s) of interest
