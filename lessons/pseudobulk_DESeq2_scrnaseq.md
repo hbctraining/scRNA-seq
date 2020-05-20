@@ -819,7 +819,7 @@ get_dds_resultsAvsB <- function(x, A, B){
 }
 
 # Run the script on all clusters comparing stim condition relative to control condition
-#map(1:length(clusters), get_dds_resultsAvsB, A = 2, B = 1)
+map(1:length(clusters), get_dds_resultsAvsB, A = 2, B = 1)
 ```
 
 ## Script to run DESeq2 on all cell type clusters - Likelihood Ratio Test
@@ -916,5 +916,5 @@ get_dds_LRTresults <- function(x){
         
 }
 
-map(1:2, get_dds_LRTresults)
+map(1:length(clusters), get_dds_LRTresults)
 ```
