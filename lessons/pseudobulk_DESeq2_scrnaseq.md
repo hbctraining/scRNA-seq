@@ -8,9 +8,9 @@ Approximate time: 90 minutes
 
 ## Learning Objectives:
 
-* Understand how to prepare single-cell RNA-seq raw count data for differential expression analysis
-* Utilize the DESeq2 tool to perform differential expression analysis a specific cell type cluster
-* Create functions to iterate the differential expression analysis across different cell types
+* Understand how to prepare single-cell RNA-seq raw count data for pseudobulk differential expression analysis
+* Utilize the DESeq2 tool to perform pseudobulk differential expression analysis on a specific cell type cluster
+* Create functions to iterate the pseudobulk differential expression analysis across different cell types
 
 _The [2019 Bioconductor tutorial on scRNA-seq pseudobulk DE analysis](http://biocworkshops2019.bioconductor.org.s3-website-us-east-1.amazonaws.com/page/muscWorkshop__vignette/) was used as a fundamental resource for the development of this lesson. In particular, many of the data wrangling steps were derived from this tutorial._
 
