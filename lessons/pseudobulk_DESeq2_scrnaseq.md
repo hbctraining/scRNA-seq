@@ -495,7 +495,9 @@ To explore the similarity of our samples, we will be performing sample-level QC 
 
 When using these unsupervised clustering methods, normalization and log2-transformation of the counts improves the distances/clustering for visualization. DESeq2 uses median of ratios method for count normalization and a **regularized log transform** (rlog) of the normalized counts for sample-level QC as it moderates the variance across the mean, improving the clustering.
 
-<img src="../img/rlog_transformation.png" width="500">
+<p align="center">
+<img src="../img/rlog_transformation.png" width="700">
+</p>
 
 >_**NOTE:** The [DESeq2 vignette](http://bioconductor.org/packages/devel/bioc/vignettes/DESeq2/inst/doc/DESeq2.html) suggests large datasets (100s of samples) to use the variance-stabilizing transformation (vst) instead of rlog for transformation of the counts, since the rlog function might take too long to run and the `vst()` function is faster with similar properties to rlog._
 
@@ -547,7 +549,9 @@ Now we determine whether we have any outliers that need removing or additional s
 
 Differential expression analysis with DESeq2 involves multiple steps as displayed in the flowchart below in blue. Briefly, DESeq2 will model the **raw counts**, using normalization factors (size factors) to account for differences in library depth. Then, it will estimate the gene-wise dispersions and shrink these estimates to generate more accurate estimates of dispersion to model the counts. Finally, DESeq2 will fit the negative binomial model and perform hypothesis testing using the Wald test or Likelihood Ratio Test. All of these steps are explained in detail in our [additional materials](https://hbctraining.github.io/DGE_workshop_salmon/schedule/).
 
+<p align="center">
 <img src="../img/de_workflow_deseq1.png" width="500">
+</p>
 
 
 All of these steps are performed by running the single `DESeq()` function on our DESeq2 object created earlier.
