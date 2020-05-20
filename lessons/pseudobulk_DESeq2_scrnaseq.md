@@ -829,8 +829,6 @@ The following script will run the DESeq2 Likelihood Ratio Test (LRT) on all cell
 
 ```r
 # Likelihood ratio test
-setwd("results")
-dir.create("DESeq2")
 dir.create("DESeq2/lrt")
 
 # Create DESeq2Dataset object
