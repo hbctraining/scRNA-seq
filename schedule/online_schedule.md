@@ -9,11 +9,11 @@
 ## Day 1
 | Time |  Topic  | Instructor |
 |:-----------:|:----------:|:--------:|
-| 09:30 - 09:50 | [Workshop introduction](../slides/Intro_to_workshop.pdf) | Radhika
-| 09:50 - 10:05 | [R refresher Q & A](../lessons/R_refresher.md) | Mary |
-| 10:05 - 10:35 | scRNA-seq pre-reading discussion | Meeta/Mary |
-| 10:35 - 11:20 | [Quality control set-up](../lessons/03_SC_quality_control-setup.md) | Jihe |
-| 11:20 - 12:00 | [Single-cell RNA-seq design and methods](../slides/Single_Cell_2_27_20.pdf) | [Dr. Sarah Boswell](https://scholar.harvard.edu/saboswell) |
+| 20m| [Workshop introduction](../slides/Intro_to_workshop.pdf) | Radhika
+| skip? | [R refresher Q & A](../lessons/R_refresher.md) | Mary |
+| 30m | scRNA-seq pre-reading discussion | Meeta/Mary |
+| 40m | [Quality control set-up](../lessons/03_SC_quality_control-setup.md) | Jihe |
+| 1h | [Single-cell RNA-seq design and methods](../slides/Single_Cell_2_27_20.pdf) | [Dr. Sarah Boswell](https://scholar.harvard.edu/saboswell) |
 
 ### Self Learning #1
 * [Quality control](../lessons/04_SC_quality_control.md)
