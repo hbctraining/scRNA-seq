@@ -21,9 +21,7 @@ This repository has teaching materials for a **2-day**, hands-on **Introduction 
 
 ### Lessons
 
-Below are links to the lessons and suggested schedules:
-
-* [Click here for links to lessons and proposed schedule](schedule)
+[Click here for links to lessons and proposed schedule](schedule)
 
 
 ### Installation Requirements
