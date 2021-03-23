@@ -1,3 +1,6 @@
+**THIS REPO IS ARCHIVED, PLEASE GO TO https://hbctraining.github.io/main FOR CURRENT LESSONS.**
+
+
 # Single-cell RNA-seq analysis workshop 
 
 | Audience | Computational skills required| Duration |
